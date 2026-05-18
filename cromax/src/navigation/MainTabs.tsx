@@ -6,7 +6,14 @@ import { TradeScreen }   from '../screens/TradeScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { CustomTabBar }  from './CustomTabBar';
 
-const Tab = createBottomTabNavigator();
+export type TabParamList = {
+  Home:    undefined;
+  Grid:    undefined;
+  Trade:   undefined;
+  Profile: undefined;
+};
+
+const Tab = createBottomTabNavigator<TabParamList>();
 
 export function MainTabs() {
   return (

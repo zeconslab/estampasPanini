@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { View, Text, Pressable, Animated, StyleSheet, LayoutChangeEvent } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { fonts } from '../theme';
+import { fonts, useTheme } from '../theme';
 
 const ICONS: Record<string, string> = {
   Home:    '⬟',
@@ -20,6 +20,7 @@ const TAB_LABELS: Record<string, string> = {
 
 export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const t = useTheme();
   const pillX   = useRef(new Animated.Value(0)).current;
   const pillW   = useRef(new Animated.Value(0)).current;
   const tabRefs  = useRef<{ x: number; width: number }[]>([]);
@@ -46,8 +47,8 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
   }, [state.index]);
 
   return (
-    <View style={[styles.bar, { paddingBottom: insets.bottom + 4 }]}>
-      <Animated.View style={[styles.pill, { left: pillX, width: pillW }]} />
+    <View style={[styles.bar, { paddingBottom: insets.bottom + 4, backgroundColor: t.pitch }]}>
+      <Animated.View style={[styles.pill, { left: pillX, width: pillW, backgroundColor: t.primary }]} />
       {state.routes.map((route, idx) => {
         const focused = idx === state.index;
         const { options } = descriptors[route.key];
@@ -63,8 +64,8 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
             }}
             style={styles.tab}
           >
-            <Text style={[styles.icon, { color: focused ? '#0E5B3A' : '#9AA39B' }]}>{icon}</Text>
-            <Text style={[styles.label, { color: focused ? '#0E5B3A' : '#9AA39B' }]}>{label}</Text>
+            <Text style={[styles.icon, { color: focused ? t.paper : t.ink4 }]}>{icon}</Text>
+            <Text style={[styles.label, { color: focused ? t.paper : t.ink4 }]}>{label}</Text>
           </Pressable>
         );
       })}
@@ -75,7 +76,6 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
 const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
-    backgroundColor: '#0A0A0A',
     paddingTop: 8,
     position: 'relative',
   },
@@ -83,7 +83,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 6,
     height: 44,
-    backgroundColor: '#E89B2F',
     borderRadius: 22,
   },
   tab: {

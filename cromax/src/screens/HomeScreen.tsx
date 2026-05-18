@@ -1,5 +1,5 @@
-import React from 'react';
-import { ScrollView, View, Text, StyleSheet, Dimensions } from 'react-native';
+import React, { useMemo } from 'react';
+import { ScrollView, View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAlbumStore }    from '../store/useAlbumStore';
 import { computeStats, TEAMS } from '../data/album';
@@ -13,19 +13,31 @@ import { Sticker as StickerComponent } from '../components/Sticker';
 import { useNavigation }    from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RootStackParamList } from '../navigation/RootNavigator';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { TabParamList } from '../navigation/MainTabs';
 
 type Nav = StackNavigationProp<RootStackParamList>;
 
-const { width: SCREEN_W } = Dimensions.get('window');
 const GRID_PAD = 16;
 const GRID_GAP = 6;
 const GRID_COLS = 6;
-const CELL_SIZE = Math.floor((SCREEN_W - GRID_PAD * 2 - GRID_GAP * (GRID_COLS - 1)) / GRID_COLS);
+
+const AVATAR_PALETTE = ['#0E5B3A', '#1A7B4F', '#3D5A80', '#6B4226', '#8B2FC9'];
+function nameColor(name: string): string {
+  const hash = name.split('').reduce((h, c) => (h * 31 + c.charCodeAt(0)) & 0x7FFFFFFF, 0);
+  return AVATAR_PALETTE[hash % AVATAR_PALETTE.length];
+}
 
 export function HomeScreen() {
   const t       = useTheme();
   const insets  = useSafeAreaInsets();
   const nav     = useNavigation<Nav>();
+  const tabNav  = useNavigation<BottomTabNavigationProp<TabParamList>>();
+  const { width: SCREEN_W } = useWindowDimensions();
+  const CELL_SIZE = useMemo(
+    () => Math.floor((SCREEN_W - GRID_PAD * 2 - GRID_GAP * (GRID_COLS - 1)) / GRID_COLS),
+    [SCREEN_W],
+  );
   const { stickers, friends } = useAlbumStore();
   const stats   = computeStats(stickers);
 
@@ -112,7 +124,7 @@ export function HomeScreen() {
                 onPress={() => nav.navigate('FriendDetail', { friendId: friend.id })}
               >
                 <View style={styles.friendTop}>
-                  <View style={[styles.avatar, { backgroundColor: '#0E5B3A' }]}>
+                  <View style={[styles.avatar, { backgroundColor: nameColor(friend.name) }]}>
                     <Text style={styles.avatarLetter}>{friend.name[0]}</Text>
                   </View>
                   <View>
@@ -137,7 +149,7 @@ export function HomeScreen() {
           <SectionHeader
             title="Selecciones avanzadas"
             trailing={
-              <HapticPress onPress={() => nav.navigate('Main' as any)}>
+              <HapticPress onPress={() => tabNav.navigate('Grid')}>
                 <Text style={[styles.eyebrowText, { color: t.ink3 }]}>Ver todas →</Text>
               </HapticPress>
             }

@@ -5,7 +5,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 import { useAlbumStore }  from '../store/useAlbumStore';
-import { useTheme }       from '../theme';
+import { useTheme, fonts } from '../theme';
 import { HapticPress }    from '../components/HapticPress';
 
 type Route = RouteProp<RootStackParamList, 'StickerModal'>;
@@ -77,7 +77,7 @@ export function StickerSheet() {
       )}
 
       <HapticPress style={[styles.closeBtn, { backgroundColor: t.pitch }]} onPress={() => nav.goBack()}>
-        <Text style={styles.closeBtnText}>Listo</Text>
+        <Text style={[styles.closeBtnText, { color: t.paper }]}>Listo</Text>
       </HapticPress>
     </View>
   );
@@ -86,15 +86,15 @@ export function StickerSheet() {
 const styles = StyleSheet.create({
   container:    { flex: 1, padding: 20 },
   handle:       { width: 36, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 20 },
-  title:        { fontSize: 22, fontWeight: '800', marginBottom: 4 },
+  title:        { fontSize: 22, fontFamily: fonts.display, marginBottom: 4 },
   label:        { fontSize: 14, marginBottom: 24 },
   stateRow:     { flexDirection: 'row', gap: 8, marginBottom: 20 },
   stateBtn:     { borderRadius: 12, paddingVertical: 12, alignItems: 'center' },
-  stateBtnText: { fontSize: 13, fontWeight: '700' },
+  stateBtnText: { fontSize: 13, fontFamily: fonts.headline },
   stepper:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 24, marginBottom: 20 },
   stepBtn:      { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
-  stepBtnText:  { fontSize: 24, fontWeight: '300' },
-  stepCount:    { fontSize: 28, fontWeight: '900', minWidth: 60, textAlign: 'center' },
+  stepBtnText:  { fontSize: 24, fontFamily: fonts.body },
+  stepCount:    { fontSize: 28, fontFamily: fonts.display, minWidth: 60, textAlign: 'center' },
   closeBtn:     { borderRadius: 24, paddingVertical: 14, alignItems: 'center', marginTop: 8 },
-  closeBtnText: { color: '#EFE7D2', fontSize: 16, fontWeight: '700' },
+  closeBtnText: { fontSize: 16, fontFamily: fonts.semibold },
 });
