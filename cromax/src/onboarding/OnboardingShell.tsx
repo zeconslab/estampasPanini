@@ -41,6 +41,7 @@ export function OnboardingShell({ step, total, onBack, eyebrow, title, children 
                 styles.dot,
                 { backgroundColor: i < step ? t.pitch2 : t.line },
                 i === step && styles.dotActive,
+                i === step && { backgroundColor: t.primary },
                 i < step && styles.dotDone,
               ]}
             />

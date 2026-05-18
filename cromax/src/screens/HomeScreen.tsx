@@ -6,6 +6,7 @@ import { computeStats, TEAMS } from '../data/album';
 import { useTheme, fonts }  from '../theme';
 import { ProgressRing }     from '../components/ProgressRing';
 import { MxBunting }        from '../components/MxBunting';
+import { MxPattern }        from '../components/MxPattern';
 import { HapticPress }      from '../components/HapticPress';
 import { SectionHeader }    from '../components/SectionHeader';
 import { Flag }             from '../components/Flag';
@@ -39,37 +40,46 @@ export function HomeScreen() {
     [SCREEN_W],
   );
   const { stickers, friends } = useAlbumStore();
-  const stats   = computeStats(stickers);
+  const stats = useMemo(() => computeStats(stickers), [stickers]);
 
   // Top 3 teams by completion %
-  const top3Teams = TEAMS.map(team => {
+  const top3Teams = useMemo(() => TEAMS.map(team => {
     const list  = stickers.filter(s => s.team === team.code);
     const owned = list.filter(s => s.state !== 'missing').length;
     return { team, owned, total: list.length };
   }).filter(e => e.total > 0)
     .sort((a, b) => b.owned / b.total - a.owned / a.total)
-    .slice(0, 3);
+    .slice(0, 3), [stickers]);
 
   // Trade matches
-  const myDupeIds = new Set(stickers.filter(s => s.state === 'duplicate').map(s => s.id));
-  const tradeMatches = friends.map(f => ({
+  const myDupeIds = useMemo(
+    () => new Set(stickers.filter(s => s.state === 'duplicate').map(s => s.id)),
+    [stickers],
+  );
+  const tradeMatches = useMemo(() => friends.map(f => ({
     friend: f,
     canGive: f.missing.filter(id => myDupeIds.has(id)).length,
     canGet: (f.dupes ?? []).filter(d => stickers.find(s => s.id === d.id && s.state === 'missing')).length,
-  })).filter(m => m.canGive > 0).slice(0, 4);
+  })).filter(m => m.canGive > 0).slice(0, 4), [friends, myDupeIds, stickers]);
 
   // Recent stickers (last 8 owned/duplicate)
-  const recent = stickers.filter(s => s.state !== 'missing').slice(-8).reverse();
+  const recent = useMemo(
+    () => stickers.filter(s => s.state !== 'missing').slice(-8).reverse(),
+    [stickers],
+  );
+
+  const scrollStyle = useMemo(() => ({ backgroundColor: t.paper }), [t.paper]);
 
   return (
     <ScrollView
-      style={{ backgroundColor: t.paper }}
-      contentContainerStyle={{ paddingBottom: 24 }}
+      style={scrollStyle}
+      contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
     >
       {/* HERO — rounded card with padding */}
       <View style={{ padding: 16, paddingTop: insets.top + 12 }}>
         <View style={[styles.heroCard, { backgroundColor: t.pitch }]}>
+          <View style={styles.patternWrap}><MxPattern size={110} color="#EFE7D2" opacity={0.1} /></View>
           <View style={styles.buntingWrap}><MxBunting /></View>
 
           <View style={styles.heroTopRow}>
@@ -172,7 +182,7 @@ export function HomeScreen() {
                       <Text style={[styles.teamCount, { color: t.ink3 }]}>{owned}/{total}</Text>
                     </View>
                     <View style={[styles.barBg, { backgroundColor: t.line }]}>
-                      <View style={[styles.barFill, { backgroundColor: t.ink, width: `${pct}%` as `${number}%` }]} />
+                      <View style={[styles.barFill, { backgroundColor: t.pitch2, width: `${pct}%` as `${number}%` }]} />
                     </View>
                   </View>
                 </View>
@@ -231,6 +241,7 @@ function MiniStat({ label, value, color, bg, textColor }: {
 }
 
 const styles = StyleSheet.create({
+  scrollContent: { paddingBottom: 24 },
   heroCard: {
     borderRadius: 22,
     padding: 20,
@@ -238,6 +249,7 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
     overflow: 'hidden',
   },
+  patternWrap: { position: 'absolute', bottom: 0, right: 0 },
   buntingWrap: { position: 'absolute', top: 14, left: 20 },
   heroTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
   heroEyebrow: {

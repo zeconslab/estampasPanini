@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Keyboard } from 'react-native';
 import { useTheme, fonts } from '../theme';
 import { HapticPress } from '../components/HapticPress';
 import { OnboardingShell } from './OnboardingShell';
@@ -46,7 +46,7 @@ export function OnboardName({ onNext, onBack }: Props) {
             placeholderTextColor={t.ink4}
             maxLength={30}
             returnKeyType="done"
-            onSubmitEditing={() => trimmed && onNext(trimmed)}
+            onSubmitEditing={() => { if (trimmed) { Keyboard.dismiss(); onNext(trimmed); } }}
             style={[styles.input, { color: t.ink, borderBottomColor: t.line }]}
           />
         </View>
@@ -61,7 +61,7 @@ export function OnboardName({ onNext, onBack }: Props) {
           styles.btn,
           { backgroundColor: trimmed ? t.pitch : t.paper2, opacity: trimmed ? 1 : 0.4 },
         ]}
-        onPress={() => trimmed && onNext(trimmed)}
+        onPress={() => { if (trimmed) { Keyboard.dismiss(); onNext(trimmed); } }}
       >
         <Text style={[styles.btnText, { color: trimmed ? '#fff' : t.ink4 }]}>Continuar</Text>
       </HapticPress>

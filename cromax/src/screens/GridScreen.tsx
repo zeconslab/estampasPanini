@@ -178,16 +178,16 @@ export function GridScreen() {
           return (
             <HapticPress
               key={f.key}
-              style={[styles.chip, { backgroundColor: active ? t.pitch : t.paper2, flex: 1 }]}
+              style={[styles.chip, { backgroundColor: active ? t.primary : t.paper2, flex: 1 }]}
               onPress={() => setFilter(f.key)}
             >
               <Text style={[styles.chipLabel, {
-                color: active ? '#EFE7D2' : t.ink3,
+                color: active ? t.pitch : t.ink3,
               }]}>
                 {f.label}
               </Text>
               <Text style={[styles.chipCount, {
-                color: active ? '#EFE7D2' : t.ink3,
+                color: active ? t.pitch : t.ink3,
                 opacity: active ? 0.7 : 0.55,
               }]}>
                 {chipCounts[f.key]}
