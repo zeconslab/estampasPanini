@@ -103,15 +103,15 @@ export function HomeScreen() {
               style={[styles.heroBtn, { backgroundColor: t.primary }]}
               onPress={() => nav.navigate('QuickAdd')}
             >
-              <Text style={[styles.heroBtnIcon, { color: t.pitch }]}>+</Text>
-              <Text style={[styles.heroBtnText, { color: t.pitch }]}>Marcar nuevas</Text>
+              <Text style={[styles.heroBtnIcon, { color: '#0E5B3A' }]}>+</Text>
+              <Text style={[styles.heroBtnText, { color: '#0E5B3A' }]}>Marcar nuevas</Text>
             </HapticPress>
             <HapticPress
-              style={[styles.heroBtn, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
+              style={[styles.heroBtn, { backgroundColor: 'rgba(255,255,255,0.18)' }]}
               onPress={() => nav.navigate('ShareModal')}
             >
-              <Text style={[styles.heroBtnIcon, { color: t.paper }]}>↑</Text>
-              <Text style={[styles.heroBtnText, { color: t.paper }]}>Mis faltantes</Text>
+              <Text style={[styles.heroBtnIcon, { color: 'rgba(255,255,255,0.9)' }]}>↑</Text>
+              <Text style={[styles.heroBtnText, { color: 'rgba(255,255,255,0.9)' }]}>Mis faltantes</Text>
             </HapticPress>
           </View>
         </View>
@@ -295,14 +295,14 @@ const styles = StyleSheet.create({
   heroActions: { flexDirection: 'row', gap: 8 },
   heroBtn: {
     flex: 1,
-    borderRadius: 24,
-    paddingVertical: 12,
+    borderRadius: 26,
+    paddingVertical: 14,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 5,
+    gap: 6,
   },
-  heroBtnIcon: { fontFamily: fonts.headline, fontSize: 16 },
+  heroBtnIcon: { fontFamily: fonts.headline, fontSize: 17 },
   heroBtnText: { fontFamily: fonts.headline, fontSize: 15, letterSpacing: -0.2 },
 
   eyebrowText: {
