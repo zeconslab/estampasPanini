@@ -78,6 +78,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
 const styles = StyleSheet.create({
   outer: {
     paddingHorizontal: 16,
+    backgroundColor: 'transparent',
   },
   bar: {
     flexDirection: 'row',

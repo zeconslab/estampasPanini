@@ -19,7 +19,10 @@ export function MainTabs() {
   return (
     <Tab.Navigator
       tabBar={props => <CustomTabBar {...props} />}
-      screenOptions={{ headerShown: false }}
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: { backgroundColor: 'transparent', borderTopWidth: 0, elevation: 0 },
+      }}
     >
       <Tab.Screen name="Home"    component={HomeScreen} />
       <Tab.Screen name="Grid"    component={GridScreen} />
