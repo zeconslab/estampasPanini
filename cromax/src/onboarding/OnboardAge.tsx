@@ -19,7 +19,7 @@ export function OnboardAge({ onNext }: Props) {
             key={range}
             style={[styles.chip,
               { backgroundColor: selected === range ? t.pitch : t.card, borderColor: t.line }
-            ] as any}
+            ]}
             onPress={() => setSelected(range)}
           >
             <Text style={[styles.chipText, { color: selected === range ? '#EFE7D2' : t.ink }]}>
@@ -29,7 +29,7 @@ export function OnboardAge({ onNext }: Props) {
         ))}
       </View>
       <HapticPress
-        style={[styles.btn, { backgroundColor: selected ? t.primary : t.paper2 }] as any}
+        style={[styles.btn, { backgroundColor: selected ? t.primary : t.paper2 }]}
         onPress={() => selected && onNext(selected)}
       >
         <Text style={[styles.btnText, { color: selected ? t.pitch : t.ink4 }]}>Siguiente</Text>

@@ -13,7 +13,7 @@ export function OnboardWelcome({ onNext }: Props) {
       <View style={styles.bunting}><MxBunting /></View>
       <Text style={styles.title}>Cromax</Text>
       <Text style={styles.sub}>Tu álbum del{'\n'}Mundial 2026</Text>
-      <HapticPress style={[styles.btn, { backgroundColor: t.primary }] as any} onPress={onNext}>
+      <HapticPress style={[styles.btn, { backgroundColor: t.primary }]} onPress={onNext}>
         <Text style={styles.btnText}>Comenzar</Text>
       </HapticPress>
     </View>

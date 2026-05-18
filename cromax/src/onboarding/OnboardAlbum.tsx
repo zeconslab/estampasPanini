@@ -11,7 +11,7 @@ export function OnboardAlbum({ onNext }: Props) {
     <View style={[styles.screen, { backgroundColor: t.paper }]}>
       <Text style={[styles.title, { color: t.ink }]}>Elige tu álbum</Text>
       <HapticPress
-        style={[styles.card, { backgroundColor: t.pitch, borderColor: t.primary, borderWidth: 2 }] as any}
+        style={[styles.card, { backgroundColor: t.pitch, borderColor: t.primary, borderWidth: 2 }]}
         onPress={() => onNext('mundial-2026')}
       >
         <Text style={styles.cardEmoji}>🏆</Text>

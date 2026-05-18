@@ -12,7 +12,7 @@ export function OnboardReady({ name, onDone }: Props) {
       <Text style={styles.emoji}>🎉</Text>
       <Text style={styles.title}>¡Listo, {name}!</Text>
       <Text style={styles.sub}>Ya puedes empezar a llenar{'\n'}tu álbum Cromax.</Text>
-      <HapticPress style={[styles.btn, { backgroundColor: t.primary }] as any} onPress={onDone}>
+      <HapticPress style={[styles.btn, { backgroundColor: t.primary }]} onPress={onDone}>
         <Text style={[styles.btnText, { color: t.pitch }]}>Ver mi álbum</Text>
       </HapticPress>
     </View>

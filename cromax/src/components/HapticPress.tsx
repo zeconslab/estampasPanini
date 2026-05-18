@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
-import { Animated, Pressable, PressableProps, ViewStyle } from 'react-native';
+import { Animated, Pressable, PressableProps, StyleProp, ViewStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 interface Props extends PressableProps {
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   children: React.ReactNode;
   haptic?: boolean;
 }

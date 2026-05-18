@@ -24,7 +24,7 @@ export function OnboardName({ onNext }: Props) {
           onSubmitEditing={() => name.trim() && onNext(name.trim())}
         />
         <HapticPress
-          style={[styles.btn, { backgroundColor: name.trim() ? t.primary : t.paper2 }] as any}
+          style={[styles.btn, { backgroundColor: name.trim() ? t.primary : t.paper2 }]}
           onPress={() => name.trim() && onNext(name.trim())}
         >
           <Text style={[styles.btnText, { color: name.trim() ? t.pitch : t.ink4 }]}>Siguiente</Text>
