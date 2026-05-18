@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   patternWrap: { position: 'absolute', bottom: 0, right: 0 },
-  buntingWrap: { position: 'absolute', top: 14, left: 20 },
+  buntingWrap: { position: 'absolute', top: 10, left: -20 },
   heroTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
   heroEyebrow: {
     fontFamily: fonts.mono,

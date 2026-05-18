@@ -87,8 +87,8 @@ const styles = StyleSheet.create({
   },
   buntingWrap: {
     position: 'absolute',
-    top: 60,
-    left: 18,
+    top: 52,
+    left: 0,
   },
 
   stickerMain: {

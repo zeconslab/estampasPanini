@@ -118,7 +118,13 @@ export function ProfileScreen() {
         {/* Modo oscuro */}
         <View style={[styles.settingsRow, styles.settingsRowBorder, { borderColor: t.line }]}>
           <Text style={[styles.rowLabel, { color: t.ink, fontFamily: fonts.semibold }]}>Modo oscuro</Text>
-          <Switch value={dark} onValueChange={toggleDark} trackColor={{ true: t.primary }} />
+          <Switch
+            value={dark}
+            onValueChange={toggleDark}
+            trackColor={{ false: t.paper2, true: t.primary }}
+            thumbColor={dark ? t.paper : '#FFFFFF'}
+            ios_backgroundColor={t.paper2}
+          />
         </View>
 
         {/* Reiniciar álbum */}
