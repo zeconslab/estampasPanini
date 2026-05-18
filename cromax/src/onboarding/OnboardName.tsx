@@ -19,7 +19,6 @@ export function OnboardName({ onNext }: Props) {
           placeholderTextColor={t.ink4}
           maxLength={30}
           style={[styles.input, { backgroundColor: t.card, color: t.ink, borderColor: t.line }]}
-          autoFocus
           returnKeyType="next"
           onSubmitEditing={() => name.trim() && onNext(name.trim())}
         />

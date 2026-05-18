@@ -7,7 +7,7 @@ import { OnboardAge }     from './OnboardAge';
 import { OnboardReady }   from './OnboardReady';
 import { useAlbumStore }  from '../store/useAlbumStore';
 
-const { width: W } = Dimensions.get('window');
+const { width: W, height: H } = Dimensions.get('window');
 
 interface Props { onComplete: () => void }
 
@@ -48,6 +48,6 @@ export function OnboardingFlow({ onComplete }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, overflow: 'hidden' },
-  track:     { flexDirection: 'row', width: W * STEPS.length },
-  page:      { width: W, flex: 1 },
+  track:     { flexDirection: 'row', width: W * STEPS.length, height: H },
+  page:      { width: W, height: H },
 });
