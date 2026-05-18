@@ -13,6 +13,19 @@ import type { Friend }                        from '../data/album';
 
 type Nav = StackNavigationProp<RootStackParamList>;
 
+function toHandle(name: string): string {
+  return '@' + name.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12);
+}
+
+function relativeTime(dateStr: string): string {
+  const h = Math.floor((Date.now() - new Date(dateStr).getTime()) / 3600000);
+  if (h < 1)  return 'hace un momento';
+  if (h < 24) return `hace ${h}h`;
+  const d = Math.floor(h / 24);
+  if (d === 1) return 'ayer';
+  return `hace ${d}d`;
+}
+
 const HOW_STEPS = [
   { n: '1', text: 'Escanea el QR de tu amigo para ver su álbum.' },
   { n: '2', text: 'Ve cuáles de tus repetidas le faltan a él, y viceversa.' },
@@ -35,35 +48,43 @@ const FriendCard = React.memo(({ friend, myDupeIds, myMissingIds, onPress }: Fri
       style={[friendCardStyles.card, { backgroundColor: t.card, borderColor: t.line }]}
       onPress={onPress}
     >
-      <View>
+      <View style={friendCardStyles.info}>
         <Text style={[friendCardStyles.name, { color: t.ink, fontFamily: fonts.semibold }]}>{friend.name}</Text>
-        <Text style={[friendCardStyles.meta, { color: t.ink4, fontFamily: fonts.body }]}>
-          {new Date(friend.scannedAt).toLocaleDateString('es-MX')}
+        <Text style={[friendCardStyles.meta, { color: t.ink4, fontFamily: fonts.mono }]}>
+          {toHandle(friend.name)} · {relativeTime(friend.scannedAt)}
         </Text>
       </View>
       <View style={friendCardStyles.matchBadges}>
-        {canGive > 0 && (
-          <View style={[friendCardStyles.badge, { backgroundColor: t.lime }]}>
-            <Text style={[friendCardStyles.badgeText, { color: t.pitch, fontFamily: fonts.mono }]}>▲ {canGive}</Text>
+        <View style={[friendCardStyles.badge, { backgroundColor: t.paper2 }]}>
+          <Text style={[friendCardStyles.badgeLabel, { color: t.ink4 }]}>TE DEBE</Text>
+          <View style={friendCardStyles.badgeRow}>
+            <View style={[friendCardStyles.dot, { backgroundColor: t.lime }]} />
+            <Text style={[friendCardStyles.badgeNum, { color: t.ink }]}>{canGive}</Text>
           </View>
-        )}
-        {canReceive > 0 && (
-          <View style={[friendCardStyles.badge, { backgroundColor: t.coral }]}>
-            <Text style={[friendCardStyles.badgeText, { color: '#fff', fontFamily: fonts.mono }]}>▼ {canReceive}</Text>
+        </View>
+        <View style={[friendCardStyles.badge, { backgroundColor: t.paper2 }]}>
+          <Text style={[friendCardStyles.badgeLabel, { color: t.ink4 }]}>LE DEBES</Text>
+          <View style={friendCardStyles.badgeRow}>
+            <View style={[friendCardStyles.dot, { backgroundColor: t.coral }]} />
+            <Text style={[friendCardStyles.badgeNum, { color: t.ink }]}>{canReceive}</Text>
           </View>
-        )}
+        </View>
       </View>
     </HapticPress>
   );
 });
 
 const friendCardStyles = StyleSheet.create({
-  card:        { marginHorizontal: 16, marginBottom: 10, padding: 16, borderRadius: 14, borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  name:        { fontSize: 17 },
-  meta:        { fontSize: 12, marginTop: 2 },
-  matchBadges: { flexDirection: 'row', gap: 6 },
-  badge:       { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
-  badgeText:   { fontSize: 12 },
+  card:        { marginHorizontal: 16, marginBottom: 10, padding: 14, borderRadius: 14, borderWidth: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  info:        { flex: 1 },
+  name:        { fontSize: 15 },
+  meta:        { fontSize: 11, marginTop: 2 },
+  matchBadges: { flexDirection: 'row', gap: 8 },
+  badge:       { borderRadius: 10, padding: 8, minWidth: 56, alignItems: 'center' },
+  badgeLabel:  { fontFamily: fonts.mono, fontSize: 8, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 3 },
+  badgeRow:    { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  dot:         { width: 6, height: 6, borderRadius: 3 },
+  badgeNum:    { fontFamily: fonts.mono, fontSize: 15 },
 });
 
 export function TradeScreen() {

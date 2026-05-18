@@ -90,7 +90,7 @@ export function HomeScreen() {
           <Text style={styles.heroTitle}>Mundial{'\n'}2026</Text>
 
           <View style={styles.statsRow}>
-            <ProgressRing pct={stats.pct} size={108} stroke={11} />
+            <ProgressRing pct={stats.pct} size={108} stroke={11} showLabel />
             <View style={styles.statsText}>
               <StatLine label="tengo"     value={stats.owned}   accent={t.lime}    sub={`/${stats.total}`} />
               <StatLine label="me faltan" value={stats.missing} accent={t.coral} />

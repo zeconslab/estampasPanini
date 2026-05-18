@@ -46,16 +46,25 @@ export function ProfileScreen() {
 
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 16, backgroundColor: t.pitch }]}>
-        <Text style={[styles.name, { color: '#E89B2F', fontFamily: fonts.display }]}>
-          {profile?.name ?? '—'}
-        </Text>
-        <View style={styles.subRow}>
-          <Text style={[styles.handle, { color: '#9AA39B', fontFamily: fonts.mono }]}>{handle}</Text>
-          {profile?.age != null && profile.age !== '' ? (
-            <Text style={[styles.age, { color: '#9AA39B', fontFamily: fonts.mono }]}>
-              {' '}· {profile.age} años
+        <View style={styles.avatarRow}>
+          <View style={[styles.avatar, { backgroundColor: '#1A7B4F' }]}>
+            <Text style={[styles.avatarLetter, { color: t.primary, fontFamily: fonts.headline }]}>
+              {profile?.name?.[0]?.toUpperCase() ?? '?'}
             </Text>
-          ) : null}
+          </View>
+          <View style={styles.avatarInfo}>
+            <Text style={[styles.name, { color: '#E89B2F', fontFamily: fonts.display }]}>
+              {profile?.name ?? '—'}
+            </Text>
+            <View style={styles.subRow}>
+              <Text style={[styles.handle, { color: '#9AA39B', fontFamily: fonts.mono }]}>{handle}</Text>
+              {profile?.age != null && profile.age !== '' ? (
+                <Text style={[styles.age, { color: '#9AA39B', fontFamily: fonts.mono }]}>
+                  {' '}· {profile.age} años
+                </Text>
+              ) : null}
+            </View>
+          </View>
         </View>
         <Text style={[styles.albumLabel, { color: '#9AA39B', fontFamily: fonts.body }]}>
           FIFA Mundial 2026
@@ -141,11 +150,15 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: 40 },
 
   // Header
-  header:     { padding: 24, paddingBottom: 28 },
-  name:       { fontSize: 32, letterSpacing: -1 },
-  subRow:     { flexDirection: 'row', alignItems: 'center', marginTop: 2, marginBottom: 2 },
-  handle:     { fontSize: 12 },
-  age:        { fontSize: 12 },
+  header:       { padding: 24, paddingBottom: 28 },
+  avatarRow:    { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 10 },
+  avatar:       { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center' },
+  avatarLetter: { fontSize: 22 },
+  avatarInfo:   { flex: 1 },
+  name:         { fontSize: 28, letterSpacing: -1 },
+  subRow:       { flexDirection: 'row', alignItems: 'center', marginTop: 2 },
+  handle:       { fontSize: 12 },
+  age:          { fontSize: 12 },
   albumLabel: { fontSize: 13, marginBottom: 18 },
   statsRow:   { flexDirection: 'row', gap: 24 },
   stat:       { alignItems: 'center' },

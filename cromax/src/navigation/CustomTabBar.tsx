@@ -13,9 +13,9 @@ const ICONS: Record<string, string> = {
 
 const TAB_LABELS: Record<string, string> = {
   Home:    'Álbum',
-  Grid:    'Cuadrícula',
+  Grid:    'Estampas',
   Trade:   'Trueque',
-  Profile: 'Perfil',
+  Profile: 'Yo',
 };
 
 export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
