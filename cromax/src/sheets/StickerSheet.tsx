@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   container:    { flex: 1, padding: 20 },
   handle:       { width: 36, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 20 },
   title:        { fontSize: 22, fontFamily: fonts.display, marginBottom: 4 },
-  label:        { fontSize: 14, marginBottom: 24 },
+  label:        { fontSize: 14, marginBottom: 24, fontFamily: fonts.body },
   stateRow:     { flexDirection: 'row', gap: 8, marginBottom: 20 },
   stateBtn:     { borderRadius: 12, paddingVertical: 12, alignItems: 'center' },
   stateBtnText: { fontSize: 13, fontFamily: fonts.headline },

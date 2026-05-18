@@ -69,7 +69,7 @@ export function HomeScreen() {
     >
       {/* HERO — rounded card with padding */}
       <View style={{ padding: 16, paddingTop: insets.top + 12 }}>
-        <View style={[styles.heroCard]}>
+        <View style={[styles.heroCard, { backgroundColor: t.pitch }]}>
           <View style={styles.buntingWrap}><MxBunting /></View>
 
           <View style={styles.heroTopRow}>
@@ -82,9 +82,9 @@ export function HomeScreen() {
           <View style={styles.statsRow}>
             <ProgressRing pct={stats.pct} size={108} stroke={11} />
             <View style={styles.statsText}>
-              <StatLine label="tengo"     value={stats.owned}   accent="#B5DA40" sub={`/${stats.total}`} />
-              <StatLine label="me faltan" value={stats.missing} accent="#D7263D" />
-              <StatLine label="repetidas" value={stats.dupes}   accent="#E89B2F" />
+              <StatLine label="tengo"     value={stats.owned}   accent={t.lime}    sub={`/${stats.total}`} />
+              <StatLine label="me faltan" value={stats.missing} accent={t.coral} />
+              <StatLine label="repetidas" value={stats.dupes}   accent={t.primary} />
             </View>
           </View>
 
@@ -99,7 +99,7 @@ export function HomeScreen() {
               style={[styles.heroBtn, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
               onPress={() => nav.navigate('ShareModal')}
             >
-              <Text style={[styles.heroBtnText, { color: '#EFE7D2' }]}>Mis faltantes</Text>
+              <Text style={[styles.heroBtnText, { color: t.paper }]}>Mis faltantes</Text>
             </HapticPress>
           </View>
         </View>
@@ -125,7 +125,7 @@ export function HomeScreen() {
               >
                 <View style={styles.friendTop}>
                   <View style={[styles.avatar, { backgroundColor: nameColor(friend.name) }]}>
-                    <Text style={styles.avatarLetter}>{friend.name[0]}</Text>
+                    <Text style={[styles.avatarLetter, { color: t.primary }]}>{friend.name[0]}</Text>
                   </View>
                   <View>
                     <Text style={[styles.friendName, { color: t.ink }]}>{friend.name}</Text>
@@ -133,8 +133,8 @@ export function HomeScreen() {
                   </View>
                 </View>
                 <View style={styles.miniStats}>
-                  <MiniStat label="te debe" value={canGive} color="#B5DA40" bg={t.paper2} textColor={t.ink} />
-                  <MiniStat label="le debes" value={canGet}  color="#D7263D" bg={t.paper2} textColor={t.ink} />
+                  <MiniStat label="te debe" value={canGive} color={t.lime}  bg={t.paper2} textColor={t.ink} />
+                  <MiniStat label="le debes" value={canGet}  color={t.coral} bg={t.paper2} textColor={t.ink} />
                 </View>
               </HapticPress>
             ))}
@@ -172,7 +172,7 @@ export function HomeScreen() {
                       <Text style={[styles.teamCount, { color: t.ink3 }]}>{owned}/{total}</Text>
                     </View>
                     <View style={[styles.barBg, { backgroundColor: t.line }]}>
-                      <View style={[styles.barFill, { backgroundColor: t.ink, width: `${pct}%` as any }]} />
+                      <View style={[styles.barFill, { backgroundColor: t.ink, width: `${pct}%` as `${number}%` }]} />
                     </View>
                   </View>
                 </View>
@@ -218,9 +218,10 @@ function StatLine({ label, value, accent, sub }: { label: string; value: number;
 function MiniStat({ label, value, color, bg, textColor }: {
   label: string; value: number; color: string; bg: string; textColor: string;
 }) {
+  const t = useTheme();
   return (
     <View style={[styles.miniStat, { backgroundColor: bg }]}>
-      <Text style={[styles.miniStatLabel, { color: '#6A7569' }]}>{label}</Text>
+      <Text style={[styles.miniStatLabel, { color: t.ink3 }]}>{label}</Text>
       <View style={styles.miniStatRow}>
         <View style={[styles.miniDot, { backgroundColor: color }]} />
         <Text style={[styles.miniStatNum, { color: textColor }]}>{value}</Text>
@@ -231,7 +232,6 @@ function MiniStat({ label, value, color, bg, textColor }: {
 
 const styles = StyleSheet.create({
   heroCard: {
-    backgroundColor: '#0E5B3A',
     borderRadius: 22,
     padding: 20,
     paddingTop: 50,
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   },
   friendTop: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
   avatar: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
-  avatarLetter: { fontFamily: fonts.headline, fontSize: 14, color: '#E89B2F' },
+  avatarLetter: { fontFamily: fonts.headline, fontSize: 14 },
   friendName: { fontFamily: fonts.semibold, fontSize: 14, lineHeight: 18 },
   friendSub: { fontFamily: fonts.body, fontSize: 11 },
   miniStats: { flexDirection: 'row', gap: 8 },
