@@ -1,20 +1,39 @@
+import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { View, ActivityIndicator } from 'react-native';
+import { useAlbumStore }   from './src/store/useAlbumStore';
+import { ThemeContext, lightTheme, darkTheme } from './src/theme';
+import { RootNavigator }   from './src/navigation/RootNavigator';
+import { OnboardingFlow }  from './src/onboarding/OnboardingFlow';
 
 export default function App() {
+  const { hydrated, dark, profile, hydrate } = useAlbumStore();
+  const theme = dark ? darkTheme : lightTheme;
+
+  useEffect(() => { hydrate(); }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
+
+  if (!hydrated) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0E5B3A' }}>
+        <ActivityIndicator color="#E89B2F" size="large" />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <ThemeContext.Provider value={theme}>
+          <StatusBar style={dark ? 'light' : 'dark'} />
+          {profile ? (
+            <RootNavigator />
+          ) : (
+            <OnboardingFlow onComplete={() => {}} />
+          )}
+        </ThemeContext.Provider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
