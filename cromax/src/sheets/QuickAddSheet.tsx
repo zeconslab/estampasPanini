@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import { View, Text, FlatList, ScrollView, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, Text, FlatList, ScrollView, TouchableOpacity, TextInput, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation }  from '@react-navigation/native';
 import { useAlbumStore }  from '../store/useAlbumStore';
@@ -30,6 +30,7 @@ export function QuickAddSheet() {
 
   const [local, setLocal] = useState(stickers);
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
   const initialStates = useRef(new Map(stickers.map(s => [s.id, s.state])));
 
   const sessionAdded = useMemo(
@@ -40,10 +41,20 @@ export function QuickAddSheet() {
     [local],
   );
 
-  const filtered = useMemo(
-    () => selectedTeam ? local.filter(s => s.team === selectedTeam) : local,
-    [local, selectedTeam],
-  );
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return local.filter(s => {
+      if (selectedTeam && s.team !== selectedTeam) return false;
+      if (!q) return true;
+      const teamObj = TEAMS.find(tm => tm.code === s.team);
+      return (
+        s.name.toLowerCase().includes(q) ||
+        String(s.id).includes(q) ||
+        (s.team ?? '').toLowerCase().includes(q) ||
+        (teamObj?.name.toLowerCase().includes(q) ?? false)
+      );
+    });
+  }, [local, selectedTeam, query]);
 
   const handlePress = useCallback((sticker: Sticker) => {
     setLocal(prev => prev.map(s => s.id === sticker.id ? cycleQuick(s) : s));
@@ -71,10 +82,19 @@ export function QuickAddSheet() {
   return (
     <View style={[styles.container, { backgroundColor: t.paper }]}>
       <View style={[styles.header, { backgroundColor: t.paper }]}>
-        <Text style={[styles.title, { color: t.ink, fontFamily: fonts.headline }]}>Marcar rápido</Text>
-        <Text style={[styles.sub, { color: t.ink4, fontFamily: fonts.body }]}>
-          Toca para ciclar: falta → tengo → repetida
-        </Text>
+        <View style={styles.titleRow}>
+          <Text style={[styles.title, { color: t.ink, fontFamily: fonts.headline }]}>Marcar rápido</Text>
+          <Text style={[styles.sub, { color: t.ink4, fontFamily: fonts.body }]}>falta → tengo → repetida</Text>
+        </View>
+        <TextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder="Buscar por código (ARG), selección o nº…"
+          placeholderTextColor={t.ink4}
+          style={[styles.search, { backgroundColor: t.card, color: t.ink, borderColor: t.line }]}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
       </View>
 
       <ScrollView
@@ -85,15 +105,12 @@ export function QuickAddSheet() {
       >
         <TouchableOpacity
           style={[styles.chip, {
-            backgroundColor: selectedTeam === null ? t.pitch : t.paper2,
+            backgroundColor: selectedTeam === null ? t.primary : t.paper2,
             borderColor: t.line,
           }]}
           onPress={() => setSelectedTeam(null)}
         >
-          <Text style={[styles.chipLabel, {
-            color: selectedTeam === null ? t.paper : t.ink3,
-            fontFamily: fonts.semibold,
-          }]}>
+          <Text style={[styles.chipCode, { color: selectedTeam === null ? t.pitch : t.ink3, fontFamily: fonts.semibold }]}>
             Todas
           </Text>
         </TouchableOpacity>
@@ -104,19 +121,20 @@ export function QuickAddSheet() {
             <TouchableOpacity
               key={team.code}
               style={[styles.chip, {
-                backgroundColor: active ? t.pitch : t.paper2,
+                backgroundColor: active ? t.primary : t.paper2,
                 borderColor: t.line,
               }]}
-              onPress={() => setSelectedTeam(team.code)}
+              onPress={() => setSelectedTeam(active ? null : team.code)}
             >
-              <Flag colors={team.colors} width={20} height={13} />
-              <Text style={[styles.chipLabel, {
-                color: active ? t.paper : t.ink3,
-                fontFamily: fonts.semibold,
-                marginLeft: 4,
-              }]}>
-                {team.code}
-              </Text>
+              <Flag colors={team.colors} width={18} height={12} />
+              <View style={styles.chipText}>
+                <Text style={[styles.chipCode, { color: active ? t.pitch : t.ink, fontFamily: fonts.semibold }]}>
+                  {team.code}
+                </Text>
+                <Text style={[styles.chipName, { color: active ? t.pitch : t.ink4, fontFamily: fonts.mono }]}>
+                  {team.name}
+                </Text>
+              </View>
             </TouchableOpacity>
           );
         })}
@@ -146,24 +164,36 @@ export function QuickAddSheet() {
 }
 
 const styles = StyleSheet.create({
-  container:   { flex: 1 },
-  header:      { padding: 16, paddingBottom: 8 },
-  title:       { fontSize: 20 },
-  sub:         { fontSize: 13, marginTop: 4 },
-  chipsRow:    { flexGrow: 0 },
-  chips:       { paddingHorizontal: PAD, paddingBottom: 10, gap: 6, flexDirection: 'row' },
-  chip:        {
+  container:  { flex: 1 },
+  header:     { padding: 16, paddingBottom: 10 },
+  titleRow:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 },
+  title:      { fontSize: 19 },
+  sub:        { fontSize: 11 },
+  search:     {
+    borderRadius: 10,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    fontSize: 14,
+    fontFamily: fonts.body,
+  },
+  chipsRow:   { flexGrow: 0 },
+  chips:      { paddingHorizontal: PAD, paddingBottom: 10, gap: 6, flexDirection: 'row' },
+  chip:       {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 6,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 18,
     borderWidth: 0.5,
   },
-  chipLabel:   { fontSize: 11 },
-  footer:      { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 16 },
-  counter:     { fontSize: 11, textAlign: 'center', marginBottom: 8, letterSpacing: 0.2 },
-  doneBtn:     { borderRadius: 24, paddingVertical: 14, alignItems: 'center' },
-  doneBtnText: { fontSize: 16 },
-  colWrapper:  { gap: GAP },
+  chipText:   { flexDirection: 'column' },
+  chipCode:   { fontSize: 11 },
+  chipName:   { fontSize: 9, marginTop: 1 },
+  footer:     { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 16 },
+  counter:    { fontSize: 11, textAlign: 'center', marginBottom: 8, letterSpacing: 0.2 },
+  doneBtn:    { borderRadius: 24, paddingVertical: 14, alignItems: 'center' },
+  doneBtnText:{ fontSize: 16 },
+  colWrapper: { gap: GAP },
 });

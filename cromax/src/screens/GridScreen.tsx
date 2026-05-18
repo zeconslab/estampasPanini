@@ -24,8 +24,8 @@ const PAD  = 16;
 
 const FILTERS: { key: Filter; label: string }[] = [
   { key: 'all',       label: 'Todas' },
-  { key: 'owned',     label: 'Tengo' },
   { key: 'missing',   label: 'Faltan' },
+  { key: 'owned',     label: 'Tengo' },
   { key: 'duplicate', label: 'Repetidas' },
 ];
 

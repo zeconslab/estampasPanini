@@ -103,12 +103,14 @@ export function HomeScreen() {
               style={[styles.heroBtn, { backgroundColor: t.primary }]}
               onPress={() => nav.navigate('QuickAdd')}
             >
+              <Text style={[styles.heroBtnIcon, { color: t.pitch }]}>+</Text>
               <Text style={[styles.heroBtnText, { color: t.pitch }]}>Marcar nuevas</Text>
             </HapticPress>
             <HapticPress
               style={[styles.heroBtn, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
               onPress={() => nav.navigate('ShareModal')}
             >
+              <Text style={[styles.heroBtnIcon, { color: t.paper }]}>↑</Text>
               <Text style={[styles.heroBtnText, { color: t.paper }]}>Mis faltantes</Text>
             </HapticPress>
           </View>
@@ -295,9 +297,12 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 24,
     paddingVertical: 12,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 5,
   },
+  heroBtnIcon: { fontFamily: fonts.headline, fontSize: 16 },
   heroBtnText: { fontFamily: fonts.headline, fontSize: 15, letterSpacing: -0.2 },
 
   eyebrowText: {
