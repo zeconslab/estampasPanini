@@ -31,5 +31,14 @@ export const darkTheme: typeof lightTheme = {
 
 export type Theme = typeof lightTheme;
 
+export const fonts = {
+  display:     'HankenGrotesk_800ExtraBold',
+  headline:    'HankenGrotesk_700Bold',
+  semibold:    'HankenGrotesk_600SemiBold',
+  body:        'HankenGrotesk_400Regular',
+  mono:        'JetBrainsMono_700Bold',
+  monoMedium:  'JetBrainsMono_500Medium',
+} as const;
+
 export const ThemeContext = createContext<Theme>(lightTheme);
 export const useTheme = () => useContext(ThemeContext);

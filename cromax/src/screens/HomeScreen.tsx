@@ -1,94 +1,338 @@
 import React from 'react';
-import { ScrollView, View, Text, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAlbumStore }    from '../store/useAlbumStore';
-import { computeStats }     from '../data/album';
-import { useTheme }         from '../theme';
+import { computeStats, TEAMS } from '../data/album';
+import { useTheme, fonts }  from '../theme';
 import { ProgressRing }     from '../components/ProgressRing';
 import { MxBunting }        from '../components/MxBunting';
 import { HapticPress }      from '../components/HapticPress';
 import { SectionHeader }    from '../components/SectionHeader';
+import { Flag }             from '../components/Flag';
+import { Sticker as StickerComponent } from '../components/Sticker';
 import { useNavigation }    from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 
 type Nav = StackNavigationProp<RootStackParamList>;
 
+const { width: SCREEN_W } = Dimensions.get('window');
+const GRID_PAD = 16;
+const GRID_GAP = 6;
+const GRID_COLS = 6;
+const CELL_SIZE = Math.floor((SCREEN_W - GRID_PAD * 2 - GRID_GAP * (GRID_COLS - 1)) / GRID_COLS);
+
 export function HomeScreen() {
   const t       = useTheme();
   const insets  = useSafeAreaInsets();
   const nav     = useNavigation<Nav>();
-  const { stickers, friends, profile } = useAlbumStore();
+  const { stickers, friends } = useAlbumStore();
   const stats   = computeStats(stickers);
 
-  // Trade matches: stickers I have duplicate of that a friend is missing
+  // Top 3 teams by completion %
+  const top3Teams = TEAMS.map(team => {
+    const list  = stickers.filter(s => s.team === team.code);
+    const owned = list.filter(s => s.state !== 'missing').length;
+    return { team, owned, total: list.length };
+  }).filter(e => e.total > 0)
+    .sort((a, b) => b.owned / b.total - a.owned / a.total)
+    .slice(0, 3);
+
+  // Trade matches
   const myDupeIds = new Set(stickers.filter(s => s.state === 'duplicate').map(s => s.id));
   const tradeMatches = friends.map(f => ({
     friend: f,
     canGive: f.missing.filter(id => myDupeIds.has(id)).length,
-  })).filter(m => m.canGive > 0).slice(0, 3);
+    canGet: (f.dupes ?? []).filter(d => stickers.find(s => s.id === d.id && s.state === 'missing')).length,
+  })).filter(m => m.canGive > 0).slice(0, 4);
+
+  // Recent stickers (last 8 owned/duplicate)
+  const recent = stickers.filter(s => s.state !== 'missing').slice(-8).reverse();
 
   return (
-    <ScrollView style={{ backgroundColor: t.paper }} contentContainerStyle={{ paddingBottom: 24 }}>
-      {/* Hero */}
-      <View style={[styles.hero, { backgroundColor: t.pitch, paddingTop: insets.top + 16 }]}>
-        <View style={styles.buntingRow}><MxBunting /></View>
-        <Text style={styles.heroTitle}>{profile?.name ?? 'Mi Álbum'}</Text>
-        <View style={styles.statsRow}>
-          <ProgressRing pct={stats.pct} size={100} stroke={10} />
-          <View style={styles.statsText}>
-            <Text style={styles.statNum}>{stats.owned}</Text>
-            <Text style={styles.statLbl}>tengo</Text>
-            <Text style={[styles.statNum, { color: '#D7263D' }]}>{stats.missing}</Text>
-            <Text style={styles.statLbl}>faltan</Text>
-            <Text style={[styles.statNum, { color: '#E89B2F' }]}>{stats.dupes}</Text>
-            <Text style={styles.statLbl}>repetidas</Text>
+    <ScrollView
+      style={{ backgroundColor: t.paper }}
+      contentContainerStyle={{ paddingBottom: 24 }}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* HERO — rounded card with padding */}
+      <View style={{ padding: 16, paddingTop: insets.top + 12 }}>
+        <View style={[styles.heroCard]}>
+          <View style={styles.buntingWrap}><MxBunting /></View>
+
+          <View style={styles.heroTopRow}>
+            <Text style={styles.heroEyebrow}>Álbum activo</Text>
+            <Text style={[styles.heroEdition, { color: t.primary }]}>Edición México</Text>
           </View>
-        </View>
-        <View style={styles.heroActions}>
-          <HapticPress style={[styles.heroBtn, { backgroundColor: t.primary }]}
-            onPress={() => nav.navigate('ShareModal')}>
-            <Text style={[styles.heroBtnText, { color: t.pitch }]}>Compartir QR</Text>
-          </HapticPress>
-          <HapticPress style={[styles.heroBtn, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
-            onPress={() => nav.navigate('QuickAdd')}>
-            <Text style={[styles.heroBtnText, { color: '#EFE7D2' }]}>Marcar rápido</Text>
-          </HapticPress>
+
+          <Text style={styles.heroTitle}>Mundial{'\n'}2026</Text>
+
+          <View style={styles.statsRow}>
+            <ProgressRing pct={stats.pct} size={108} stroke={11} />
+            <View style={styles.statsText}>
+              <StatLine label="tengo"     value={stats.owned}   accent="#B5DA40" sub={`/${stats.total}`} />
+              <StatLine label="me faltan" value={stats.missing} accent="#D7263D" />
+              <StatLine label="repetidas" value={stats.dupes}   accent="#E89B2F" />
+            </View>
+          </View>
+
+          <View style={styles.heroActions}>
+            <HapticPress
+              style={[styles.heroBtn, { backgroundColor: t.primary }]}
+              onPress={() => nav.navigate('QuickAdd')}
+            >
+              <Text style={[styles.heroBtnText, { color: t.pitch }]}>Marcar nuevas</Text>
+            </HapticPress>
+            <HapticPress
+              style={[styles.heroBtn, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
+              onPress={() => nav.navigate('ShareModal')}
+            >
+              <Text style={[styles.heroBtnText, { color: '#EFE7D2' }]}>Mis faltantes</Text>
+            </HapticPress>
+          </View>
         </View>
       </View>
 
-      {/* Trade matches preview */}
-      {tradeMatches.length > 0 && (
+      {/* TRADE MATCHES — horizontal scroll */}
+      {friends.length > 0 && (
         <>
-          <SectionHeader title="Trueques posibles" />
-          {tradeMatches.map(({ friend, canGive }) => (
-            <HapticPress
-              key={friend.id}
-              style={[styles.tradeCard, { backgroundColor: t.card, borderColor: t.line }]}
-              onPress={() => nav.navigate('FriendDetail', { friendId: friend.id })}
-            >
-              <Text style={[styles.tradeName, { color: t.ink }]}>{friend.name}</Text>
-              <Text style={[styles.tradeCount, { color: t.lime }]}>{canGive} estampas</Text>
-            </HapticPress>
-          ))}
+          <SectionHeader
+            title="Matches de trueque"
+            trailing={<Text style={[styles.eyebrowText, { color: t.ink3 }]}>{friends.length} amigos</Text>}
+          />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.friendsScroll}
+          >
+            {tradeMatches.map(({ friend, canGive, canGet }) => (
+              <HapticPress
+                key={friend.id}
+                style={[styles.friendCard, { backgroundColor: t.card, borderColor: t.line }]}
+                onPress={() => nav.navigate('FriendDetail', { friendId: friend.id })}
+              >
+                <View style={styles.friendTop}>
+                  <View style={[styles.avatar, { backgroundColor: '#0E5B3A' }]}>
+                    <Text style={styles.avatarLetter}>{friend.name[0]}</Text>
+                  </View>
+                  <View>
+                    <Text style={[styles.friendName, { color: t.ink }]}>{friend.name}</Text>
+                    <Text style={[styles.friendSub, { color: t.ink3 }]}>actualizado hoy</Text>
+                  </View>
+                </View>
+                <View style={styles.miniStats}>
+                  <MiniStat label="te debe" value={canGive} color="#B5DA40" bg={t.paper2} textColor={t.ink} />
+                  <MiniStat label="le debes" value={canGet}  color="#D7263D" bg={t.paper2} textColor={t.ink} />
+                </View>
+              </HapticPress>
+            ))}
+            <View style={{ width: 8 }} />
+          </ScrollView>
+        </>
+      )}
+
+      {/* TOP TEAMS */}
+      {top3Teams.length > 0 && (
+        <>
+          <SectionHeader
+            title="Selecciones avanzadas"
+            trailing={
+              <HapticPress onPress={() => nav.navigate('Main' as any)}>
+                <Text style={[styles.eyebrowText, { color: t.ink3 }]}>Ver todas →</Text>
+              </HapticPress>
+            }
+          />
+          <View style={[styles.teamsCard, { backgroundColor: t.card, borderColor: t.line }]}>
+            {top3Teams.map(({ team, owned, total }, i) => {
+              const pct = total > 0 ? (owned / total) * 100 : 0;
+              return (
+                <View
+                  key={team.code}
+                  style={[
+                    styles.teamRow,
+                    i < top3Teams.length - 1 && { borderBottomWidth: 0.5, borderBottomColor: t.line },
+                  ]}
+                >
+                  <Flag colors={team.colors} width={28} height={18} />
+                  <View style={styles.teamInfo}>
+                    <View style={styles.teamLabelRow}>
+                      <Text style={[styles.teamName, { color: t.ink }]}>{team.name}</Text>
+                      <Text style={[styles.teamCount, { color: t.ink3 }]}>{owned}/{total}</Text>
+                    </View>
+                    <View style={[styles.barBg, { backgroundColor: t.line }]}>
+                      <View style={[styles.barFill, { backgroundColor: t.ink, width: `${pct}%` as any }]} />
+                    </View>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        </>
+      )}
+
+      {/* RECENT STICKERS */}
+      {recent.length > 0 && (
+        <>
+          <SectionHeader title="Pegadas recientemente" />
+          <View style={styles.recentGrid}>
+            {recent.map(s => (
+              <StickerComponent
+                key={s.id}
+                sticker={s}
+                size={CELL_SIZE}
+                onPress={() => nav.navigate('StickerModal', { stickerId: s.id })}
+              />
+            ))}
+          </View>
         </>
       )}
     </ScrollView>
   );
 }
 
+function StatLine({ label, value, accent, sub }: { label: string; value: number; accent: string; sub?: string }) {
+  return (
+    <View style={styles.statLine}>
+      <Text style={styles.statLineLabel}>{label}</Text>
+      <View style={styles.statLineRight}>
+        <Text style={styles.statLineNum}>{value}</Text>
+        {sub && <Text style={styles.statLineSub}>{sub}</Text>}
+        <View style={[styles.statLineDot, { backgroundColor: accent }]} />
+      </View>
+    </View>
+  );
+}
+
+function MiniStat({ label, value, color, bg, textColor }: {
+  label: string; value: number; color: string; bg: string; textColor: string;
+}) {
+  return (
+    <View style={[styles.miniStat, { backgroundColor: bg }]}>
+      <Text style={[styles.miniStatLabel, { color: '#6A7569' }]}>{label}</Text>
+      <View style={styles.miniStatRow}>
+        <View style={[styles.miniDot, { backgroundColor: color }]} />
+        <Text style={[styles.miniStatNum, { color: textColor }]}>{value}</Text>
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  hero:        { padding: 20, paddingBottom: 28 },
-  buntingRow:  { marginBottom: 12 },
-  heroTitle:   { fontSize: 28, fontWeight: '900', color: '#EFE7D2', marginBottom: 20 },
-  statsRow:    { flexDirection: 'row', alignItems: 'center', gap: 24, marginBottom: 20 },
-  statsText:   { gap: 2 },
-  statNum:     { fontSize: 28, fontWeight: '900', color: '#B5DA40', lineHeight: 32 },
-  statLbl:     { fontSize: 11, color: '#9AA39B', marginBottom: 6 },
-  heroActions: { flexDirection: 'row', gap: 12 },
-  heroBtn:     { flex: 1, borderRadius: 24, paddingVertical: 12, alignItems: 'center' },
-  heroBtnText: { fontSize: 15, fontWeight: '700' },
-  tradeCard:   { marginHorizontal: 16, marginBottom: 8, padding: 16, borderRadius: 12, borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  tradeName:   { fontSize: 16, fontWeight: '600' },
-  tradeCount:  { fontSize: 14, fontWeight: '700' },
+  heroCard: {
+    backgroundColor: '#0E5B3A',
+    borderRadius: 22,
+    padding: 20,
+    paddingTop: 50,
+    paddingBottom: 24,
+    overflow: 'hidden',
+  },
+  buntingWrap: { position: 'absolute', top: 14, left: 20 },
+  heroTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
+  heroEyebrow: {
+    fontFamily: fonts.mono,
+    fontSize: 10,
+    color: 'rgba(242,232,208,0.75)',
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
+  },
+  heroEdition: {
+    fontFamily: fonts.mono,
+    fontSize: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
+  },
+  heroTitle: {
+    fontFamily: fonts.display,
+    fontSize: 38,
+    color: '#fff',
+    letterSpacing: -1.2,
+    lineHeight: 38,
+    marginTop: 6,
+    marginBottom: 18,
+  },
+  statsRow: { flexDirection: 'row', alignItems: 'center', gap: 18, marginBottom: 20 },
+  statsText: { flex: 1, gap: 10 },
+
+  statLine: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  statLineLabel: {
+    fontFamily: fonts.mono,
+    fontSize: 9,
+    color: 'rgba(255,255,255,0.55)',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  statLineRight: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  statLineNum: { fontFamily: fonts.mono, fontSize: 22, color: '#fff', letterSpacing: -0.4 },
+  statLineSub: { fontFamily: fonts.mono, fontSize: 12, color: 'rgba(255,255,255,0.45)' },
+  statLineDot: { width: 8, height: 8, borderRadius: 4, marginLeft: 4 },
+
+  heroActions: { flexDirection: 'row', gap: 8 },
+  heroBtn: {
+    flex: 1,
+    borderRadius: 24,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroBtnText: { fontFamily: fonts.headline, fontSize: 15, letterSpacing: -0.2 },
+
+  eyebrowText: {
+    fontFamily: fonts.mono,
+    fontSize: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+
+  friendsScroll: { paddingHorizontal: 16, gap: 10, paddingBottom: 4 },
+  friendCard: {
+    width: 170,
+    padding: 14,
+    borderRadius: 16,
+    borderWidth: 0.5,
+  },
+  friendTop: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
+  avatar: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  avatarLetter: { fontFamily: fonts.headline, fontSize: 14, color: '#E89B2F' },
+  friendName: { fontFamily: fonts.semibold, fontSize: 14, lineHeight: 18 },
+  friendSub: { fontFamily: fonts.body, fontSize: 11 },
+  miniStats: { flexDirection: 'row', gap: 8 },
+  miniStat: { flex: 1, borderRadius: 10, padding: 8 },
+  miniStatLabel: {
+    fontFamily: fonts.mono,
+    fontSize: 9,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 4,
+  },
+  miniStatRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  miniDot: { width: 6, height: 6, borderRadius: 3 },
+  miniStatNum: { fontFamily: fonts.mono, fontSize: 16 },
+
+  teamsCard: {
+    marginHorizontal: 16,
+    borderRadius: 16,
+    borderWidth: 0.5,
+    overflow: 'hidden',
+    marginBottom: 4,
+  },
+  teamRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 12,
+    paddingHorizontal: 14,
+  },
+  teamInfo: { flex: 1 },
+  teamLabelRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
+  teamName: { fontFamily: fonts.semibold, fontSize: 14 },
+  teamCount: { fontFamily: fonts.mono, fontSize: 12, letterSpacing: -0.2 },
+  barBg: { height: 6, borderRadius: 3, overflow: 'hidden' },
+  barFill: { height: 6, borderRadius: 3 },
+
+  recentGrid: {
+    paddingHorizontal: GRID_PAD,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: GRID_GAP,
+  },
 });

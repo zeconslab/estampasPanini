@@ -45,23 +45,23 @@ export function mulberry(seed: number): () => number {
   };
 }
 
-const TEAMS = [
-  { code: 'MEX', name: 'México',        players: 20 },
-  { code: 'ARG', name: 'Argentina',     players: 20 },
-  { code: 'BRA', name: 'Brasil',        players: 20 },
-  { code: 'FRA', name: 'Francia',       players: 20 },
-  { code: 'ESP', name: 'España',        players: 20 },
-  { code: 'ENG', name: 'Inglaterra',    players: 20 },
-  { code: 'GER', name: 'Alemania',      players: 20 },
-  { code: 'USA', name: 'EUA',           players: 20 },
-  { code: 'POR', name: 'Portugal',      players: 20 },
-  { code: 'NED', name: 'Países Bajos',  players: 20 },
-  { code: 'BEL', name: 'Bélgica',       players: 20 },
-  { code: 'CRO', name: 'Croacia',       players: 20 },
-  { code: 'URU', name: 'Uruguay',       players: 20 },
-  { code: 'COL', name: 'Colombia',      players: 20 },
-  { code: 'SEN', name: 'Senegal',       players: 20 },
-  { code: 'JPN', name: 'Japón',         players: 20 },
+export const TEAMS: Array<{ code: string; name: string; players: number; colors: [string,string,string] }> = [
+  { code: 'MEX', name: 'México',        players: 20, colors: ['#006847','#FFFFFF','#CE1126'] },
+  { code: 'ARG', name: 'Argentina',     players: 20, colors: ['#75AADB','#FFFFFF','#75AADB'] },
+  { code: 'BRA', name: 'Brasil',        players: 20, colors: ['#FEDF00','#009C3B','#002776'] },
+  { code: 'FRA', name: 'Francia',       players: 20, colors: ['#002395','#FFFFFF','#ED2939'] },
+  { code: 'ESP', name: 'España',        players: 20, colors: ['#AA151B','#F1BF00','#AA151B'] },
+  { code: 'ENG', name: 'Inglaterra',    players: 20, colors: ['#FFFFFF','#CF091D','#FFFFFF'] },
+  { code: 'GER', name: 'Alemania',      players: 20, colors: ['#000000','#DD0000','#FFCE00'] },
+  { code: 'USA', name: 'EUA',           players: 20, colors: ['#B22234','#FFFFFF','#3C3B6E'] },
+  { code: 'POR', name: 'Portugal',      players: 20, colors: ['#006600','#FFFFFF','#FF0000'] },
+  { code: 'NED', name: 'Países Bajos',  players: 20, colors: ['#AE1C28','#FFFFFF','#21468B'] },
+  { code: 'BEL', name: 'Bélgica',       players: 20, colors: ['#000000','#FAE042','#EF3340'] },
+  { code: 'CRO', name: 'Croacia',       players: 20, colors: ['#FF0000','#FFFFFF','#0000FF'] },
+  { code: 'URU', name: 'Uruguay',       players: 20, colors: ['#5CB8E4','#FFFFFF','#5CB8E4'] },
+  { code: 'COL', name: 'Colombia',      players: 20, colors: ['#FCD116','#003087','#CE1126'] },
+  { code: 'SEN', name: 'Senegal',       players: 20, colors: ['#00853F','#FDEF42','#E31B23'] },
+  { code: 'JPN', name: 'Japón',         players: 20, colors: ['#FFFFFF','#BC002D','#FFFFFF'] },
 ];
 
 const FIRST_NAMES = ['Carlos','Luis','Juan','Diego','Andrés','Miguel','Jorge','Roberto','Fernando','Sergio','Raúl','Javier','Eduardo','Marco','Alexis','Gabriel','Héctor','Daniel','Pablo','Mateo'];

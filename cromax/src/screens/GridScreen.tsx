@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAlbumStore }   from '../store/useAlbumStore';
-import { useTheme }        from '../theme';
+import { useTheme, fonts } from '../theme';
 import { Sticker as StickerComponent } from '../components/Sticker';
 import { HapticPress }     from '../components/HapticPress';
 import { useNavigation }   from '@react-navigation/native';
@@ -61,7 +61,7 @@ export function GridScreen() {
               style={[styles.chip, { backgroundColor: filter === f.key ? t.pitch : t.paper2 }]}
               onPress={() => setFilter(f.key)}
             >
-              <Text style={{ color: filter === f.key ? '#EFE7D2' : t.ink3, fontSize: 13, fontWeight: '600' }}>
+              <Text style={{ color: filter === f.key ? '#EFE7D2' : t.ink3, fontSize: 13, fontFamily: fonts.semibold, letterSpacing: -0.1 }}>
                 {f.label}
               </Text>
             </HapticPress>
@@ -90,7 +90,7 @@ export function GridScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header:    { paddingHorizontal: 12, paddingBottom: 8 },
-  search:    { borderRadius: 10, borderWidth: 1, padding: 10, fontSize: 15, marginBottom: 8 },
+  search:    { borderRadius: 10, borderWidth: 1, padding: 10, fontSize: 15, marginBottom: 8, fontFamily: fonts.body },
   filters:   { flexDirection: 'row', gap: 8 },
   chip:      { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20 },
 });

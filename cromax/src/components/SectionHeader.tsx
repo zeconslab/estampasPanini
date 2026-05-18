@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from '../theme';
+import { useTheme, fonts } from '../theme';
 
 interface Props {
   title: string;
@@ -23,11 +23,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 10,
+    marginTop: 4,
   },
   title: {
+    fontFamily: fonts.headline,
     fontSize: 18,
-    fontWeight: '700',
-    letterSpacing: -0.3,
+    letterSpacing: -0.4,
+    lineHeight: 22,
   },
 });

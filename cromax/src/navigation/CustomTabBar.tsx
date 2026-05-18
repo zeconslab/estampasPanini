@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { View, Text, Pressable, Animated, StyleSheet, LayoutChangeEvent } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { fonts } from '../theme';
 
 const ICONS: Record<string, string> = {
   Home:    '⬟',
@@ -92,5 +93,5 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   icon:  { fontSize: 18, marginBottom: 2 },
-  label: { fontSize: 10, fontWeight: '600' },
+  label: { fontFamily: fonts.semibold, fontSize: 10, letterSpacing: 0.1 },
 });

@@ -3,7 +3,7 @@ import { ScrollView, View, Text, Switch, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAlbumStore }   from '../store/useAlbumStore';
 import { computeStats }    from '../data/album';
-import { useTheme }        from '../theme';
+import { useTheme, fonts } from '../theme';
 import { SectionHeader }   from '../components/SectionHeader';
 
 export function ProfileScreen() {
@@ -45,12 +45,12 @@ export function ProfileScreen() {
 
 const styles = StyleSheet.create({
   header:   { padding: 24, paddingBottom: 28 },
-  name:     { fontSize: 32, fontWeight: '900', color: '#E89B2F' },
-  album:    { fontSize: 14, color: '#9AA39B', marginTop: 4, marginBottom: 20 },
+  name:     { fontFamily: fonts.display, fontSize: 32, color: '#E89B2F', letterSpacing: -1 },
+  album:    { fontFamily: fonts.body, fontSize: 14, color: '#9AA39B', marginTop: 4, marginBottom: 20 },
   statsRow: { flexDirection: 'row', gap: 24 },
   stat:     { alignItems: 'center' },
-  statNum:  { fontSize: 24, fontWeight: '900' },
-  statLbl:  { fontSize: 11, color: '#9AA39B', marginTop: 2 },
+  statNum:  { fontFamily: fonts.mono, fontSize: 24, color: '#fff' },
+  statLbl:  { fontFamily: fonts.mono, fontSize: 9, color: '#9AA39B', marginTop: 2, textTransform: 'uppercase', letterSpacing: 0.8 },
   row:      { marginHorizontal: 16, padding: 16, borderRadius: 12, borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  rowLabel: { fontSize: 16, fontWeight: '600' },
+  rowLabel: { fontFamily: fonts.semibold, fontSize: 16 },
 });

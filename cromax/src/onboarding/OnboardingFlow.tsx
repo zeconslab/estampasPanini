@@ -28,6 +28,12 @@ export function OnboardingFlow({ onComplete }: Props) {
     });
   };
 
+  const goBack = () => {
+    Animated.timing(slideX, { toValue: -(stepIdx - 1) * W, useNativeDriver: true, duration: 260 }).start(() => {
+      setStepIdx(i => i - 1);
+    });
+  };
+
   const handleDone = () => {
     setProfile({ albumId, name, age });
     onComplete();
@@ -37,9 +43,9 @@ export function OnboardingFlow({ onComplete }: Props) {
     <View style={styles.container}>
       <Animated.View style={[styles.track, { transform: [{ translateX: slideX }] }]}>
         <View style={styles.page}><OnboardWelcome onNext={goNext} /></View>
-        <View style={styles.page}><OnboardAlbum onNext={id => { setAlbumId(id); goNext(); }} /></View>
-        <View style={styles.page}><OnboardName onNext={n => { setName(n); goNext(); }} /></View>
-        <View style={styles.page}><OnboardAge onNext={a => { setAge(a); goNext(); }} /></View>
+        <View style={styles.page}><OnboardAlbum onNext={id => { setAlbumId(id); goNext(); }} onBack={goBack} /></View>
+        <View style={styles.page}><OnboardName onNext={n => { setName(n); goNext(); }} onBack={goBack} /></View>
+        <View style={styles.page}><OnboardAge onNext={a => { setAge(a); goNext(); }} onBack={goBack} /></View>
         <View style={styles.page}><OnboardReady name={name} onDone={handleDone} /></View>
       </Animated.View>
     </View>
