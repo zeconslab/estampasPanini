@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import {
   ScrollView, View, Text, Switch, TouchableOpacity, StyleSheet, Alert,
 } from 'react-native';
@@ -21,7 +21,7 @@ export function ProfileScreen() {
     [profile?.name],
   );
 
-  const handleResetOnboarding = () => {
+  const handleResetOnboarding = useCallback(() => {
     Alert.alert(
       'Reiniciar álbum',
       '¿Seguro? Esto borrará tu perfil y regresarás al inicio.',
@@ -31,16 +31,18 @@ export function ProfileScreen() {
           text: 'Reiniciar',
           style: 'destructive',
           onPress: () => {
-            AsyncStorage.removeItem('cromax.profile');
+            AsyncStorage.removeItem('cromax.profile').catch(console.error);
             useAlbumStore.setState({ profile: null });
           },
         },
       ],
     );
-  };
+  }, []);
+
+  const scrollStyle = useMemo(() => ({ backgroundColor: t.paper }), [t.paper]);
 
   return (
-    <ScrollView style={{ backgroundColor: t.paper }} contentContainerStyle={styles.scrollContent}>
+    <ScrollView style={scrollStyle} contentContainerStyle={styles.scrollContent}>
 
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 16, backgroundColor: t.pitch }]}>
@@ -49,7 +51,7 @@ export function ProfileScreen() {
         </Text>
         <View style={styles.subRow}>
           <Text style={[styles.handle, { color: '#9AA39B', fontFamily: fonts.mono }]}>{handle}</Text>
-          {profile?.age ? (
+          {profile?.age != null && profile.age !== '' ? (
             <Text style={[styles.age, { color: '#9AA39B', fontFamily: fonts.mono }]}>
               {' '}· {profile.age} años
             </Text>
@@ -116,12 +118,12 @@ export function ProfileScreen() {
         {/* Modo oscuro */}
         <View style={[styles.settingsRow, styles.settingsRowBorder, { borderColor: t.line }]}>
           <Text style={[styles.rowLabel, { color: t.ink, fontFamily: fonts.semibold }]}>Modo oscuro</Text>
-          <Switch value={dark} onValueChange={toggleDark} trackColor={{ true: '#E89B2F' }} />
+          <Switch value={dark} onValueChange={toggleDark} trackColor={{ true: t.primary }} />
         </View>
 
         {/* Reiniciar álbum */}
         <TouchableOpacity style={styles.settingsRow} onPress={handleResetOnboarding}>
-          <Text style={[styles.rowLabel, { color: '#D7263D', fontFamily: fonts.semibold }]}>Reiniciar álbum</Text>
+          <Text style={[styles.rowLabel, { color: t.coral, fontFamily: fonts.semibold }]}>Reiniciar álbum</Text>
         </TouchableOpacity>
       </View>
 
