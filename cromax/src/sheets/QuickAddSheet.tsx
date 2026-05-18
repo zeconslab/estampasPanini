@@ -31,7 +31,8 @@ export function QuickAddSheet() {
 
   const sessionAdded = useMemo(
     () => local.filter(s =>
-      initialStates.current.get(s.id) === 'missing' && s.state !== 'missing'
+      initialStates.current.get(s.id) === 'missing' &&
+      (s.state === 'owned' || s.state === 'duplicate')
     ).length,
     [local],
   );
