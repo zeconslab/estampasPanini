@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import {
-  View, Text, TextInput, ScrollView,
-  StyleSheet, Dimensions,
+  View, Text, TextInput, SectionList,
+  StyleSheet, useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAlbumStore }   from '../store/useAlbumStore';
@@ -21,8 +21,6 @@ type Filter = 'all' | 'owned' | 'missing' | 'duplicate';
 const COLS = 6;
 const GAP  = 6;
 const PAD  = 16;
-const W    = Dimensions.get('window').width;
-const CELL = Math.floor((W - PAD * 2 - GAP * 5) / 6);
 
 const FILTERS: { key: Filter; label: string }[] = [
   { key: 'all',       label: 'Todas' },
@@ -33,6 +31,12 @@ const FILTERS: { key: Filter; label: string }[] = [
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
+/**
+ * Chip badge counts = exact state match.
+ * Section header "owned" count = owned + duplicate ("have it").
+ * These differ intentionally: the chip badge answers "how many in this state?",
+ * while the section header answers "how many do you have (any copy)?".
+ */
 function filterCount(stickers: Sticker[], f: Filter): number {
   if (f === 'all') return stickers.length;
   return stickers.filter(s => s.state === f).length;
@@ -47,6 +51,12 @@ function stickerMatches(s: Sticker, q: string): boolean {
   );
 }
 
+function chunkRows(arr: Sticker[], size: number): Sticker[][] {
+  const rows: Sticker[][] = [];
+  for (let i = 0; i < arr.length; i += size) rows.push(arr.slice(i, i + size));
+  return rows;
+}
+
 // ─── Team section header ─────────────────────────────────────────────────────
 
 interface SectionHeaderProps {
@@ -59,7 +69,8 @@ function TeamSectionHeader({ teamCode, sectionStickers }: SectionHeaderProps) {
 
   const isSpecial = teamCode === '★';
   const team = isSpecial ? null : TEAMS.find(tm => tm.code === teamCode);
-  const owned = sectionStickers.filter(s => s.state === 'owned' || s.state === 'duplicate').length;
+  // Section header counts both owned and duplicate as "have it"
+  const owned = sectionStickers.filter(s => s.state !== 'missing').length;
   const total = sectionStickers.length;
 
   return (
@@ -67,7 +78,7 @@ function TeamSectionHeader({ teamCode, sectionStickers }: SectionHeaderProps) {
       {isSpecial ? (
         <View style={[styles.specialIcon, { backgroundColor: t.primary }]} />
       ) : (
-        <Flag colors={team!.colors} width={28} height={18} />
+        <Flag colors={team?.colors ?? ['#888888', '#888888', '#888888']} width={28} height={18} />
       )}
       <Text style={[styles.sectionName, { color: t.ink, fontFamily: fonts.headline }]}>
         {isSpecial ? 'Especiales · Leyendas' : (team?.name ?? teamCode)}
@@ -86,11 +97,15 @@ export function GridScreen() {
   const insets = useSafeAreaInsets();
   const nav    = useNavigation<Nav>();
   const stickers = useAlbumStore(s => s.stickers);
+  const { width } = useWindowDimensions();
+
+  // CELL is derived from the live window width so it reacts to orientation changes
+  const CELL = useMemo(() => Math.floor((width - PAD * 2 - GAP * 5) / 6), [width]);
 
   const [query,  setQuery]  = useState('');
   const [filter, setFilter] = useState<Filter>('all');
 
-  // Pre-filter counts (before search, just for chip badges)
+  // Pre-filter counts (before search, just for chip badges — exact state match)
   const chipCounts = useMemo<Record<Filter, number>>(() => ({
     all:       filterCount(stickers, 'all'),
     owned:     filterCount(stickers, 'owned'),
@@ -108,8 +123,8 @@ export function GridScreen() {
     });
   }, [stickers, filter, query]);
 
-  // Group visible stickers into ordered sections
-  const sections = useMemo(() => {
+  // Group visible stickers into ordered sections chunked into rows for SectionList
+  const orderedSections = useMemo(() => {
     const map = new Map<string, Sticker[]>();
 
     for (const team of TEAMS) {
@@ -140,84 +155,84 @@ export function GridScreen() {
     return result;
   }, [visible]);
 
+  // Transform sections into SectionList format with rows chunked to COLS
+  const sections = useMemo(
+    () => orderedSections.map(s => ({ key: s.key, data: chunkRows(s.stickers, COLS) })),
+    [orderedSections],
+  );
+
+  const ListHeader = (
+    <View style={[styles.header, { paddingTop: insets.top + 8, backgroundColor: t.paper }]}>
+      <TextInput
+        value={query}
+        onChangeText={setQuery}
+        placeholder="Buscar estampa…"
+        placeholderTextColor={t.ink4}
+        style={[styles.search, { backgroundColor: t.card, color: t.ink, borderColor: t.line }]}
+      />
+
+      {/* Filter chips */}
+      <View style={styles.filters}>
+        {FILTERS.map(f => {
+          const active = filter === f.key;
+          return (
+            <HapticPress
+              key={f.key}
+              style={[styles.chip, { backgroundColor: active ? t.pitch : t.paper2, flex: 1 }]}
+              onPress={() => setFilter(f.key)}
+            >
+              <Text style={[styles.chipLabel, {
+                color: active ? '#EFE7D2' : t.ink3,
+              }]}>
+                {f.label}
+              </Text>
+              <Text style={[styles.chipCount, {
+                color: active ? '#EFE7D2' : t.ink3,
+                opacity: active ? 0.7 : 0.55,
+              }]}>
+                {chipCounts[f.key]}
+              </Text>
+            </HapticPress>
+          );
+        })}
+      </View>
+    </View>
+  );
+
   return (
     <View style={[styles.container, { backgroundColor: t.paper }]}>
-      {/* ── Header ── */}
-      <View style={[styles.header, { paddingTop: insets.top + 8, backgroundColor: t.paper }]}>
-        <TextInput
-          value={query}
-          onChangeText={setQuery}
-          placeholder="Buscar estampa…"
-          placeholderTextColor={t.ink4}
-          style={[styles.search, { backgroundColor: t.card, color: t.ink, borderColor: t.line }]}
-        />
-
-        {/* Filter chips */}
-        <View style={styles.filters}>
-          {FILTERS.map(f => {
-            const active = filter === f.key;
-            return (
-              <HapticPress
-                key={f.key}
-                style={[styles.chip, { backgroundColor: active ? t.pitch : t.paper2, flex: 1 }]}
-                onPress={() => setFilter(f.key)}
-              >
-                <Text style={{
-                  color: active ? '#EFE7D2' : t.ink3,
-                  fontSize: 12,
-                  fontFamily: fonts.semibold,
-                  letterSpacing: -0.1,
-                  textAlign: 'center',
-                }}>
-                  {f.label}
-                </Text>
-                <Text style={{
-                  color: active ? '#EFE7D2' : t.ink3,
-                  fontSize: 10,
-                  fontFamily: fonts.mono,
-                  textAlign: 'center',
-                  opacity: active ? 0.7 : 0.55,
-                  marginTop: 1,
-                }}>
-                  {chipCounts[f.key]}
-                </Text>
-              </HapticPress>
-            );
-          })}
-        </View>
-      </View>
-
-      {/* ── Content ── */}
-      <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 16 }]}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        {sections.length === 0 ? (
+      <SectionList
+        sections={sections}
+        keyExtractor={(row, index) => `row-${index}-${row[0]?.id ?? index}`}
+        ListHeaderComponent={ListHeader}
+        ListEmptyComponent={
           <View style={styles.emptyState}>
             <Text style={[styles.emptyText, { color: t.ink3 }]}>Sin resultados.</Text>
           </View>
-        ) : (
-          sections.map(section => (
-            <View key={section.key} style={styles.section}>
-              <TeamSectionHeader
-                teamCode={section.key}
-                sectionStickers={section.stickers}
-              />
-              <View style={styles.stickerGrid}>
-                {section.stickers.map(item => (
-                  <StickerComponent
-                    key={item.id}
-                    sticker={item}
-                    size={CELL}
-                    onPress={() => nav.navigate('StickerModal', { stickerId: item.id })}
-                  />
-                ))}
-              </View>
-            </View>
-          ))
+        }
+        renderSectionHeader={({ section }) => (
+          <TeamSectionHeader
+            teamCode={section.key}
+            sectionStickers={section.data.flat()}
+          />
         )}
-      </ScrollView>
+        renderItem={({ item: row }) => (
+          <View style={[styles.row, { paddingHorizontal: PAD, gap: GAP, marginBottom: GAP }]}>
+            {row.map(sticker => (
+              <StickerComponent
+                key={sticker.id}
+                sticker={sticker}
+                size={CELL}
+                onPress={() => nav.navigate('StickerModal', { stickerId: sticker.id })}
+              />
+            ))}
+          </View>
+        )}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        stickySectionHeadersEnabled={false}
+      />
     </View>
   );
 }
@@ -235,22 +250,34 @@ const styles = StyleSheet.create({
   },
   filters:     { flexDirection: 'row', gap: 6 },
   chip:        { paddingHorizontal: 8, paddingVertical: 7, borderRadius: 20, alignItems: 'center' },
-  scrollContent: { paddingHorizontal: PAD, paddingTop: 12 },
+  chipLabel:   {
+    fontSize: 12,
+    fontFamily: fonts.semibold,
+    letterSpacing: -0.1,
+    textAlign: 'center',
+  },
+  chipCount:   {
+    fontSize: 10,
+    fontFamily: fonts.mono,
+    textAlign: 'center',
+    marginTop: 1,
+  },
 
   // Section
-  section:      { marginBottom: 20 },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     marginBottom: 10,
+    paddingHorizontal: PAD,
+    paddingTop: 12,
   },
   specialIcon:  { width: 20, height: 20, borderRadius: 5 },
   sectionName:  { fontSize: 15, flex: 1 },
   sectionCount: { fontSize: 11 },
 
-  // Sticker grid
-  stickerGrid:  { flexDirection: 'row', flexWrap: 'wrap', gap: GAP },
+  // Row inside a section
+  row: { flexDirection: 'row' },
 
   // Empty state
   emptyState:  { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 80 },
