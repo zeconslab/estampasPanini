@@ -1,4 +1,4 @@
-# Estampas — App Nativa iOS + Android
+# Cromax — App Nativa iOS + Android
 **Fecha:** 2026-05-18
 **Stack:** React Native + Expo Managed Workflow
 **Alcance:** v1 — álbum local, compartir faltantes por QR (bitmask), sin backend
@@ -7,7 +7,7 @@
 
 ## 1. Contexto
 
-`Estampas` es un tracker de álbum físico de estampas para el Mundial 2026. El diseño visual está completamente resuelto en un prototipo HTML/CSS/React (`index.html` en la raíz del repo): 4 pantallas principales, múltiples bottom sheets, estética folk mexicana con papel picado y motivos de marigold.
+`Cromax` es un tracker de álbum físico de estampas para el Mundial 2026. El diseño visual está completamente resuelto en un prototipo HTML/CSS/React (`index.html` en la raíz del repo): 4 pantallas principales, múltiples bottom sheets, estética folk mexicana con papel picado y motivos de marigold.
 
 Este documento describe la migración de ese prototipo a una app nativa publicable en App Store y Play Store.
 
@@ -348,8 +348,8 @@ Se pasa via React Context desde `App.tsx` — igual que el prototipo pasa `dark`
 ## 10. Comandos de setup
 
 ```bash
-npx create-expo-app estampas-app --template blank-typescript
-cd estampas-app
+npx create-expo-app cromax --template blank-typescript
+cd cromax
 
 npx expo install @react-navigation/native @react-navigation/bottom-tabs @react-navigation/stack
 npx expo install react-native-screens react-native-safe-area-context
