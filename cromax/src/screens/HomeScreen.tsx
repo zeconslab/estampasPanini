@@ -12,6 +12,7 @@ import { SectionHeader }    from '../components/SectionHeader';
 import { Flag }             from '../components/Flag';
 import { Sticker as StickerComponent } from '../components/Sticker';
 import { useNavigation }    from '@react-navigation/native';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -68,12 +69,13 @@ export function HomeScreen() {
     [stickers],
   );
 
+  const tabBarHeight = useBottomTabBarHeight();
   const scrollStyle = useMemo(() => ({ backgroundColor: t.paper }), [t.paper]);
 
   return (
     <ScrollView
       style={scrollStyle}
-      contentContainerStyle={styles.scrollContent}
+      contentContainerStyle={[styles.scrollContent, { paddingBottom: tabBarHeight + 8 }]}
       showsVerticalScrollIndicator={false}
     >
       {/* HERO — rounded card with padding */}
@@ -243,7 +245,7 @@ function MiniStat({ label, value, color, bg, textColor }: {
 }
 
 const styles = StyleSheet.create({
-  scrollContent: { paddingBottom: 24 },
+  scrollContent: {},
   heroCard: {
     borderRadius: 22,
     padding: 20,

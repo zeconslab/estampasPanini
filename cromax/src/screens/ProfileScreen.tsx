@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import AsyncStorage                from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets }       from 'react-native-safe-area-context';
+import { useBottomTabBarHeight }   from '@react-navigation/bottom-tabs';
 import { useAlbumStore }           from '../store/useAlbumStore';
 import { computeStats }            from '../data/album';
 import { useTheme, fonts }         from '../theme';
@@ -11,8 +12,9 @@ import { SectionHeader }           from '../components/SectionHeader';
 import { ProgressRing }            from '../components/ProgressRing';
 
 export function ProfileScreen() {
-  const t      = useTheme();
-  const insets = useSafeAreaInsets();
+  const t            = useTheme();
+  const insets       = useSafeAreaInsets();
+  const tabBarHeight = useBottomTabBarHeight();
   const { profile, stickers, dark, toggleDark } = useAlbumStore();
   const stats = useMemo(() => computeStats(stickers), [stickers]);
 
@@ -42,7 +44,7 @@ export function ProfileScreen() {
   const scrollStyle = useMemo(() => ({ backgroundColor: t.paper }), [t.paper]);
 
   return (
-    <ScrollView style={scrollStyle} contentContainerStyle={styles.scrollContent}>
+    <ScrollView style={scrollStyle} contentContainerStyle={[styles.scrollContent, { paddingBottom: tabBarHeight + 8 }]}>
 
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 16, backgroundColor: t.pitch }]}>

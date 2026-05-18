@@ -7,6 +7,7 @@ import { HapticPress }                        from '../components/HapticPress';
 import { SectionHeader }                      from '../components/SectionHeader';
 import { MxBunting }                          from '../components/MxBunting';
 import { useNavigation }                      from '@react-navigation/native';
+import { useBottomTabBarHeight }              from '@react-navigation/bottom-tabs';
 import type { StackNavigationProp }           from '@react-navigation/stack';
 import type { RootStackParamList }            from '../navigation/RootNavigator';
 import type { Friend }                        from '../data/album';
@@ -88,9 +89,10 @@ const friendCardStyles = StyleSheet.create({
 });
 
 export function TradeScreen() {
-  const t      = useTheme();
-  const insets = useSafeAreaInsets();
-  const nav    = useNavigation<Nav>();
+  const t            = useTheme();
+  const insets       = useSafeAreaInsets();
+  const tabBarHeight = useBottomTabBarHeight();
+  const nav          = useNavigation<Nav>();
   const { friends, stickers } = useAlbumStore();
 
   const myDupeIds    = useMemo(() => new Set(stickers.filter(s => s.state === 'duplicate').map(s => s.id)), [stickers]);
@@ -104,7 +106,7 @@ export function TradeScreen() {
   const scrollStyle = useMemo(() => ({ backgroundColor: t.paper }), [t.paper]);
 
   return (
-    <ScrollView style={scrollStyle} contentContainerStyle={styles.scrollContent}>
+    <ScrollView style={scrollStyle} contentContainerStyle={[styles.scrollContent, { paddingBottom: tabBarHeight + 8 }]}>
 
       {/* Hero card */}
       <View style={[styles.hero, { backgroundColor: t.pitch, paddingTop: insets.top + 20 }]}>

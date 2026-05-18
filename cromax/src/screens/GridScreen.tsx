@@ -12,6 +12,7 @@ import { Flag }            from '../components/Flag';
 import { Sticker as StickerComponent } from '../components/Sticker';
 import { HapticPress }     from '../components/HapticPress';
 import { useNavigation }   from '@react-navigation/native';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RootStackParamList }  from '../navigation/RootNavigator';
 
@@ -93,9 +94,10 @@ function TeamSectionHeader({ teamCode, sectionStickers }: SectionHeaderProps) {
 // ─── Main screen ─────────────────────────────────────────────────────────────
 
 export function GridScreen() {
-  const t      = useTheme();
-  const insets = useSafeAreaInsets();
-  const nav    = useNavigation<Nav>();
+  const t            = useTheme();
+  const insets       = useSafeAreaInsets();
+  const tabBarHeight = useBottomTabBarHeight();
+  const nav          = useNavigation<Nav>();
   const stickers = useAlbumStore(s => s.stickers);
   const { width } = useWindowDimensions();
 
@@ -228,7 +230,7 @@ export function GridScreen() {
             ))}
           </View>
         )}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
+        contentContainerStyle={{ paddingBottom: tabBarHeight + 8 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         stickySectionHeadersEnabled={false}
