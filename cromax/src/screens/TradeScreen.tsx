@@ -120,7 +120,7 @@ export function TradeScreen() {
             onPress={() => nav.navigate('ScanModal')}
             style={[styles.scanBtn, { backgroundColor: t.pitch }]}
           >
-            <Text style={[styles.scanBtnText, { fontFamily: fonts.semibold }]}>Escanear QR</Text>
+            <Text style={[styles.scanBtnText, { color: t.paper, fontFamily: fonts.semibold }]}>Escanear QR</Text>
           </HapticPress>
         }
       />
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
 
   // Scan button
   scanBtn:     { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 },
-  scanBtnText: { color: '#EFE7D2', fontSize: 13 },
+  scanBtnText: { fontSize: 13 },
 
   // Friends
   empty:       { margin: 16, padding: 24, borderRadius: 16, borderWidth: 1, alignItems: 'center' },
