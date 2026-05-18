@@ -1,9 +1,10 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, ScrollView, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation }  from '@react-navigation/native';
 import { useAlbumStore }  from '../store/useAlbumStore';
 import { cycleQuick, TEAMS } from '../data/album';
+import type { Sticker } from '../data/album';
 import { useTheme, fonts } from '../theme';
 import { Sticker as StickerComponent } from '../components/Sticker';
 import { HapticPress }    from '../components/HapticPress';
@@ -12,6 +13,8 @@ import { Flag }           from '../components/Flag';
 const COLS = 6;
 const GAP  = 6;
 const PAD  = 12;
+
+const keyExtractor = (s: Sticker) => String(s.id);
 
 export function QuickAddSheet() {
   const t       = useTheme();
@@ -42,14 +45,28 @@ export function QuickAddSheet() {
     [local, selectedTeam],
   );
 
-  const handlePress = (id: number) => {
-    setLocal(prev => prev.map(s => s.id === id ? cycleQuick(s) : s));
-  };
+  const handlePress = useCallback((sticker: Sticker) => {
+    setLocal(prev => prev.map(s => s.id === sticker.id ? cycleQuick(s) : s));
+  }, []);
 
-  const handleDone = () => {
-    setStickers(local);
+  const localRef = useRef(local);
+  useEffect(() => { localRef.current = local; }, [local]);
+  const handleDone = useCallback(() => {
+    setStickers(localRef.current);
     nav.goBack();
-  };
+  }, [setStickers, nav]);
+
+  const renderItem = useCallback(
+    ({ item }: { item: Sticker }) => (
+      <StickerComponent sticker={item} size={CELL} onPress={handlePress} />
+    ),
+    [CELL, handlePress],
+  );
+
+  const listContentStyle = useMemo(
+    () => ({ padding: PAD, gap: GAP, paddingBottom: insets.bottom + 80 }),
+    [insets.bottom],
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: t.paper }]}>
@@ -74,7 +91,7 @@ export function QuickAddSheet() {
           onPress={() => setSelectedTeam(null)}
         >
           <Text style={[styles.chipLabel, {
-            color: selectedTeam === null ? '#EFE7D2' : t.ink3,
+            color: selectedTeam === null ? t.paper : t.ink3,
             fontFamily: fonts.semibold,
           }]}>
             Todas
@@ -94,7 +111,7 @@ export function QuickAddSheet() {
             >
               <Flag colors={team.colors} width={20} height={13} />
               <Text style={[styles.chipLabel, {
-                color: active ? '#EFE7D2' : t.ink3,
+                color: active ? t.paper : t.ink3,
                 fontFamily: fonts.semibold,
                 marginLeft: 4,
               }]}>
@@ -107,13 +124,11 @@ export function QuickAddSheet() {
 
       <FlatList
         data={filtered}
-        keyExtractor={s => String(s.id)}
+        keyExtractor={keyExtractor}
         numColumns={COLS}
-        contentContainerStyle={{ padding: PAD, gap: GAP, paddingBottom: insets.bottom + 80 }}
-        columnWrapperStyle={{ gap: GAP }}
-        renderItem={({ item }) => (
-          <StickerComponent sticker={item} size={CELL} onPress={s => handlePress(s.id)} />
-        )}
+        contentContainerStyle={listContentStyle}
+        columnWrapperStyle={styles.colWrapper}
+        renderItem={renderItem}
       />
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 8, backgroundColor: t.paper }]}>
@@ -123,7 +138,7 @@ export function QuickAddSheet() {
           </Text>
         )}
         <HapticPress style={[styles.doneBtn, { backgroundColor: t.pitch }]} onPress={handleDone}>
-          <Text style={[styles.doneBtnText, { fontFamily: fonts.semibold }]}>Guardar cambios</Text>
+          <Text style={[styles.doneBtnText, { color: t.paper, fontFamily: fonts.semibold }]}>Guardar cambios</Text>
         </HapticPress>
       </View>
     </View>
@@ -149,5 +164,6 @@ const styles = StyleSheet.create({
   footer:      { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 16 },
   counter:     { fontSize: 11, textAlign: 'center', marginBottom: 8, letterSpacing: 0.2 },
   doneBtn:     { borderRadius: 24, paddingVertical: 14, alignItems: 'center' },
-  doneBtnText: { color: '#EFE7D2', fontSize: 16 },
+  doneBtnText: { fontSize: 16 },
+  colWrapper:  { gap: GAP },
 });
