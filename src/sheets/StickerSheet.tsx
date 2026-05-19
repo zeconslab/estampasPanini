@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -156,9 +155,7 @@ export function StickerSheet() {
 
   return (
     <View style={styles.overlay}>
-      <Pressable style={StyleSheet.absoluteFill} onPress={() => nav.goBack()}>
-        <BlurView style={StyleSheet.absoluteFill} intensity={18} tint="dark" />
-      </Pressable>
+      <Pressable style={[StyleSheet.absoluteFill, styles.backdrop]} onPress={() => nav.goBack()} />
       <View style={[styles.sheet, { backgroundColor: t.paper, paddingBottom: insets.bottom + 16 }]}>
       <View style={[styles.handle, { backgroundColor: t.line2 }]} />
 
@@ -295,6 +292,7 @@ function ActionTile({ active, color, label, sub, onPress }: {
 
 const styles = StyleSheet.create({
   overlay:      { flex: 1, justifyContent: 'flex-end' },
+  backdrop:     { backgroundColor: 'rgba(0,0,0,0.45)' },
   sheet:        { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 18, paddingTop: 10 },
   handle:       { width: 36, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 16 },
   topRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 },
