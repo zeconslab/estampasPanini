@@ -62,8 +62,8 @@ export function OnboardWelcome({ onNext }: Props) {
 
       {/* CTA panel */}
       <View style={[styles.cta, { backgroundColor: t.paper }]}>
-        <HapticPress style={[styles.btn, { backgroundColor: t.primary }]} onPress={onNext}>
-          <Text style={[styles.btnText, { color: t.pitch }]}>Empezar mi álbum</Text>
+        <HapticPress style={[styles.btn, { backgroundColor: t.pitch }]} onPress={onNext}>
+          <Text style={[styles.btnText, { color: t.paper }]}>Empezar mi álbum</Text>
         </HapticPress>
         <Text style={[styles.disclaimer, { color: t.ink4 }]}>
           Gratis · sin cuenta obligatoria · 100% en tu dispositivo
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1 },
 
   hero: {
-    flex: 1,
+    flex: 0.7,
     backgroundColor: '#0E5B3A',
     overflow: 'hidden',
     justifyContent: 'flex-end',
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   },
   buntingWrap: {
     position: 'absolute',
-    top: 52,
+    top: 0,
     left: 0,
   },
 
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
   },
 
-  cta: { padding: 18, paddingTop: 20, paddingBottom: 30 },
+  cta: { flex: 0.3, padding: 18, paddingTop: 20, paddingBottom: 30, justifyContent: 'center' },
   btn: {
     width: '100%',
     padding: 16,
