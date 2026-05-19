@@ -1,11 +1,9 @@
 import React, { useMemo } from 'react';
 import { ScrollView, View, Text, StyleSheet } from 'react-native';
-import { useSafeAreaInsets }                  from 'react-native-safe-area-context';
 import { useAlbumStore }                      from '../store/useAlbumStore';
 import { useTheme, fonts }                    from '../theme';
 import { HapticPress }                        from '../components/HapticPress';
 import { SectionHeader }                      from '../components/SectionHeader';
-import { MxBunting }                          from '../components/MxBunting';
 import { Topbar, IconBtn }                    from '../components/Topbar';
 import { IcShare }                            from '../components/Icons';
 import { useNavigation }                      from '@react-navigation/native';
@@ -102,7 +100,6 @@ const friendCardStyles = StyleSheet.create({
 
 export function TradeScreen() {
   const t            = useTheme();
-  const insets       = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
   const nav          = useNavigation<Nav>();
   const { friends, stickers } = useAlbumStore();

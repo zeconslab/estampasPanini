@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { Sticker as StickerData } from '../data/album';
 import { TEAMS } from '../data/album';
-import { useTheme } from '../theme';
+import { useTheme, fonts } from '../theme';
 import { HapticPress } from './HapticPress';
 
 interface Props {
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 3,
     left: 4,
-    fontFamily: 'JetBrainsMono_700Bold',
+    fontFamily: fonts.mono,
     zIndex: 2,
     letterSpacing: -0.3,
   },
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   init: {
-    fontFamily: 'HankenGrotesk_800ExtraBold',
+    fontFamily: fonts.display,
     color: 'rgba(255,255,255,0.92)',
     letterSpacing: -1,
   },
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   footText: {
-    fontFamily: 'HankenGrotesk_700Bold',
+    fontFamily: fonts.headline,
     textTransform: 'uppercase',
     letterSpacing: 0.4,
   },
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 9,
-    fontFamily: 'JetBrainsMono_700Bold',
+    fontFamily: fonts.mono,
     lineHeight: 11,
   },
 });

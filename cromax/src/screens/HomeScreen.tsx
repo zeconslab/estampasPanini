@@ -127,8 +127,8 @@ export function HomeScreen() {
               style={[styles.heroBtn, { backgroundColor: t.primary }]}
               onPress={() => nav.navigate('QuickAdd')}
             >
-              <Text style={[styles.heroBtnIcon, { color: '#0E5B3A' }]}>+</Text>
-              <Text style={[styles.heroBtnText, { color: '#0E5B3A' }]}>Marcar nuevas</Text>
+              <Text style={[styles.heroBtnIcon, { color: t.pitch }]}>+</Text>
+              <Text style={[styles.heroBtnText, { color: t.pitch }]}>Marcar nuevas</Text>
             </HapticPress>
             <HapticPress
               style={[styles.heroBtn, { backgroundColor: 'rgba(255,255,255,0.18)' }]}

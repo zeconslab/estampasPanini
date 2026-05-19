@@ -78,9 +78,9 @@ export function StickerSheet() {
             styles.stateChip,
             {
               backgroundColor:
-                sticker.state === 'owned'     ? 'rgba(181,218,64,0.22)' :
-                sticker.state === 'missing'   ? 'rgba(215,38,61,0.18)'  :
-                                                'rgba(232,155,47,0.22)',
+                sticker.state === 'owned'     ? (t.lime + '38') :
+                sticker.state === 'missing'   ? t.coralSoft :
+                                                t.goldSoft,
             }
           ]}>
             <View style={[styles.chipDot, {

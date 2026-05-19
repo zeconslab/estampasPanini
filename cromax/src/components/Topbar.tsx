@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
   },
   title: {
-    fontFamily: 'HankenGrotesk_700Bold',
+    fontFamily: fonts.headline,
     fontSize: 17,
     letterSpacing: -0.2,
     flex: 1,
