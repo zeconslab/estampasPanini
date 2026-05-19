@@ -32,7 +32,7 @@ export function Sticker({ sticker, size = 52, onPress, onLongPress }: Props) {
   const isOwned     = sticker.state === 'owned' || isDuplicate;
 
   const [c1, c2]  = sticker.team ? teamColors(sticker.team) : ['#E8B23A', '#F5D77A'];
-  const numLabel  = sticker.team
+  const numLabel  = sticker.team && sticker.team !== 'CC'
     ? `${sticker.team} ${String(sticker.teamNum ?? sticker.id).padStart(2, '0')}`
     : sticker.label;
   const footLabel = sticker.label;
