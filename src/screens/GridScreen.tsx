@@ -175,22 +175,30 @@ export function GridScreen() {
         style={[styles.search, { backgroundColor: t.card, color: t.ink, borderColor: t.line }]}
       />
 
-      {/* Filter — segmented control */}
-      <View style={[styles.filterWrap, { backgroundColor: t.card }]}>
+      {/* Filter chips */}
+      <View style={styles.filters}>
         {FILTERS.map(f => {
           const active = filter === f.key;
           return (
             <HapticPress
               key={f.key}
-              style={[styles.chip, active && { backgroundColor: t.pitch, shadowColor: t.pitch, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 6, elevation: 3 }]}
+              style={[
+                styles.chip,
+                {
+                  backgroundColor: active ? t.pitch : t.card,
+                  borderColor: active ? 'transparent' : t.line,
+                },
+              ]}
               onPress={() => setFilter(f.key)}
             >
-              <Text style={[styles.chipLabel, { color: active ? '#fff' : t.ink2 }]}>
+              <Text style={[styles.chipLabel, { color: active ? '#fff' : t.ink }]}>
                 {f.label}
               </Text>
-              <Text style={[styles.chipCount, { color: active ? 'rgba(255,255,255,0.65)' : t.ink4 }]}>
-                {chipCounts[f.key]}
-              </Text>
+              <View style={[styles.chipBadge, { backgroundColor: active ? 'rgba(255,255,255,0.18)' : t.paper2 }]}>
+                <Text style={[styles.chipCount, { color: active ? 'rgba(255,255,255,0.85)' : t.ink4 }]}>
+                  {chipCounts[f.key]}
+                </Text>
+              </View>
             </HapticPress>
           );
         })}
@@ -250,10 +258,21 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontFamily: fonts.body,
   },
-  filterWrap:  { flexDirection: 'row', borderRadius: 13, padding: 3, gap: 2 },
-  chip:        { flex: 1, paddingVertical: 9, paddingHorizontal: 2, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  chipLabel:   { fontSize: 12, fontFamily: fonts.semibold, letterSpacing: -0.2, textAlign: 'center' },
-  chipCount:   { fontSize: 10, fontFamily: fonts.mono, textAlign: 'center', marginTop: 2 },
+  filters:    { flexDirection: 'row', gap: 6 },
+  chip:       {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 6,
+    borderRadius: 12,
+    borderWidth: 0.5,
+  },
+  chipLabel:  { fontFamily: fonts.semibold, fontSize: 12, letterSpacing: -0.2 },
+  chipBadge:  { borderRadius: 6, paddingHorizontal: 5, paddingVertical: 2 },
+  chipCount:  { fontFamily: fonts.mono, fontSize: 10 },
 
   // Section
   sectionHeader: {
