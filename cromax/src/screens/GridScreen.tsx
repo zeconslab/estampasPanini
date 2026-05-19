@@ -11,6 +11,7 @@ import type { Sticker }    from '../data/album';
 import { Flag }            from '../components/Flag';
 import { Sticker as StickerComponent } from '../components/Sticker';
 import { HapticPress }     from '../components/HapticPress';
+import { Topbar }          from '../components/Topbar';
 import { useNavigation }   from '@react-navigation/native';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -25,8 +26,8 @@ const PAD  = 16;
 
 const FILTERS: { key: Filter; label: string }[] = [
   { key: 'all',       label: 'Todas' },
+  { key: 'owned',     label: 'Pegadas' },
   { key: 'missing',   label: 'Faltan' },
-  { key: 'owned',     label: 'Tengo' },
   { key: 'duplicate', label: 'Repetidas' },
 ];
 
@@ -106,6 +107,7 @@ export function GridScreen() {
 
   const [query,  setQuery]  = useState('');
   const [filter, setFilter] = useState<Filter>('all');
+  const [scrolled, setScrolled] = React.useState(false);
 
   // Pre-filter counts (before search, just for chip badges — exact state match)
   const chipCounts = useMemo<Record<Filter, number>>(() => ({
@@ -164,7 +166,7 @@ export function GridScreen() {
   );
 
   const ListHeader = (
-    <View style={[styles.header, { paddingTop: insets.top + 8, backgroundColor: t.paper }]}>
+    <View style={[styles.header, { backgroundColor: t.paper }]}>
       <TextInput
         value={query}
         onChangeText={setQuery}
@@ -180,17 +182,16 @@ export function GridScreen() {
           return (
             <HapticPress
               key={f.key}
-              style={[styles.chip, { backgroundColor: active ? t.primary : t.paper2, flex: 1 }]}
+              style={[styles.chip, { backgroundColor: active ? t.pitch : t.card, flex: 1 }]}
               onPress={() => setFilter(f.key)}
             >
               <Text style={[styles.chipLabel, {
-                color: active ? t.pitch : t.ink3,
+                color: active ? '#fff' : t.ink2,
               }]}>
                 {f.label}
               </Text>
               <Text style={[styles.chipCount, {
-                color: active ? t.pitch : t.ink3,
-                opacity: active ? 0.7 : 0.55,
+                color: active ? 'rgba(255,255,255,0.7)' : t.ink4,
               }]}>
                 {chipCounts[f.key]}
               </Text>
@@ -203,6 +204,7 @@ export function GridScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: t.paper }]}>
+      <Topbar title="Cuadrícula" scrolled={scrolled} />
       <SectionList
         sections={sections}
         keyExtractor={(row, index) => `row-${index}-${row[0]?.id ?? index}`}
@@ -234,6 +236,8 @@ export function GridScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         stickySectionHeadersEnabled={false}
+        onScroll={e => setScrolled(e.nativeEvent.contentOffset.y > 6)}
+        scrollEventThrottle={16}
       />
     </View>
   );
