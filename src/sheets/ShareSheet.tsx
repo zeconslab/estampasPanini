@@ -1,10 +1,13 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, Share,
+  View, Text, ScrollView, StyleSheet, Share, Linking, ToastAndroid, Platform, Alert,
 } from 'react-native';
+import * as Clipboard      from 'expo-clipboard';
 import QRCode              from 'react-native-qrcode-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation }   from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { RootStackParamList }  from '../navigation/RootNavigator';
 import { useAlbumStore }   from '../store/useAlbumStore';
 import { encodeQR }        from '../utils/qr';
 import { TEAMS }           from '../data/album';
@@ -77,11 +80,14 @@ const chanStyles = StyleSheet.create({
 
 // ─── Main sheet ──────────────────────────────────────────────────────────────
 
+type Nav = StackNavigationProp<RootStackParamList>;
+
 export function ShareSheet() {
   const t       = useTheme();
   const insets  = useSafeAreaInsets();
-  const nav     = useNavigation();
+  const nav     = useNavigation<Nav>();
   const { stickers, profile, friends } = useAlbumStore();
+  const [copied, setCopied] = useState(false);
 
   const payload = useMemo(() => encodeQR(profile?.name ?? 'Amigo', stickers), [stickers, profile]);
 
@@ -136,6 +142,33 @@ export function ShareSheet() {
 
   const teamsWithMissing = missingByTeam.filter(r => r.labels.length > 0);
 
+  const handleWhatsApp = useCallback(async () => {
+    const url = `whatsapp://send?text=${encodeURIComponent(shareText)}`;
+    const can = await Linking.canOpenURL(url);
+    if (can) {
+      Linking.openURL(url);
+    } else {
+      Share.share({ message: shareText });
+    }
+  }, [shareText]);
+
+  const handleMessages = useCallback(() => {
+    const url = Platform.OS === 'ios'
+      ? `sms:&body=${encodeURIComponent(shareText)}`
+      : `sms:?body=${encodeURIComponent(shareText)}`;
+    Linking.openURL(url).catch(() => Share.share({ message: shareText }));
+  }, [shareText]);
+
+  const handleCopy = useCallback(async () => {
+    await Clipboard.setStringAsync(shareText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [shareText]);
+
+  const handleShare = useCallback(() => {
+    Share.share({ message: shareText });
+  }, [shareText]);
+
   return (
     <View style={[styles.container, { backgroundColor: t.paper }]}>
       {/* Drag handle */}
@@ -177,10 +210,10 @@ export function ShareSheet() {
 
         {/* Channel buttons */}
         <View style={styles.channelRow}>
-          <ChannelBtn icon="💬" label="WhatsApp"  color="#25D366" onPress={() => {}} />
-          <ChannelBtn icon="✉️" label="Mensajes"  color={t.pitch2} onPress={() => {}} />
-          <ChannelBtn icon="⬛" label="QR pleno"  color={t.ink}   onPress={() => {}} />
-          <ChannelBtn icon="📋" label="Copiar"    color={t.gold}  onPress={() => {}} />
+          <ChannelBtn icon="💬" label="WhatsApp"  color="#25D366"  onPress={handleWhatsApp} />
+          <ChannelBtn icon="✉️" label="Mensajes"  color={t.pitch2} onPress={handleMessages} />
+          <ChannelBtn icon="↑"  label="Compartir" color={t.ink}    onPress={handleShare} />
+          <ChannelBtn icon={copied ? "✓" : "📋"} label={copied ? "¡Copiado!" : "Copiar"} color={t.gold} onPress={handleCopy} />
         </View>
 
         {/* Friend matches */}
@@ -195,7 +228,7 @@ export function ShareSheet() {
               </Text>
             </View>
             {friendMatches.map(({ friend, canGive, canReceive }) => (
-              <View key={friend.id} style={[styles.friendCard, { backgroundColor: t.card, borderColor: t.line }]}>
+              <HapticPress key={friend.id} style={[styles.friendCard, { backgroundColor: t.card, borderColor: t.line }]} onPress={() => nav.navigate('FriendDetail', { friendId: friend.id })}>
                 <View style={[styles.friendAvatar, { backgroundColor: t.pitch2 }]}>
                   <Text style={[styles.friendAvatarLetter, { color: t.primary, fontFamily: fonts.headline }]}>
                     {friend.name[0]}
@@ -223,7 +256,7 @@ export function ShareSheet() {
                     </View>
                   </View>
                 </View>
-              </View>
+              </HapticPress>
             ))}
           </>
         )}
