@@ -34,8 +34,8 @@ export function Sticker({ sticker, size = 52, onPress, onLongPress }: Props) {
   const [c1, c2]  = sticker.team ? teamColors(sticker.team) : ['#E8B23A', '#F5D77A'];
   const numLabel  = sticker.team
     ? `${sticker.team} ${String(sticker.teamNum ?? sticker.id).padStart(2, '0')}`
-    : `#${String(sticker.id).padStart(3, '0')}`;
-  const footLabel = sticker.team ?? sticker.label;
+    : sticker.label;
+  const footLabel = sticker.label;
 
   const footH    = Math.max(10, Math.round(h * 0.165));
   const numSize  = Math.max(5,  Math.round(size * 0.135));
