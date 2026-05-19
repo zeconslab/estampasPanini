@@ -49,7 +49,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
 
   return (
     // Outer wrapper: transparent, provides floating margins + safe-area spacing
-    <View style={[styles.outer, { paddingBottom: insets.bottom + 8 }]}>
+    <View style={[styles.outer, { paddingBottom: insets.bottom }]}>
       {/* Floating bar */}
       <View style={[styles.bar, { backgroundColor: t.pitch }]}>
         <Animated.View style={[styles.pill, { left: pillX, width: pillW, backgroundColor: t.primary }]} />
