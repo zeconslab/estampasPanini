@@ -118,6 +118,22 @@ export const TEAMS: Array<{
 const FIRST_NAMES = ['Carlos','Luis','Juan','Diego','Andrés','Miguel','Jorge','Roberto','Fernando','Sergio','Raúl','Javier','Eduardo','Marco','Alexis','Gabriel','Héctor','Daniel','Pablo','Mateo'];
 const LAST_NAMES  = ['García','Martínez','López','Hernández','González','Rodríguez','Pérez','Sánchez','Torres','Ramírez','Flores','Cruz','Morales','Reyes','Jiménez','Ortega','Silva','Castro','Vargas','Mendoza'];
 
+// 12 estampas exclusivas Coca-Cola × Panini (CC01–CC12)
+const CC_STICKERS = [
+  'Destapa la Pasión',            // CC01
+  'México en el Mundial',         // CC02
+  'Unidad FIFA 2026',             // CC03
+  'Gol a Gol',                    // CC04
+  'La Chispa del Fútbol',         // CC05
+  'Celebración Mundial',          // CC06
+  'Momento Coca-Cola',            // CC07
+  'El Mundo Juega',               // CC08
+  'Sabor de Victoria',            // CC09
+  'Hinchada con Pasión',          // CC10
+  'Tu Lugar en la Cancha',        // CC11
+  'Colección Exclusiva 2026',     // CC12
+];
+
 // 20 estampas especiales FIFA (FW00 + FW01–FW19)
 const FIFA_SPECIALS = [
   'Logo FIFA World Cup 2026',    // FW00
@@ -142,7 +158,7 @@ const FIFA_SPECIALS = [
   'Historia del Torneo',         // FW19
 ];
 
-export function generateAlbum(seed: number): Sticker[] {
+export function generateAlbum(seed: number, withCocaCola = false): Sticker[] {
   const rng = mulberry(seed);
   const pick = <T>(arr: T[]) => arr[Math.floor(rng() * arr.length)];
   const stickers: Sticker[] = [];
@@ -180,7 +196,18 @@ export function generateAlbum(seed: number): Sticker[] {
     }
   });
 
-  // 20 + 48×20 = 980 ✓
+  // 12 estampas Coca-Cola (CC01–CC12) — solo si el usuario las activó
+  if (withCocaCola) {
+    CC_STICKERS.forEach((name, i) => {
+      stickers.push({
+        id: id++, type: 'special', team: 'CC',
+        label: `CC${String(i + 1).padStart(2, '0')}`,
+        name, state: 'missing', count: 0,
+      });
+    });
+  }
+
+  // Base: 980  |  Con Coca-Cola: 992 ✓
   return stickers;
 }
 

@@ -66,24 +66,28 @@ interface SectionHeaderProps {
   sectionStickers: Sticker[];
 }
 
+const COKE_RED = '#E61A27';
+
 function TeamSectionHeader({ teamCode, sectionStickers }: SectionHeaderProps) {
   const t = useTheme();
 
-  const isSpecial = teamCode === '★';
-  const team = isSpecial ? null : TEAMS.find(tm => tm.code === teamCode);
-  // Section header counts both owned and duplicate as "have it"
+  const isSpecial  = teamCode === '★';
+  const isCocaCola = teamCode === 'CC';
+  const team = (isSpecial || isCocaCola) ? null : TEAMS.find(tm => tm.code === teamCode);
   const owned = sectionStickers.filter(s => s.state !== 'missing').length;
   const total = sectionStickers.length;
 
   return (
     <View style={styles.sectionHeader}>
-      {isSpecial ? (
+      {isCocaCola ? (
+        <View style={[styles.specialIcon, { backgroundColor: COKE_RED }]} />
+      ) : isSpecial ? (
         <View style={[styles.specialIcon, { backgroundColor: t.primary }]} />
       ) : (
         <Flag colors={team?.colors ?? ['#888888', '#888888', '#888888']} width={28} height={18} />
       )}
       <Text style={[styles.sectionName, { color: t.ink, fontFamily: fonts.headline }]}>
-        {isSpecial ? 'Especiales · Leyendas' : (team?.name ?? teamCode)}
+        {isCocaCola ? 'Coca-Cola × Panini' : isSpecial ? 'Especiales · FIFA' : (team?.name ?? teamCode)}
       </Text>
       <Text style={[styles.sectionCount, { color: t.ink3, fontFamily: fonts.mono }]}>
         {owned}/{total}
@@ -136,7 +140,8 @@ export function GridScreen() {
     for (const team of TEAMS) {
       map.set(team.code, []);
     }
-    map.set('★', []);
+    map.set('★', []);  // FIFA specials (no team)
+    map.set('CC', []); // Coca-Cola exclusives
 
     for (const s of visible) {
       const key = s.team ?? '★';
@@ -144,19 +149,20 @@ export function GridScreen() {
       if (bucket) {
         bucket.push(s);
       } else {
-        // unknown team key — fall back to specials bucket
         map.get('★')!.push(s);
       }
     }
 
     // Build ordered array, skip empty buckets
     const result: Array<{ key: string; stickers: Sticker[] }> = [];
+    const special = map.get('★')!;
+    if (special.length > 0) result.push({ key: '★', stickers: special });
     for (const team of TEAMS) {
       const bucket = map.get(team.code)!;
       if (bucket.length > 0) result.push({ key: team.code, stickers: bucket });
     }
-    const special = map.get('★')!;
-    if (special.length > 0) result.push({ key: '★', stickers: special });
+    const cc = map.get('CC')!;
+    if (cc.length > 0) result.push({ key: 'CC', stickers: cc });
 
     return result;
   }, [visible]);
