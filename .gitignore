@@ -1,0 +1,13 @@
+# ── Prototipo HTML (no va al repo) ──────────────────
+*.jsx
+*.html
+*.css
+design_handoff_estampas/
+screenshots/
+uploads/
+
+# ── macOS ────────────────────────────────────────────
+.DS_Store
+
+# ── docs internos de desarrollo ─────────────────────
+docs/
