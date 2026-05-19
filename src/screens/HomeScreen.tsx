@@ -64,10 +64,15 @@ export function HomeScreen() {
     canGet: (f.dupes ?? []).filter(d => stickers.find(s => s.id === d.id && s.state === 'missing')).length,
   })).filter(m => m.canGive > 0).slice(0, 4), [friends, myDupeIds, stickers]);
 
-  // Recent stickers (last 8 owned/duplicate)
+  // Fit exactly one row based on screen width
+  const maxVisible = useMemo(
+    () => Math.floor((SCREEN_W - GRID_PAD * 2 + GRID_GAP) / (CELL_SIZE + GRID_GAP)),
+    [SCREEN_W, CELL_SIZE],
+  );
+
   const recent = useMemo(
-    () => stickers.filter(s => s.state !== 'missing').slice(-8).reverse(),
-    [stickers],
+    () => stickers.filter(s => s.state !== 'missing').slice(-maxVisible).reverse(),
+    [stickers, maxVisible],
   );
 
   const tabBarHeight = useBottomTabBarHeight();
@@ -226,11 +231,7 @@ export function HomeScreen() {
       {recent.length > 0 && (
         <>
           <SectionHeader title="Pegadas recientemente" />
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.recentRow}
-          >
+          <View style={styles.recentRow}>
             {recent.map(s => (
               <StickerComponent
                 key={s.id}
@@ -239,7 +240,7 @@ export function HomeScreen() {
                 onPress={() => nav.navigate('StickerModal', { stickerId: s.id })}
               />
             ))}
-          </ScrollView>
+          </View>
         </>
       )}
       </ScrollView>
