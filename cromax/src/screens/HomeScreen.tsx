@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import { ScrollView, View, Text, StyleSheet, useWindowDimensions } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAlbumStore }    from '../store/useAlbumStore';
+import { Topbar, IconBtn }  from '../components/Topbar';
+import { IcPlus, IcMoon, IcSun, IcShare } from '../components/Icons';
 import { computeStats, TEAMS } from '../data/album';
 import { useTheme, fonts }  from '../theme';
 import { ProgressRing }     from '../components/ProgressRing';
@@ -32,7 +33,6 @@ function nameColor(name: string): string {
 
 export function HomeScreen() {
   const t       = useTheme();
-  const insets  = useSafeAreaInsets();
   const nav     = useNavigation<Nav>();
   const tabNav  = useNavigation<BottomTabNavigationProp<TabParamList>>();
   const { width: SCREEN_W } = useWindowDimensions();
@@ -40,8 +40,9 @@ export function HomeScreen() {
     () => Math.floor((SCREEN_W - GRID_PAD * 2 - GRID_GAP * (GRID_COLS - 1)) / GRID_COLS),
     [SCREEN_W],
   );
-  const { stickers, friends } = useAlbumStore();
+  const { stickers, friends, dark, toggleDark } = useAlbumStore();
   const stats = useMemo(() => computeStats(stickers), [stickers]);
+  const [scrolled, setScrolled] = React.useState(false);
 
   // Top 3 teams by completion %
   const top3Teams = useMemo(() => TEAMS.map(team => {
@@ -70,16 +71,37 @@ export function HomeScreen() {
   );
 
   const tabBarHeight = useBottomTabBarHeight();
-  const scrollStyle = useMemo(() => ({ backgroundColor: t.paper }), [t.paper]);
 
   return (
-    <ScrollView
-      style={scrollStyle}
-      contentContainerStyle={[styles.scrollContent, { paddingBottom: tabBarHeight + 8 }]}
-      showsVerticalScrollIndicator={false}
-    >
+    <View style={{ flex: 1, backgroundColor: t.paper }}>
+      <Topbar
+        title="Estampas"
+        scrolled={scrolled}
+        left={
+          <IconBtn onPress={() => nav.navigate('QuickAdd' as any)}>
+            <IcPlus color={t.ink} size={18} />
+          </IconBtn>
+        }
+        right={
+          <>
+            <IconBtn onPress={toggleDark}>
+              {dark ? <IcSun color={t.ink} size={17} /> : <IcMoon color={t.ink} size={17} />}
+            </IconBtn>
+            <IconBtn onPress={() => nav.navigate('ShareModal' as any)}>
+              <IcShare color={t.ink} size={17} />
+            </IconBtn>
+          </>
+        }
+      />
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: (tabBarHeight ?? 80) + 80 }]}
+        showsVerticalScrollIndicator={false}
+        onScroll={e => setScrolled(e.nativeEvent.contentOffset.y > 6)}
+        scrollEventThrottle={16}
+      >
       {/* HERO — rounded card with padding */}
-      <View style={{ padding: 16, paddingTop: insets.top + 12 }}>
+      <View style={{ padding: 16, paddingTop: 12 }}>
         <View style={[styles.heroCard, { backgroundColor: t.pitch }]}>
           <View style={styles.patternWrap}><MxPattern size={110} color="#EFE7D2" opacity={0.1} /></View>
           <View style={styles.buntingWrap}><MxBunting /></View>
@@ -212,7 +234,16 @@ export function HomeScreen() {
           </View>
         </>
       )}
-    </ScrollView>
+      </ScrollView>
+
+      {/* FAB */}
+      <HapticPress
+        style={[styles.fab, { backgroundColor: t.primary, bottom: (tabBarHeight ?? 80) + 16 }]}
+        onPress={() => nav.navigate('QuickAdd' as any)}
+      >
+        <IcPlus color={t.pitch} size={22} />
+      </HapticPress>
+    </View>
   );
 }
 
@@ -365,5 +396,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: GRID_GAP,
+  },
+  fab: {
+    position: 'absolute',
+    right: 18,
+    width: 54,
+    height: 54,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#B5DA40',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.55,
+    shadowRadius: 18,
+    elevation: 10,
   },
 });
