@@ -46,8 +46,9 @@ export function mulberry(seed: number): () => number {
   };
 }
 
-// 48 selecciones · 12 grupos · 4 por grupo
-// Estructura real álbum Panini Mundial 2026
+// ─── 48 selecciones · 12 grupos · estructura oficial Panini ──────────────────
+// Cada selección: 1 escudo + 1 foto grupal + 18 jugadores = 20 estampas
+// 48 × 20 = 960 + 20 especiales FIFA = 980 total
 export const TEAMS: Array<{
   code: string; name: string; group: string; players: number;
   colors: [string, string, string];
@@ -57,41 +58,41 @@ export const TEAMS: Array<{
   { code: 'KOR', name: 'Corea del Sur',        group: 'A', players: 18, colors: ['#FFFFFF','#C60C30','#003478'] },
   { code: 'RSA', name: 'Sudáfrica',            group: 'A', players: 18, colors: ['#007A4D','#FFB612','#001489'] },
   { code: 'CZE', name: 'Chequia',              group: 'A', players: 18, colors: ['#D7141A','#FFFFFF','#11457E'] },
-  // ── Grupo B ── confirmado en álbum oficial ────────────
+  // ── Grupo B ──────────────────────────────────────────
   { code: 'CAN', name: 'Canadá',               group: 'B', players: 18, colors: ['#FF0000','#FFFFFF','#FF0000'] },
   { code: 'QAT', name: 'Catar',                group: 'B', players: 18, colors: ['#8D1B3D','#FFFFFF','#8D1B3D'] },
   { code: 'SUI', name: 'Suiza',                group: 'B', players: 18, colors: ['#FF0000','#FFFFFF','#FF0000'] },
   { code: 'BIH', name: 'Bosnia y Herz.',       group: 'B', players: 18, colors: ['#002395','#FECB00','#FFFFFF'] },
   // ── Grupo C ──────────────────────────────────────────
   { code: 'BRA', name: 'Brasil',               group: 'C', players: 18, colors: ['#FEDF00','#009C3B','#002776'] },
-  { code: 'URU', name: 'Uruguay',              group: 'C', players: 18, colors: ['#5CB8E4','#FFFFFF','#5CB8E4'] },
-  { code: 'POL', name: 'Polonia',              group: 'C', players: 18, colors: ['#FFFFFF','#DC143C','#FFFFFF'] },
-  { code: 'NZL', name: 'Nueva Zelanda',        group: 'C', players: 18, colors: ['#00247D','#CC142B','#00247D'] },
+  { code: 'HAI', name: 'Haití',                group: 'C', players: 18, colors: ['#00209F','#D21034','#000000'] },
+  { code: 'MAR', name: 'Marruecos',            group: 'C', players: 18, colors: ['#C1272D','#006233','#C1272D'] },
+  { code: 'SCO', name: 'Escocia',              group: 'C', players: 18, colors: ['#003087','#FFFFFF','#003087'] },
   // ── Grupo D ──────────────────────────────────────────
   { code: 'USA', name: 'EUA',                  group: 'D', players: 18, colors: ['#B22234','#FFFFFF','#3C3B6E'] },
-  { code: 'JPN', name: 'Japón',                group: 'D', players: 18, colors: ['#FFFFFF','#BC002D','#FFFFFF'] },
-  { code: 'MAR', name: 'Marruecos',            group: 'D', players: 18, colors: ['#C1272D','#006233','#C1272D'] },
-  { code: 'SRB', name: 'Serbia',               group: 'D', players: 18, colors: ['#C6363C','#0C4076','#FFFFFF'] },
+  { code: 'AUS', name: 'Australia',            group: 'D', players: 18, colors: ['#00008B','#FFD700','#00008B'] },
+  { code: 'PAR', name: 'Paraguay',             group: 'D', players: 18, colors: ['#D52B1E','#FFFFFF','#0038A8'] },
+  { code: 'TUR', name: 'Turquía',              group: 'D', players: 18, colors: ['#E30A17','#FFFFFF','#E30A17'] },
   // ── Grupo E ──────────────────────────────────────────
   { code: 'GER', name: 'Alemania',             group: 'E', players: 18, colors: ['#000000','#DD0000','#FFCE00'] },
-  { code: 'TUR', name: 'Turquía',              group: 'E', players: 18, colors: ['#E30A17','#FFFFFF','#E30A17'] },
-  { code: 'EGY', name: 'Egipto',               group: 'E', players: 18, colors: ['#CE1126','#FFFFFF','#000000'] },
-  { code: 'CRC', name: 'Costa Rica',           group: 'E', players: 18, colors: ['#002B7F','#CE1126','#FFFFFF'] },
+  { code: 'ECU', name: 'Ecuador',              group: 'E', players: 18, colors: ['#FFD100','#003DA5','#FF0000'] },
+  { code: 'CUW', name: 'Curazao',              group: 'E', players: 18, colors: ['#002B7F','#F7D618','#FFFFFF'] },
+  { code: 'CIV', name: 'Costa de Marfil',      group: 'E', players: 18, colors: ['#F77F00','#FFFFFF','#009A44'] },
   // ── Grupo F ──────────────────────────────────────────
-  { code: 'ESP', name: 'España',               group: 'F', players: 18, colors: ['#AA151B','#F1BF00','#AA151B'] },
-  { code: 'DEN', name: 'Dinamarca',            group: 'F', players: 18, colors: ['#C60C30','#FFFFFF','#C60C30'] },
-  { code: 'CMR', name: 'Camerún',              group: 'F', players: 18, colors: ['#007A5E','#CE1126','#FCD116'] },
-  { code: 'AUS', name: 'Australia',            group: 'F', players: 18, colors: ['#00008B','#FFD700','#00008B'] },
+  { code: 'NED', name: 'Países Bajos',         group: 'F', players: 18, colors: ['#AE1C28','#FFFFFF','#21468B'] },
+  { code: 'JPN', name: 'Japón',                group: 'F', players: 18, colors: ['#FFFFFF','#BC002D','#FFFFFF'] },
+  { code: 'SWE', name: 'Suecia',               group: 'F', players: 18, colors: ['#006AA7','#FECC02','#006AA7'] },
+  { code: 'TUN', name: 'Túnez',                group: 'F', players: 18, colors: ['#E70013','#FFFFFF','#E70013'] },
   // ── Grupo G ──────────────────────────────────────────
-  { code: 'ITA', name: 'Italia',               group: 'G', players: 18, colors: ['#009246','#FFFFFF','#CE2B37'] },
-  { code: 'NGA', name: 'Nigeria',              group: 'G', players: 18, colors: ['#008751','#FFFFFF','#008751'] },
-  { code: 'SWE', name: 'Suecia',               group: 'G', players: 18, colors: ['#006AA7','#FECC02','#006AA7'] },
-  { code: 'KSA', name: 'Arabia Saudita',       group: 'G', players: 18, colors: ['#006C35','#FFFFFF','#006C35'] },
+  { code: 'BEL', name: 'Bélgica',              group: 'G', players: 18, colors: ['#000000','#FAE042','#EF3340'] },
+  { code: 'EGY', name: 'Egipto',               group: 'G', players: 18, colors: ['#CE1126','#FFFFFF','#000000'] },
+  { code: 'IRN', name: 'Irán',                 group: 'G', players: 18, colors: ['#239F40','#FFFFFF','#DA0000'] },
+  { code: 'NZL', name: 'Nueva Zelanda',        group: 'G', players: 18, colors: ['#00247D','#CC142B','#00247D'] },
   // ── Grupo H ──────────────────────────────────────────
-  { code: 'NED', name: 'Países Bajos',         group: 'H', players: 18, colors: ['#AE1C28','#FFFFFF','#21468B'] },
-  { code: 'BEL', name: 'Bélgica',              group: 'H', players: 18, colors: ['#000000','#FAE042','#EF3340'] },
-  { code: 'IRN', name: 'Irán',                 group: 'H', players: 18, colors: ['#239F40','#FFFFFF','#DA0000'] },
-  { code: 'ECU', name: 'Ecuador',              group: 'H', players: 18, colors: ['#FFD100','#003DA5','#FF0000'] },
+  { code: 'ESP', name: 'España',               group: 'H', players: 18, colors: ['#AA151B','#F1BF00','#AA151B'] },
+  { code: 'URU', name: 'Uruguay',              group: 'H', players: 18, colors: ['#5CB8E4','#FFFFFF','#5CB8E4'] },
+  { code: 'KSA', name: 'Arabia Saudita',       group: 'H', players: 18, colors: ['#006C35','#FFFFFF','#006C35'] },
+  { code: 'CPV', name: 'Cabo Verde',           group: 'H', players: 18, colors: ['#003893','#FFFFFF','#CF2027'] },
   // ── Grupo I ──────────────────────────────────────────
   { code: 'FRA', name: 'Francia',              group: 'I', players: 18, colors: ['#002395','#FFFFFF','#ED2939'] },
   { code: 'SEN', name: 'Senegal',              group: 'I', players: 18, colors: ['#00853F','#FDEF42','#E31B23'] },
@@ -106,7 +107,7 @@ export const TEAMS: Array<{
   { code: 'COL', name: 'Colombia',             group: 'K', players: 18, colors: ['#FCD116','#003087','#CE1126'] },
   { code: 'POR', name: 'Portugal',             group: 'K', players: 18, colors: ['#006600','#FFFFFF','#FF0000'] },
   { code: 'UZB', name: 'Uzbekistán',           group: 'K', players: 18, colors: ['#1EB53A','#FFFFFF','#CE1126'] },
-  { code: 'COD', name: 'RD Congo',             group: 'K', players: 18, colors: ['#007FFF','#F7D618','#CE1126'] },
+  { code: 'COD', name: 'RD del Congo',         group: 'K', players: 18, colors: ['#007FFF','#F7D618','#CE1126'] },
   // ── Grupo L ──────────────────────────────────────────
   { code: 'ENG', name: 'Inglaterra',           group: 'L', players: 18, colors: ['#FFFFFF','#CF091D','#FFFFFF'] },
   { code: 'CRO', name: 'Croacia',              group: 'L', players: 18, colors: ['#FF0000','#FFFFFF','#0000FF'] },
@@ -117,28 +118,28 @@ export const TEAMS: Array<{
 const FIRST_NAMES = ['Carlos','Luis','Juan','Diego','Andrés','Miguel','Jorge','Roberto','Fernando','Sergio','Raúl','Javier','Eduardo','Marco','Alexis','Gabriel','Héctor','Daniel','Pablo','Mateo'];
 const LAST_NAMES  = ['García','Martínez','López','Hernández','González','Rodríguez','Pérez','Sánchez','Torres','Ramírez','Flores','Cruz','Morales','Reyes','Jiménez','Ortega','Silva','Castro','Vargas','Mendoza'];
 
-// 20 estampas especiales FIFA (FW00–FW19)
+// 20 estampas especiales FIFA (FW00 + FW01–FW19)
 const FIFA_SPECIALS = [
-  'Logo FIFA World Cup 2026',
-  'Mascota Oficial',
-  'Trofeo FIFA',
-  'Estadio Rose Bowl',
-  'Estadio Azteca',
-  'Estadio MetLife',
-  'Estadio AT&T',
-  'Estadio BC Place',
-  'All-Star XI',
-  'Top Goleadores',
-  'Mejores Porteros',
-  'Mejores Defensas',
-  'Capitanes del Mundo',
-  'Golden Boot',
-  'Golden Glove',
-  'Golden Ball',
-  'Fair Play Award',
-  'Campeones Históricos',
-  'Leyendas del Fútbol',
-  'Momentos Icónicos',
+  'Logo FIFA World Cup 2026',    // FW00
+  'Portada Oficial',             // FW01
+  'Trofeo FIFA',                 // FW02
+  'Portada Grupos',              // FW03
+  'Portada Estadios',            // FW04
+  'Estadio Rose Bowl',           // FW05
+  'Estadio Azteca',              // FW06
+  'Estadio MetLife',             // FW07
+  'Estadio AT&T',                // FW08
+  'Estadio BC Place',            // FW09
+  'All-Star XI',                 // FW10
+  'Top Goleadores',              // FW11
+  'Mejores Porteros',            // FW12
+  'Capitanes del Mundo',         // FW13
+  'Golden Boot',                 // FW14
+  'Golden Glove',                // FW15
+  'Golden Ball',                 // FW16
+  'Fair Play Award',             // FW17
+  'Campeones Históricos',        // FW18
+  'Historia del Torneo',         // FW19
 ];
 
 export function generateAlbum(seed: number): Sticker[] {
@@ -147,31 +148,28 @@ export function generateAlbum(seed: number): Sticker[] {
   const stickers: Sticker[] = [];
   let id = 1;
 
-  // 20 estampas especiales FIFA (FW00–FW19)
+  // 20 especiales FIFA (FW00–FW19)
   FIFA_SPECIALS.forEach((name, i) => {
     stickers.push({
       id: id++, type: 'special', team: null,
-      label: `FW${String(i).padStart(2, '0')}`,
+      label: i === 0 ? 'FW00' : `FW${String(i).padStart(2, '0')}`,
       name, state: 'missing', count: 0,
     });
   });
 
-  // 48 selecciones × 20 estampas = 960
+  // 48 selecciones × 20 = 960
   // Cada selección: 1 escudo + 1 foto grupal + 18 jugadores
   TEAMS.forEach((team, ti) => {
-    // Escudo
     stickers.push({
       id: id++, type: 'shield', team: team.code, teamNum: ti + 1,
       label: team.code, name: team.name, state: 'missing', count: 0,
     });
-    // Foto grupal
     stickers.push({
       id: id++, type: 'special', team: team.code, teamNum: ti + 1,
       label: `${team.code}-GRP`,
       name: `${team.name} · Foto grupal`,
       state: 'missing', count: 0,
     });
-    // 18 jugadores
     for (let p = 0; p < team.players; p++) {
       stickers.push({
         id: id++, type: 'player', team: team.code, teamNum: ti + 1,
@@ -182,7 +180,7 @@ export function generateAlbum(seed: number): Sticker[] {
     }
   });
 
-  // Total: 20 FIFA specials + 48 × (1 escudo + 1 foto + 18 jugadores) = 20 + 960 = 980 ✓
+  // 20 + 48×20 = 980 ✓
   return stickers;
 }
 
@@ -223,7 +221,7 @@ export const ALBUMS: Album[] = [
     id: 'mundial26', name: 'Mundial 2026',
     subtitle: '48 selecciones · 12 grupos · 980 estampas',
     cover: '#0E5B3A', accent: '#E89B2F', active: true,
-    baseCount: 980, cocaColaCount: 14,
+    baseCount: 980, cocaColaCount: 12,
   },
   {
     id: 'champ24', name: 'Champions 24/25',
