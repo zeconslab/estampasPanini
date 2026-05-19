@@ -141,7 +141,7 @@ export interface Album {
 }
 
 export const ALBUMS: Album[] = [
-  { id: 'mundial26',  name: 'Mundial 2026',         subtitle: 'Edición México · 638 estampas base',  cover: '#0E5B3A', accent: '#E89B2F', active: true,  baseCount: 638, cocaColaCount: 16 },
+  { id: 'mundial26',  name: 'Mundial 2026',         subtitle: 'Edición México · 980 estampas base',  cover: '#0E5B3A', accent: '#E89B2F', active: true,  baseCount: 980, cocaColaCount: 14 },
   { id: 'champ24',   name: 'Champions 24/25',       subtitle: '32 clubes · 590 estampas',            cover: '#1B2D63', accent: '#67B7E8', active: false, baseCount: 590 },
   { id: 'libert25',  name: 'Copa América Femenina', subtitle: '12 selecciones · 290 estampas',       cover: '#D7263D', accent: '#F2E8D0', active: false, baseCount: 290 },
 ];
