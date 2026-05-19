@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1 },
 
   hero: {
-    flex: 0.7,
+    flex: 0.8,
     backgroundColor: '#0E5B3A',
     overflow: 'hidden',
     justifyContent: 'flex-end',
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
   },
 
-  cta: { flex: 0.3, paddingHorizontal: 18, paddingTop: 20, justifyContent: 'flex-end' },
+  cta: { flex: 0.2, paddingHorizontal: 18, paddingTop: 16, justifyContent: 'flex-end' },
   btn: {
     width: '100%',
     padding: 16,
