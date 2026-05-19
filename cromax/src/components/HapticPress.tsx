@@ -8,7 +8,7 @@ interface Props extends PressableProps {
   haptic?: boolean;
 }
 
-export function HapticPress({ children, style, onPress, haptic = true, ...rest }: Props) {
+export function HapticPress({ children, style, onPress, onLongPress, haptic = true, ...rest }: Props) {
   const scale = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
@@ -21,9 +21,13 @@ export function HapticPress({ children, style, onPress, haptic = true, ...rest }
     if (haptic) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onPress?.(e);
   };
+  const handleLongPress = (e: Parameters<NonNullable<PressableProps['onLongPress']>>[0]) => {
+    if (haptic) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    onLongPress?.(e);
+  };
 
   return (
-    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handlePress} {...rest}>
+    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handlePress} onLongPress={handleLongPress} {...rest}>
       <Animated.View style={[style, { transform: [{ scale }] }]}>
         {children}
       </Animated.View>
