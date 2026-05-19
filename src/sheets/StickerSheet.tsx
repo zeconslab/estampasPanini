@@ -17,8 +17,8 @@ type Route = RouteProp<RootStackParamList, 'StickerModal'>;
 
 // ─── Mini card preview ───────────────────────────────────────────────────────
 
-const CARD_W = 60;
-const CARD_H = Math.round(CARD_W * 7 / 5); // 84
+const CARD_W = 44;
+const CARD_H = Math.round(CARD_W * 7 / 5); // 62
 
 function cardGradient(code: string | null): [string, string] {
   if (code === 'CC') return ['#E61A27', '#8B0000'];
@@ -79,10 +79,10 @@ const miniStyles = StyleSheet.create({
   },
   num: {
     position: 'absolute',
-    top: 3,
-    left: 4,
+    top: 2,
+    left: 3,
     fontFamily: fonts.mono,
-    fontSize: 7,
+    fontSize: 5.5,
     letterSpacing: -0.2,
     zIndex: 2,
   },
@@ -90,12 +90,12 @@ const miniStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
-    padding: 4,
-    marginTop: 14,
+    padding: 3,
+    marginTop: 10,
   },
   init: {
     fontFamily: fonts.display,
-    fontSize: 20,
+    fontSize: 14,
     color: 'rgba(255,255,255,0.92)',
     letterSpacing: -0.5,
   },
@@ -114,9 +114,9 @@ const miniStyles = StyleSheet.create({
   },
   footText: {
     fontFamily: fonts.headline,
-    fontSize: 8,
+    fontSize: 6,
     textTransform: 'uppercase',
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
   },
 });
 
@@ -275,12 +275,14 @@ function ActionTile({ active, color, label, sub, onPress }: {
       ]}
       onPress={onPress}
     >
-      <View style={tileStyles.dotRow}>
+      <View style={tileStyles.row}>
         <View style={[tileStyles.dot, { backgroundColor: color }]} />
-        {active && <IcCheck color="#fff" size={12} />}
+        <View style={tileStyles.texts}>
+          <Text style={[tileStyles.label, { color: active ? '#fff' : t.ink, fontFamily: fonts.headline }]} numberOfLines={1}>{label}</Text>
+          <Text style={[tileStyles.sub, { color: active ? 'rgba(255,255,255,0.65)' : t.ink3, fontFamily: fonts.body }]} numberOfLines={1}>{sub}</Text>
+        </View>
+        {active && <IcCheck color="#fff" size={11} />}
       </View>
-      <Text style={[tileStyles.label, { color: active ? '#fff' : t.ink, fontFamily: fonts.headline }]}>{label}</Text>
-      <Text style={[tileStyles.sub, { color: active ? 'rgba(255,255,255,0.65)' : t.ink3, fontFamily: fonts.body }]}>{sub}</Text>
     </HapticPress>
   );
 }
@@ -312,9 +314,10 @@ const styles = StyleSheet.create({
 });
 
 const tileStyles = StyleSheet.create({
-  tile:   { flex: 1, borderRadius: 16, padding: 14, borderWidth: 0.5 },
-  dotRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
-  dot:    { width: 10, height: 10, borderRadius: 5 },
-  label:  { fontSize: 14, marginBottom: 2 },
-  sub:    { fontSize: 10, lineHeight: 14 },
+  tile:   { flex: 1, borderRadius: 14, paddingVertical: 12, paddingHorizontal: 10, borderWidth: 0.5 },
+  row:    { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  dot:    { width: 8, height: 8, borderRadius: 4, flexShrink: 0 },
+  texts:  { flex: 1 },
+  label:  { fontSize: 13, marginBottom: 1 },
+  sub:    { fontSize: 10, lineHeight: 13 },
 });
