@@ -190,23 +190,8 @@ export function ProfileScreen() {
 
 const BMC_URL = 'https://buymeacoffee.com/raulweb';
 
-const TIP_OPTIONS: { value: number; emoji: string; label: string }[] = [
-  { value: 29,  emoji: '☕',      label: 'Cafecito' },
-  { value: 59,  emoji: '☕☕',    label: 'Doble' },
-  { value: 99,  emoji: '🥐',     label: 'Con pan' },
-  { value: 199, emoji: '🌼',     label: 'Generoso' },
-];
-
 function TipJar() {
   const t = useTheme();
-  const [open, setOpen] = React.useState(false);
-  const [amount, setAmount] = React.useState(59);
-  const [sent, setSent] = React.useState(false);
-
-  const handleSend = React.useCallback(async () => {
-    await Linking.openURL(BMC_URL);
-    setSent(true);
-  }, []);
 
   return (
     <View style={[tipStyles.card, { backgroundColor: t.goldSoft, borderColor: t.line }]}>
@@ -222,91 +207,31 @@ function TipJar() {
         </View>
       </View>
 
-      {!open && !sent && (
-        <HapticPress
-          style={[tipStyles.btn, { backgroundColor: t.primary }]}
-          onPress={() => setOpen(true)}
-        >
-          <Text style={[tipStyles.btnText, { color: t.pitch, fontFamily: fonts.headline }]}>
-            ❤️  Invítame un cafecito
-          </Text>
-        </HapticPress>
-      )}
-
-      {open && !sent && (
-        <>
-          <View style={tipStyles.amountRow}>
-            {TIP_OPTIONS.map(opt => {
-              const active = amount === opt.value;
-              return (
-                <HapticPress
-                  key={opt.value}
-                  style={[tipStyles.amountChip, {
-                    backgroundColor: active ? t.ink : t.card,
-                    borderColor: active ? t.ink : t.line,
-                  }]}
-                  onPress={() => setAmount(opt.value)}
-                >
-                  <Text style={[tipStyles.amountEmoji]}>{opt.emoji}</Text>
-                  <Text style={[tipStyles.amountNum, { color: active ? t.paper : t.ink, fontFamily: fonts.mono }]}>
-                    MX${opt.value}
-                  </Text>
-                  <Text style={[tipStyles.amountLabel, { color: active ? 'rgba(255,255,255,0.6)' : t.ink4, fontFamily: fonts.body }]}>
-                    {opt.label}
-                  </Text>
-                </HapticPress>
-              );
-            })}
-          </View>
-          <View style={tipStyles.actions}>
-            <HapticPress style={[tipStyles.cancelBtn, { backgroundColor: t.paper2 }]} onPress={() => setOpen(false)}>
-              <Text style={[tipStyles.cancelText, { color: t.ink, fontFamily: fonts.semibold }]}>Cancelar</Text>
-            </HapticPress>
-            <HapticPress style={[tipStyles.sendBtn, { backgroundColor: t.primary, flex: 1 }]} onPress={handleSend}>
-              <Text style={[tipStyles.sendText, { color: t.pitch, fontFamily: fonts.headline }]}>
-                Donar MX${amount} ☕
-              </Text>
-            </HapticPress>
-          </View>
-        </>
-      )}
-
-      {sent && (
-        <View style={{ alignItems: 'center', paddingVertical: 8 }}>
-          <Text style={{ fontSize: 28, marginBottom: 4 }}>🌼</Text>
-          <Text style={[tipStyles.title, { color: t.ink, fontFamily: fonts.headline }]}>¡Mil gracias!</Text>
-          <Text style={[tipStyles.sub, { color: t.ink3, fontFamily: fonts.body, textAlign: 'center' }]}>
-            Tu apoyo ayuda a que la app siga creciendo.
-          </Text>
-        </View>
-      )}
+      <HapticPress
+        style={[tipStyles.btn, { backgroundColor: t.primary }]}
+        onPress={() => Linking.openURL(BMC_URL)}
+      >
+        <Text style={[tipStyles.btnText, { color: t.pitch, fontFamily: fonts.headline }]}>
+          ❤️  Invítame un cafecito
+        </Text>
+      </HapticPress>
 
       <Text style={[tipStyles.disclaimer, { color: t.ink4, fontFamily: fonts.mono }]}>
-        Donación voluntaria en pesos mexicanos · Toda la app sigue gratis
+        Donación voluntaria · Toda la app sigue gratis
       </Text>
     </View>
   );
 }
 
 const tipStyles = StyleSheet.create({
-  card:        { borderRadius: 22, padding: 18, borderWidth: 0.5, overflow: 'hidden' },
-  header:      { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 12 },
-  iconBg:      { width: 36, height: 36, borderRadius: 11, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  title:       { fontSize: 17 },
-  sub:         { fontSize: 12, lineHeight: 17, marginTop: 2 },
-  btn:         { borderRadius: 16, paddingVertical: 14, alignItems: 'center', marginBottom: 6 },
-  btnText:     { fontSize: 15 },
-  amountRow:   { flexDirection: 'row', gap: 6, marginBottom: 10 },
-  amountChip:  { flex: 1, borderRadius: 14, borderWidth: 0.5, paddingVertical: 12, alignItems: 'center', gap: 3 },
-  amountEmoji: { fontSize: 16 },
-  amountNum:   { fontSize: 12 },
-  amountLabel: { fontSize: 9, marginTop: 1 },
-  actions:     { flexDirection: 'row', gap: 8, marginBottom: 6 },
-  cancelBtn:   { borderRadius: 14, paddingVertical: 13, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'center' },
-  cancelText:  { fontSize: 14 },
-  sendBtn:     { borderRadius: 14, paddingVertical: 13, alignItems: 'center', justifyContent: 'center' },
-  sendText:    { fontSize: 14 },
-  disclaimer:  { fontSize: 10, textAlign: 'center', marginTop: 8, letterSpacing: 0.2 },
+  card:       { borderRadius: 22, padding: 18, borderWidth: 0.5, overflow: 'hidden' },
+  header:     { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 12 },
+  iconBg:     { width: 36, height: 36, borderRadius: 11, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  title:      { fontSize: 17 },
+  sub:        { fontSize: 12, lineHeight: 17, marginTop: 2 },
+  btn:        { borderRadius: 16, paddingVertical: 14, alignItems: 'center', marginBottom: 6 },
+  btnText:    { fontSize: 15 },
+  disclaimer: { fontSize: 10, textAlign: 'center', marginTop: 4, letterSpacing: 0.2 },
 });
 
 const styles = StyleSheet.create({
