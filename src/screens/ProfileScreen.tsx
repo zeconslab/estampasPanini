@@ -31,15 +31,26 @@ export function ProfileScreen() {
   const handleResetOnboarding = useCallback(() => {
     Alert.alert(
       'Reiniciar álbum',
-      '¿Seguro? Esto borrará tu perfil y regresarás al inicio.',
+      '¿Seguro? Esto borrará todo tu progreso, amigos guardados y perfil. No se puede deshacer.',
       [
         { text: 'Cancelar', style: 'cancel' },
         {
-          text: 'Reiniciar',
+          text: 'Reiniciar todo',
           style: 'destructive',
-          onPress: () => {
-            AsyncStorage.removeItem('cromax.profile').catch(console.error);
-            useAlbumStore.setState({ profile: null });
+          onPress: async () => {
+            await AsyncStorage.multiRemove([
+              'cromax.stickers',
+              'cromax.friends',
+              'cromax.profile',
+              'cromax.dark',
+            ]);
+            useAlbumStore.setState({
+              stickers: [],
+              friends:  [],
+              profile:  null,
+              dark:     false,
+              hydrated: false,
+            });
           },
         },
       ],
