@@ -29,9 +29,10 @@ export interface AlbumStats {
 }
 
 export interface Profile {
-  albumId: string;
-  name: string;
-  age: string;
+  albumId:      string;
+  name:         string;
+  age:          string;
+  withCocaCola: boolean;
 }
 
 // Mulberry32 deterministic RNG
@@ -129,16 +130,18 @@ export function cycleQuick(sticker: Sticker): Sticker {
 }
 
 export interface Album {
-  id:       string;
-  name:     string;
-  subtitle: string;
-  cover:    string;
-  accent:   string;
-  active:   boolean;
+  id:            string;
+  name:          string;
+  subtitle:      string;
+  cover:         string;
+  accent:        string;
+  active:        boolean;
+  baseCount:     number;
+  cocaColaCount?: number;
 }
 
 export const ALBUMS: Album[] = [
-  { id: 'mundial26',  name: 'Mundial 2026',         subtitle: 'Edición México · 670 estampas', cover: '#0E5B3A', accent: '#E89B2F', active: true },
-  { id: 'champ24',   name: 'Champions 24/25',       subtitle: '32 clubes · 580 estampas',      cover: '#1B2D63', accent: '#67B7E8', active: false },
-  { id: 'libert25',  name: 'Copa América Femenina', subtitle: '12 selecciones · 270 estampas', cover: '#D7263D', accent: '#F2E8D0', active: false },
+  { id: 'mundial26',  name: 'Mundial 2026',         subtitle: 'Edición México · 638 estampas base',  cover: '#0E5B3A', accent: '#E89B2F', active: true,  baseCount: 638, cocaColaCount: 16 },
+  { id: 'champ24',   name: 'Champions 24/25',       subtitle: '32 clubes · 590 estampas',            cover: '#1B2D63', accent: '#67B7E8', active: false, baseCount: 590 },
+  { id: 'libert25',  name: 'Copa América Femenina', subtitle: '12 selecciones · 290 estampas',       cover: '#D7263D', accent: '#F2E8D0', active: false, baseCount: 290 },
 ];

@@ -16,10 +16,11 @@ const STEPS: Step[] = ['welcome', 'album', 'name', 'age', 'ready'];
 
 export function OnboardingFlow({ onComplete }: Props) {
   const setProfile = useAlbumStore(s => s.setProfile);
-  const [stepIdx, setStepIdx]     = useState(0);
-  const [albumId, setAlbumId]     = useState('mundial-2026');
-  const [name,    setName]        = useState('');
-  const [age,     setAge]         = useState('');
+  const [stepIdx,       setStepIdx]     = useState(0);
+  const [albumId,       setAlbumId]     = useState('mundial26');
+  const [withCocaCola,  setWithCocaCola]= useState(false);
+  const [name,          setName]        = useState('');
+  const [age,           setAge]         = useState('');
   const slideX = useRef(new Animated.Value(0)).current;
 
   const goNext = () => {
@@ -35,7 +36,7 @@ export function OnboardingFlow({ onComplete }: Props) {
   };
 
   const handleDone = () => {
-    setProfile({ albumId, name, age });
+    setProfile({ albumId, name, age, withCocaCola });
     onComplete();
   };
 
@@ -43,7 +44,7 @@ export function OnboardingFlow({ onComplete }: Props) {
     <View style={styles.container}>
       <Animated.View style={[styles.track, { transform: [{ translateX: slideX }] }]}>
         <View style={styles.page}><OnboardWelcome onNext={goNext} /></View>
-        <View style={styles.page}><OnboardAlbum onNext={id => { setAlbumId(id); goNext(); }} onBack={goBack} /></View>
+        <View style={styles.page}><OnboardAlbum onNext={(id, coke) => { setAlbumId(id); setWithCocaCola(coke); goNext(); }} onBack={goBack} /></View>
         <View style={styles.page}><OnboardName onNext={n => { setName(n); goNext(); }} onBack={goBack} /></View>
         <View style={styles.page}><OnboardAge onNext={a => { setAge(a); goNext(); }} onBack={goBack} /></View>
         <View style={styles.page}><OnboardReady name={name} onDone={handleDone} /></View>
