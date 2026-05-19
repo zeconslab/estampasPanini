@@ -226,7 +226,11 @@ export function HomeScreen() {
       {recent.length > 0 && (
         <>
           <SectionHeader title="Pegadas recientemente" />
-          <View style={styles.recentGrid}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.recentRow}
+          >
             {recent.map(s => (
               <StickerComponent
                 key={s.id}
@@ -235,7 +239,7 @@ export function HomeScreen() {
                 onPress={() => nav.navigate('StickerModal', { stickerId: s.id })}
               />
             ))}
-          </View>
+          </ScrollView>
         </>
       )}
       </ScrollView>
@@ -420,10 +424,9 @@ const styles = StyleSheet.create({
   barBg: { height: 6, borderRadius: 3, overflow: 'hidden' },
   barFill: { height: 6, borderRadius: 3 },
 
-  recentGrid: {
+  recentRow: {
     paddingHorizontal: GRID_PAD,
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: GRID_GAP,
   },
   fab: {
