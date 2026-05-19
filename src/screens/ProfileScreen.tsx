@@ -44,13 +44,8 @@ export function ProfileScreen() {
               'cromax.profile',
               'cromax.dark',
             ]);
-            useAlbumStore.setState({
-              stickers: [],
-              friends:  [],
-              profile:  null,
-              dark:     false,
-              hydrated: false,
-            });
+            // Re-hydrate with empty storage → generates fresh album, profile=null → App shows onboarding
+            await useAlbumStore.getState().hydrate();
           },
         },
       ],
