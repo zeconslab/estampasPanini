@@ -124,18 +124,22 @@ export function HomeScreen() {
 
           <View style={styles.heroActions}>
             <HapticPress
-              style={[styles.heroBtn, { backgroundColor: t.primary }]}
+              style={[styles.heroBtnPrimary]}
               onPress={() => nav.navigate('QuickAdd')}
             >
-              <Text style={[styles.heroBtnIcon, { color: t.pitch }]}>+</Text>
+              <View style={styles.heroBtnIconWrap}>
+                <IcPlus color={t.pitch} size={17} />
+              </View>
               <Text style={[styles.heroBtnText, { color: t.pitch }]}>Marcar nuevas</Text>
             </HapticPress>
             <HapticPress
-              style={[styles.heroBtn, { backgroundColor: 'rgba(255,255,255,0.18)' }]}
+              style={[styles.heroBtnGhost]}
               onPress={() => nav.navigate('ShareModal')}
             >
-              <Text style={[styles.heroBtnIcon, { color: 'rgba(255,255,255,0.9)' }]}>↑</Text>
-              <Text style={[styles.heroBtnText, { color: 'rgba(255,255,255,0.9)' }]}>Mis faltantes</Text>
+              <View style={styles.heroBtnIconWrap}>
+                <IcShare color="#fff" size={15} />
+              </View>
+              <Text style={[styles.heroBtnText, { color: '#fff' }]}>Mis faltantes</Text>
             </HapticPress>
           </View>
         </View>
@@ -326,17 +330,42 @@ const styles = StyleSheet.create({
   statLineDot: { width: 8, height: 8, borderRadius: 4, marginLeft: 4 },
 
   heroActions: { flexDirection: 'row', gap: 8 },
-  heroBtn: {
+  heroBtnPrimary: {
     flex: 1,
-    borderRadius: 26,
-    paddingVertical: 14,
+    borderRadius: 18,
+    paddingVertical: 15,
+    paddingHorizontal: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: 7,
+    backgroundColor: '#B5DA40',
+    shadowColor: '#B5DA40',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.55,
+    shadowRadius: 14,
+    elevation: 8,
   },
-  heroBtnIcon: { fontFamily: fonts.headline, fontSize: 17 },
-  heroBtnText: { fontFamily: fonts.headline, fontSize: 15, letterSpacing: -0.2 },
+  heroBtnGhost: {
+    flex: 1,
+    borderRadius: 18,
+    paddingVertical: 15,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.22)',
+  },
+  heroBtnIconWrap: {
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroBtnText: { fontFamily: fonts.headline, fontSize: 14, letterSpacing: -0.2 },
 
   eyebrowText: {
     fontFamily: fonts.mono,
