@@ -1,83 +1,57 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useTheme, fonts } from '../theme';
-import { HapticPress } from '../components/HapticPress';
-import { MxBunting } from '../components/MxBunting';
+import { useTheme, fonts }  from '../theme';
+import { HapticPress }      from '../components/HapticPress';
+import { OnboardingShell }  from './OnboardingShell';
+
+const STEPS = [
+  { n: '1', title: 'Marca lo que ya pegaste',   desc: 'Selecciona la sigla del país y toca cada estampa que ya tengas.', color: 'primary' as const },
+  { n: '2', title: 'Anota las repetidas',        desc: 'Toca otra vez una estampa que ya tienes para marcarla como repetida.', color: 'coral' as const },
+  { n: '3', title: 'Comparte tus faltantes',     desc: 'Genera un link único para enviar a tus amigos y armar intercambios físicos.', color: 'pitch' as const },
+];
 
 interface Props { name: string; onDone: () => void }
 
 export function OnboardReady({ name, onDone }: Props) {
   const t = useTheme();
+
   return (
-    <View style={[styles.screen, { backgroundColor: t.pitch }]}>
-      <View style={styles.buntingWrap}><MxBunting /></View>
+    <OnboardingShell step={3} total={4} eyebrow="Paso 4 · Listo" title={`¡Bienvenido,\n${name}!`}>
+      <Text style={[styles.sub, { color: t.ink3, fontFamily: fonts.body }]}>
+        Tu álbum está listo. Aquí van los siguientes pasos para empezar:
+      </Text>
 
-      <View style={styles.content}>
-        <Text style={styles.eyebrow}>¡Todo listo!</Text>
-        <Text style={styles.title}>Bienvenido,{'\n'}{name} 👋</Text>
-        <Text style={[styles.sub, { color: 'rgba(242,232,208,0.80)' }]}>
-          Ya puedes empezar a llenar{'\n'}tu álbum del Mundial 2026.
-        </Text>
+      <View style={styles.steps}>
+        {STEPS.map(s => (
+          <View key={s.n} style={styles.stepRow}>
+            <View style={[styles.bullet, {
+              backgroundColor: s.color === 'primary' ? t.primary : s.color === 'coral' ? t.coral : t.pitch,
+            }]}>
+              <Text style={[styles.bulletNum, { fontFamily: fonts.mono }]}>{s.n}</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.stepTitle, { color: t.ink, fontFamily: fonts.headline }]}>{s.title}</Text>
+              <Text style={[styles.stepDesc,  { color: t.ink3, fontFamily: fonts.body }]}>{s.desc}</Text>
+            </View>
+          </View>
+        ))}
       </View>
 
-      <View style={[styles.cta, { backgroundColor: t.paper }]}>
-        <HapticPress style={[styles.btn, { backgroundColor: t.primary }]} onPress={onDone}>
-          <Text style={[styles.btnText, { color: t.pitch }]}>Ver mi álbum</Text>
-        </HapticPress>
-      </View>
-    </View>
+      <HapticPress style={[styles.btn, { backgroundColor: t.pitch }]} onPress={onDone}>
+        <Text style={[styles.btnText, { color: '#fff', fontFamily: fonts.headline }]}>Ir a mi álbum →</Text>
+      </HapticPress>
+    </OnboardingShell>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  buntingWrap: {
-    position: 'absolute',
-    top: 80,
-    left: 26,
-    zIndex: 1,
-  },
-  content: {
-    flex: 1,
-    padding: 26,
-    paddingTop: 140,
-    justifyContent: 'flex-end',
-    paddingBottom: 32,
-  },
-  eyebrow: {
-    fontFamily: 'JetBrainsMono_700Bold',
-    fontSize: 10,
-    color: '#E89B2F',
-    textTransform: 'uppercase',
-    letterSpacing: 1.4,
-    marginBottom: 10,
-  },
-  title: {
-    fontFamily: fonts.display,
-    fontSize: 40,
-    color: '#fff',
-    letterSpacing: -1.2,
-    lineHeight: 42,
-    marginBottom: 14,
-  },
-  sub: {
-    fontFamily: fonts.body,
-    fontSize: 16,
-    lineHeight: 22,
-  },
-  cta: {
-    padding: 18,
-    paddingBottom: 30,
-  },
-  btn: {
-    width: '100%',
-    padding: 16,
-    borderRadius: 16,
-    alignItems: 'center',
-  },
-  btnText: {
-    fontFamily: fonts.headline,
-    fontSize: 16,
-    letterSpacing: -0.2,
-  },
+  sub:       { fontSize: 13, lineHeight: 19, marginTop: 8, marginBottom: 24 },
+  steps:     { gap: 14, marginBottom: 28 },
+  stepRow:   { flexDirection: 'row', alignItems: 'flex-start', gap: 14 },
+  bullet:    { width: 32, height: 32, borderRadius: 11, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  bulletNum: { fontSize: 14, color: '#fff' },
+  stepTitle: { fontSize: 15, marginBottom: 3 },
+  stepDesc:  { fontSize: 12, lineHeight: 17 },
+  btn:       { borderRadius: 16, paddingVertical: 16, alignItems: 'center' },
+  btnText:   { fontSize: 16 },
 });
