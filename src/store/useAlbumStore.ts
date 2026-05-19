@@ -41,11 +41,24 @@ export const useAlbumStore = create<AlbumStore>((set, get) => ({
       AsyncStorage.getItem(KEYS.dark),
     ]);
 
-    const stickers: Sticker[] = rawStickers
-      ? JSON.parse(rawStickers)
-      : generateAlbum(42);
+    const freshAlbum = generateAlbum(42);
+    let stickers: Sticker[];
 
-    if (!rawStickers) {
+    if (rawStickers) {
+      const cached: Sticker[] = JSON.parse(rawStickers);
+      // If sticker count changed (album was updated), regenerate preserving state where IDs match
+      if (cached.length !== freshAlbum.length) {
+        const stateById = new Map(cached.map(s => [s.id, { state: s.state, count: s.count }]));
+        stickers = freshAlbum.map(s => {
+          const saved = stateById.get(s.id);
+          return saved ? { ...s, ...saved } : s;
+        });
+        await AsyncStorage.setItem(KEYS.stickers, JSON.stringify(stickers));
+      } else {
+        stickers = cached;
+      }
+    } else {
+      stickers = freshAlbum;
       await AsyncStorage.setItem(KEYS.stickers, JSON.stringify(stickers));
     }
 
