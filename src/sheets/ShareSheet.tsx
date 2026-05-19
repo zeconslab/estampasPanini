@@ -1,8 +1,7 @@
 import React, { useMemo, useCallback, useState } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, Share, Linking, ToastAndroid, Platform, Alert,
+  View, Text, ScrollView, StyleSheet, Share, Linking, Platform,
 } from 'react-native';
-import * as Clipboard      from 'expo-clipboard';
 import QRCode              from 'react-native-qrcode-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation }   from '@react-navigation/native';
@@ -163,7 +162,7 @@ export function ShareSheet() {
   }, [shareText]);
 
   const handleCopy = useCallback(async () => {
-    await Clipboard.setStringAsync(shareText);
+    await Share.share({ message: shareText });
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, [shareText]);
