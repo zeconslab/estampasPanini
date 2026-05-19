@@ -65,17 +65,20 @@ function ChannelBtn({ icon, label, color, onPress }: { icon: string; label: stri
   return (
     <HapticPress style={[chanStyles.btn, { backgroundColor: t.card, borderColor: t.line }]} onPress={onPress}>
       <View style={[chanStyles.iconBg, { backgroundColor: color }]}>
-        <Text style={{ fontSize: 16 }}>{icon}</Text>
+        <Text style={chanStyles.icon}>{icon}</Text>
       </View>
-      <Text style={[chanStyles.label, { color: t.ink, fontFamily: fonts.semibold }]}>{label}</Text>
+      <Text style={[chanStyles.label, { color: t.ink, fontFamily: fonts.semibold }]} numberOfLines={1}>
+        {label}
+      </Text>
     </HapticPress>
   );
 }
 
 const chanStyles = StyleSheet.create({
-  btn:    { flex: 1, alignItems: 'center', gap: 6, padding: 12, borderRadius: 14, borderWidth: 0.5 },
-  iconBg: { width: 36, height: 36, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
-  label:  { fontSize: 11 },
+  btn:    { alignItems: 'center', gap: 7, paddingVertical: 12, paddingHorizontal: 6, borderRadius: 16, borderWidth: 0.5, width: 76 },
+  iconBg: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  icon:   { fontSize: 20 },
+  label:  { fontSize: 11, textAlign: 'center' },
 });
 
 // ─── Main sheet ──────────────────────────────────────────────────────────────
@@ -210,10 +213,10 @@ export function ShareSheet() {
 
         {/* Channel buttons */}
         <View style={styles.channelRow}>
-          <ChannelBtn icon="💬" label="WhatsApp"  color="#25D366"  onPress={handleWhatsApp} />
-          <ChannelBtn icon="✉️" label="Mensajes"  color={t.pitch2} onPress={handleMessages} />
-          <ChannelBtn icon="↑"  label="Compartir" color={t.ink}    onPress={handleShare} />
-          <ChannelBtn icon={copied ? "✓" : "📋"} label={copied ? "¡Copiado!" : "Copiar"} color={t.gold} onPress={handleCopy} />
+          <ChannelBtn icon="💬"                   label="WhatsApp"              color="#25D366"  onPress={handleWhatsApp} />
+          <ChannelBtn icon="✉️"                   label="Mensajes"              color={t.pitch2} onPress={handleMessages} />
+          <ChannelBtn icon="📤"                   label="Compartir"             color={t.ink}    onPress={handleShare} />
+          <ChannelBtn icon={copied ? "✅" : "📋"} label={copied ? "Copiado" : "Copiar"} color={t.gold} onPress={handleCopy} />
         </View>
 
         {/* Friend matches */}
@@ -360,7 +363,7 @@ const styles = StyleSheet.create({
   teamLabels: { flex: 1, fontSize: 10, lineHeight: 14 },
 
   // Channel row
-  channelRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, marginBottom: 4 },
+  channelRow: { flexDirection: 'row', justifyContent: 'space-evenly', paddingHorizontal: 8, marginBottom: 4 },
 
   // Flash tip
   flashTip:  { flexDirection: 'row', alignItems: 'flex-start', gap: 10, borderRadius: 14, padding: 12, margin: 16, marginTop: 8 },
