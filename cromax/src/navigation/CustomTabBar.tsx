@@ -3,12 +3,13 @@ import { View, Text, Pressable, Animated, StyleSheet, LayoutChangeEvent } from '
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fonts, useTheme } from '../theme';
+import { IcAlbum, IcGrid, IcSwap, IcUser } from '../components/Icons';
 
-const ICONS: Record<string, string> = {
-  Home:    '⬟',
-  Grid:    '▦',
-  Trade:   '⇄',
-  Profile: '◉',
+const ICON_COMPONENTS: Record<string, (color: string) => React.ReactNode> = {
+  Home:    (c) => <IcAlbum color={c} size={20} />,
+  Grid:    (c) => <IcGrid  color={c} size={20} />,
+  Trade:   (c) => <IcSwap  color={c} size={20} />,
+  Profile: (c) => <IcUser  color={c} size={20} />,
 };
 
 const TAB_LABELS: Record<string, string> = {
@@ -56,7 +57,6 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
           const focused = idx === state.index;
           const { options } = descriptors[route.key];
           const label = options.title ?? TAB_LABELS[route.name] ?? route.name;
-          const icon  = ICONS[route.name] ?? '●';
 
           return (
             <Pressable
@@ -65,7 +65,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
               onPress={() => { if (!focused) navigation.navigate(route.name); }}
               style={styles.tab}
             >
-              <Text style={[styles.icon,  { color: focused ? ACTIVE_COLOR : INACTIVE_COLOR }]}>{icon}</Text>
+              {ICON_COMPONENTS[route.name]?.(focused ? ACTIVE_COLOR : INACTIVE_COLOR)}
               <Text style={[styles.label, { color: focused ? ACTIVE_COLOR : INACTIVE_COLOR }]}>{label}</Text>
             </Pressable>
           );
@@ -105,6 +105,5 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     zIndex: 1,
   },
-  icon:  { fontSize: 18, marginBottom: 2 },
-  label: { fontFamily: fonts.semibold, fontSize: 10, letterSpacing: 0.1 },
+  label: { fontFamily: fonts.semibold, fontSize: 10, letterSpacing: 0.1, marginTop: 2 },
 });
