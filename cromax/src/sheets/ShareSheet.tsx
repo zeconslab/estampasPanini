@@ -57,6 +57,24 @@ function TeamMissingRow({
   );
 }
 
+function ChannelBtn({ icon, label, color, onPress }: { icon: string; label: string; color: string; onPress: () => void }) {
+  const t = useTheme();
+  return (
+    <HapticPress style={[chanStyles.btn, { backgroundColor: t.card, borderColor: t.line }]} onPress={onPress}>
+      <View style={[chanStyles.iconBg, { backgroundColor: color }]}>
+        <Text style={{ fontSize: 16 }}>{icon}</Text>
+      </View>
+      <Text style={[chanStyles.label, { color: t.ink, fontFamily: fonts.semibold }]}>{label}</Text>
+    </HapticPress>
+  );
+}
+
+const chanStyles = StyleSheet.create({
+  btn:    { flex: 1, alignItems: 'center', gap: 6, padding: 12, borderRadius: 14, borderWidth: 0.5 },
+  iconBg: { width: 36, height: 36, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
+  label:  { fontSize: 11 },
+});
+
 // ─── Main sheet ──────────────────────────────────────────────────────────────
 
 export function ShareSheet() {
@@ -157,6 +175,14 @@ export function ShareSheet() {
           </Text>
         </View>
 
+        {/* Channel buttons */}
+        <View style={styles.channelRow}>
+          <ChannelBtn icon="💬" label="WhatsApp"  color="#25D366" onPress={() => {}} />
+          <ChannelBtn icon="✉️" label="Mensajes"  color={t.pitch2} onPress={() => {}} />
+          <ChannelBtn icon="⬛" label="QR pleno"  color={t.ink}   onPress={() => {}} />
+          <ChannelBtn icon="📋" label="Copiar"    color={t.gold}  onPress={() => {}} />
+        </View>
+
         {/* Friend matches */}
         {friendMatches.length > 0 && (
           <>
@@ -228,6 +254,14 @@ export function ShareSheet() {
           </>
         )}
 
+        {/* Flash tip */}
+        <View style={[styles.flashTip, { backgroundColor: 'rgba(214,242,63,0.22)' }]}>
+          <Text style={{ fontSize: 16 }}>⚡</Text>
+          <Text style={[styles.flashText, { color: t.ink2, fontFamily: fonts.body }]}>
+            Cuando un amigo abra tu link, automáticamente te dirá cuáles de tus faltantes él tiene repetidas.
+          </Text>
+        </View>
+
         {/* Action buttons */}
         <View style={styles.btnGroup}>
           <HapticPress
@@ -291,6 +325,13 @@ const styles = StyleSheet.create({
   teamName:   { fontSize: 10, marginTop: 1 },
   teamCount:  { fontSize: 15, width: 30, textAlign: 'right' },
   teamLabels: { flex: 1, fontSize: 10, lineHeight: 14 },
+
+  // Channel row
+  channelRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, marginBottom: 4 },
+
+  // Flash tip
+  flashTip:  { flexDirection: 'row', alignItems: 'flex-start', gap: 10, borderRadius: 14, padding: 12, margin: 16, marginTop: 8 },
+  flashText: { flex: 1, fontSize: 12, lineHeight: 17 },
 
   // Buttons
   btnGroup:         { margin: 16, marginTop: 20, gap: 10 },
