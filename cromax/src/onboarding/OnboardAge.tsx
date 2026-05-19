@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useTheme, fonts } from '../theme';
-import { HapticPress } from '../components/HapticPress';
-import { OnboardingShell } from './OnboardingShell';
+import { View, Text, StyleSheet } from 'react-native';
+import { useTheme, fonts }  from '../theme';
+import { HapticPress }      from '../components/HapticPress';
+import { OnboardingShell }  from './OnboardingShell';
+import { IcCheck }          from '../components/Icons';
 
-const AGE_RANGES = ['< 12', '12–17', '18–25', '26–35', '36–45', '46+'];
+const BUCKETS = [
+  { id: 'kid',   label: 'Menos de 12',  sub: 'Versión simple, ayuda de un adulto sugerida' },
+  { id: 'teen',  label: '12 a 17',       sub: 'Comparte con compañeros del cole' },
+  { id: 'adult', label: '18 a 35',       sub: 'La experiencia completa' },
+  { id: 'pro',   label: '36 o más',      sub: 'Coleccionista experto, todos los álbumes' },
+];
 
 interface Props {
   onNext: (age: string) => void;
@@ -16,80 +22,62 @@ export function OnboardAge({ onNext, onBack }: Props) {
   const [selected, setSelected] = useState('');
 
   return (
-    <OnboardingShell
-      step={3}
-      total={4}
-      onBack={onBack}
-      eyebrow="Paso 3 · Edad"
-      title="¿Cuántos años tienes?"
-    >
-      <Text style={[styles.subtitle, { color: t.ink3 }]}>
-        Nos ayuda a mejorar la app para todos los coleccionistas.
+    <OnboardingShell step={3} total={4} onBack={onBack} eyebrow="Paso 3 · Edad" title="¿Tu rango de edad?">
+      <Text style={[styles.sub, { color: t.ink3, fontFamily: fonts.body }]}>
+        Nos ayuda a ajustar la experiencia. No compartimos tus datos.
       </Text>
 
-      <View style={styles.grid}>
-        {AGE_RANGES.map(range => (
-          <TouchableOpacity
-            key={range}
-            activeOpacity={0.85}
-            onPress={() => setSelected(range)}
-            style={[
-              styles.chip,
-              {
-                backgroundColor: selected === range ? t.pitch : t.card,
-                borderColor: selected === range ? t.pitch : t.line,
-              },
-            ]}
-          >
-            <Text style={[styles.chipText, { color: selected === range ? '#EFE7D2' : t.ink }]}>
-              {range}
-            </Text>
-          </TouchableOpacity>
-        ))}
+      <View style={styles.list}>
+        {BUCKETS.map(b => {
+          const sel = selected === b.id;
+          return (
+            <HapticPress
+              key={b.id}
+              style={[
+                styles.row,
+                {
+                  backgroundColor: sel ? t.pitch : t.card,
+                  borderColor: sel ? 'transparent' : t.line,
+                },
+              ]}
+              onPress={() => setSelected(b.id)}
+            >
+              <View style={styles.rowText}>
+                <Text style={[styles.rowLabel, { color: sel ? '#fff' : t.ink, fontFamily: fonts.headline }]}>{b.label}</Text>
+                <Text style={[styles.rowSub, { color: sel ? 'rgba(255,255,255,0.7)' : t.ink4, fontFamily: fonts.body }]}>{b.sub}</Text>
+              </View>
+              <View style={[
+                styles.radio,
+                {
+                  backgroundColor: sel ? '#fff' : 'transparent',
+                  borderColor: sel ? 'transparent' : t.line2,
+                },
+              ]}>
+                {sel && <IcCheck color={t.pitch} size={12} />}
+              </View>
+            </HapticPress>
+          );
+        })}
       </View>
 
       <HapticPress
-        style={[
-          styles.btn,
-          { backgroundColor: selected ? t.pitch : t.paper2, opacity: selected ? 1 : 0.4 },
-        ]}
+        style={[styles.btn, { backgroundColor: selected ? t.pitch : t.paper2, opacity: selected ? 1 : 0.4 }]}
         onPress={() => selected && onNext(selected)}
       >
-        <Text style={[styles.btnText, { color: selected ? '#fff' : t.ink4 }]}>Continuar</Text>
+        <Text style={[styles.btnText, { color: selected ? '#fff' : t.ink4, fontFamily: fonts.headline }]}>Continuar</Text>
       </HapticPress>
     </OnboardingShell>
   );
 }
 
 const styles = StyleSheet.create({
-  subtitle: {
-    fontSize: 13,
-    fontFamily: fonts.body,
-    lineHeight: 19,
-    marginBottom: 20,
-    marginTop: 8,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 28,
-  },
-  chip: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 32,
-    borderWidth: 1,
-  },
-  chipText: {
-    fontFamily: fonts.semibold,
-    fontSize: 16,
-    letterSpacing: -0.2,
-  },
-  btn: {
-    borderRadius: 16,
-    padding: 15,
-    alignItems: 'center',
-  },
-  btnText: { fontFamily: fonts.headline, fontSize: 15, letterSpacing: -0.1 },
+  sub:      { fontSize: 13, lineHeight: 19, marginTop: 8, marginBottom: 18 },
+  list:     { gap: 8, marginBottom: 20 },
+  row:      { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 16, padding: 14, borderWidth: 0.5 },
+  rowText:  { flex: 1 },
+  rowLabel: { fontSize: 15 },
+  rowSub:   { fontSize: 11, marginTop: 2, lineHeight: 15 },
+  radio:    { width: 22, height: 22, borderRadius: 11, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  btn:      { borderRadius: 16, paddingVertical: 15, alignItems: 'center', marginTop: 4 },
+  btnText:  { fontSize: 15 },
 });
