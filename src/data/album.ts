@@ -118,20 +118,22 @@ export const TEAMS: Array<{
 const FIRST_NAMES = ['Carlos','Luis','Juan','Diego','Andrés','Miguel','Jorge','Roberto','Fernando','Sergio','Raúl','Javier','Eduardo','Marco','Alexis','Gabriel','Héctor','Daniel','Pablo','Mateo'];
 const LAST_NAMES  = ['García','Martínez','López','Hernández','González','Rodríguez','Pérez','Sánchez','Torres','Ramírez','Flores','Cruz','Morales','Reyes','Jiménez','Ortega','Silva','Castro','Vargas','Mendoza'];
 
-// 12 estampas exclusivas Coca-Cola × Panini (CC01–CC12)
+// 14 estampas Colección Coca-Cola oficial (CC1–CC14)
 const CC_STICKERS = [
-  'Destapa la Pasión',            // CC01
-  'México en el Mundial',         // CC02
-  'Unidad FIFA 2026',             // CC03
-  'Gol a Gol',                    // CC04
-  'La Chispa del Fútbol',         // CC05
-  'Celebración Mundial',          // CC06
-  'Momento Coca-Cola',            // CC07
-  'El Mundo Juega',               // CC08
-  'Sabor de Victoria',            // CC09
-  'Hinchada con Pasión',          // CC10
-  'Tu Lugar en la Cancha',        // CC11
-  'Colección Exclusiva 2026',     // CC12
+  'Lamine Yamal',       // CC1
+  'Joshua Kimmich',     // CC2
+  'Harry Kane',         // CC3
+  'Santiago Giménez',   // CC4
+  'Joško Gvardiol',     // CC5
+  'Federico Valverde',  // CC6
+  'Jeferson Lerma',     // CC7
+  'Enner Valencia',     // CC8
+  'Gabriel Magalhães',  // CC9
+  'Virgil van Dijk',    // CC10
+  'Alphonso Davies',    // CC11
+  'Emiliano Martínez',  // CC12
+  'Raúl Jiménez',       // CC13
+  'Lautaro Martínez',   // CC14
 ];
 
 // 20 estampas especiales FIFA (FW00 + FW01–FW19)
@@ -196,18 +198,18 @@ export function generateAlbum(seed: number, withCocaCola = false): Sticker[] {
     }
   });
 
-  // 12 estampas Coca-Cola (CC01–CC12) — solo si el usuario las activó
+  // 14 estampas Colección Coca-Cola (CC1–CC14) — solo si el usuario las activó
   if (withCocaCola) {
     CC_STICKERS.forEach((name, i) => {
       stickers.push({
-        id: id++, type: 'special', team: 'CC',
-        label: `CC${String(i + 1).padStart(2, '0')}`,
+        id: id++, type: 'player', team: 'CC',
+        label: `CC${i + 1}`,
         name, state: 'missing', count: 0,
       });
     });
   }
 
-  // Base: 980  |  Con Coca-Cola: 992 ✓
+  // Base: 980  |  Con Coca-Cola: 994 ✓
   return stickers;
 }
 
@@ -248,7 +250,7 @@ export const ALBUMS: Album[] = [
     id: 'mundial26', name: 'Mundial 2026',
     subtitle: '48 selecciones · 12 grupos · 980 estampas',
     cover: '#0E5B3A', accent: '#E89B2F', active: true,
-    baseCount: 980, cocaColaCount: 12,
+    baseCount: 980, cocaColaCount: 14,
   },
   {
     id: 'champ24', name: 'Champions 24/25',
