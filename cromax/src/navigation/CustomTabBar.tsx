@@ -6,10 +6,10 @@ import { fonts, useTheme } from '../theme';
 import { IcAlbum, IcGrid, IcSwap, IcUser } from '../components/Icons';
 
 const ICON_COMPONENTS: Record<string, (color: string) => React.ReactNode> = {
-  Home:    (c) => <IcAlbum color={c} size={20} />,
-  Grid:    (c) => <IcGrid  color={c} size={20} />,
-  Trade:   (c) => <IcSwap  color={c} size={20} />,
-  Profile: (c) => <IcUser  color={c} size={20} />,
+  Home:    (c) => <IcAlbum color={c} size={22} />,
+  Grid:    (c) => <IcGrid  color={c} size={22} />,
+  Trade:   (c) => <IcSwap  color={c} size={22} />,
+  Profile: (c) => <IcUser  color={c} size={22} />,
 };
 
 const TAB_LABELS: Record<string, string> = {
@@ -34,8 +34,8 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
   const movePill = (idx: number) => {
     const tab = tabRefs.current[idx];
     if (!tab) return;
-    Animated.spring(pillX, { toValue: tab.x + 4,       useNativeDriver: false, tension: 120, friction: 8 }).start();
-    Animated.spring(pillW, { toValue: tab.width - 8,   useNativeDriver: false, tension: 120, friction: 8 }).start();
+    Animated.spring(pillX, { toValue: tab.x + 5,       useNativeDriver: false, tension: 120, friction: 8 }).start();
+    Animated.spring(pillW, { toValue: tab.width - 10,  useNativeDriver: false, tension: 120, friction: 8 }).start();
   };
 
   const handleLayout = (e: LayoutChangeEvent, idx: number) => {
@@ -86,11 +86,9 @@ const styles = StyleSheet.create({
   },
   bar: {
     flexDirection: 'row',
-    borderRadius: 28,
-    paddingTop: 8,
-    paddingBottom: 8,
+    borderRadius: 32,
+    paddingVertical: 10,
     position: 'relative',
-    // Shadow
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.28,
@@ -100,14 +98,16 @@ const styles = StyleSheet.create({
   pill: {
     position: 'absolute',
     top: 6,
-    height: 44,
-    borderRadius: 22,
+    bottom: 6,
+    borderRadius: 26,
   },
   tab: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 6,
+    justifyContent: 'center',
+    paddingVertical: 8,
+    gap: 3,
     zIndex: 1,
   },
-  label: { fontFamily: fonts.semibold, fontSize: 10, letterSpacing: 0.1, marginTop: 2 },
+  label: { fontFamily: fonts.semibold, fontSize: 10, letterSpacing: 0.2 },
 });
