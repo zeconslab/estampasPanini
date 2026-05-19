@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -131,6 +131,15 @@ export function StickerSheet() {
   const { stickers, updateSticker } = useAlbumStore();
   const sticker = stickers.find(s => s.id === stickerId);
 
+  const backdropOpacity = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(backdropOpacity, {
+      toValue: 1,
+      duration: 220,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   if (!sticker) return null;
 
   const team = sticker.team && sticker.team !== 'CC'
@@ -155,7 +164,9 @@ export function StickerSheet() {
 
   return (
     <View style={styles.overlay}>
-      <Pressable style={[StyleSheet.absoluteFill, styles.backdrop]} onPress={() => nav.goBack()} />
+      <Animated.View style={[StyleSheet.absoluteFill, { opacity: backdropOpacity }]}>
+        <Pressable style={[StyleSheet.absoluteFill, styles.backdrop]} onPress={() => nav.goBack()} />
+      </Animated.View>
       <View style={[styles.sheet, { backgroundColor: t.paper, paddingBottom: insets.bottom + 16 }]}>
       <View style={[styles.handle, { backgroundColor: t.line2 }]} />
 
