@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "Cromax",
+    "slug": "cromax",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0E5B3A"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.cromaxapp.cromax",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Para escanear el QR de tus amigos y ver sus faltantes."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0E5B3A"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.cromaxapp.cromax",
+      "permissions": ["android.permission.CAMERA"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        { "cameraPermission": "Para escanear el QR de tus amigos y ver sus faltantes." }
+      ]
+    ]
+  }
+}
