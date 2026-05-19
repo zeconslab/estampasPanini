@@ -117,14 +117,25 @@ export function ProfileScreen() {
           {ALBUMS.map(album => {
             const pct = album.active ? stats.pct : 0;
             return (
-              <View key={album.id} style={[styles.albumCard, { backgroundColor: t.card, borderColor: t.line }]}>
-                <View style={[styles.albumCover, { backgroundColor: album.cover }]}>
-                  <View style={[styles.albumCoverAccent, { backgroundColor: album.accent }]} />
-                  <Text style={styles.albumCoverName}>{album.name.toUpperCase()}</Text>
+              <View
+                key={album.id}
+                style={[
+                  styles.albumCard,
+                  { backgroundColor: t.card, borderColor: t.line },
+                  !album.active && { opacity: 0.45 },
+                ]}
+              >
+                <View style={[styles.albumCover, { backgroundColor: album.active ? album.cover : t.paper3 }]}>
+                  {album.active && <View style={[styles.albumCoverAccent, { backgroundColor: album.accent }]} />}
+                  <Text style={[styles.albumCoverName, !album.active && { color: t.ink4 }]}>
+                    {album.name.toUpperCase()}
+                  </Text>
                 </View>
                 <View style={styles.albumInfo}>
                   <View style={styles.albumTitleRow}>
-                    <Text style={[styles.albumTitle, { color: t.ink, fontFamily: fonts.semibold }]}>{album.name}</Text>
+                    <Text style={[styles.albumTitle, { color: album.active ? t.ink : t.ink3, fontFamily: fonts.semibold }]}>
+                      {album.name}
+                    </Text>
                     {album.active
                       ? <View style={[styles.activeBadge, { backgroundColor: t.lime }]}>
                           <Text style={[styles.activeBadgeText, { color: t.pitch }]}>Activo</Text>
@@ -134,9 +145,9 @@ export function ProfileScreen() {
                         </View>
                     }
                   </View>
-                  <Text style={[styles.albumSubtitle, { color: t.ink3, fontFamily: fonts.mono }]}>{album.subtitle}</Text>
+                  <Text style={[styles.albumSubtitle, { color: t.ink4, fontFamily: fonts.mono }]}>{album.subtitle}</Text>
                   <View style={[styles.progressTrack, { backgroundColor: t.line }]}>
-                    <View style={[styles.progressFill, { backgroundColor: t.lime, width: `${pct}%` as any }]} />
+                    {album.active && <View style={[styles.progressFill, { backgroundColor: t.lime, width: `${pct}%` as any }]} />}
                   </View>
                 </View>
               </View>
