@@ -60,6 +60,10 @@ export function QuickAddSheet() {
     setLocal(prev => prev.map(s => s.id === sticker.id ? cycleQuick(s) : s));
   }, []);
 
+  const handleLongPress = useCallback((sticker: Sticker) => {
+    setLocal(prev => prev.map(s => s.id === sticker.id ? { ...s, state: 'missing', count: 0 } : s));
+  }, []);
+
   const localRef = useRef(local);
   useEffect(() => { localRef.current = local; }, [local]);
   const handleDone = useCallback(() => {
@@ -69,9 +73,9 @@ export function QuickAddSheet() {
 
   const renderItem = useCallback(
     ({ item }: { item: Sticker }) => (
-      <StickerComponent sticker={item} size={CELL} onPress={handlePress} />
+      <StickerComponent sticker={item} size={CELL} onPress={handlePress} onLongPress={handleLongPress} />
     ),
-    [CELL, handlePress],
+    [CELL, handlePress, handleLongPress],
   );
 
   const listContentStyle = useMemo(
@@ -117,24 +121,24 @@ export function QuickAddSheet() {
 
         {TEAMS.map(team => {
           const active = selectedTeam === team.code;
+          const teamStickers = local.filter(s => s.team === team.code);
+          const ownedCount   = teamStickers.filter(s => s.state !== 'missing').length;
           return (
             <TouchableOpacity
               key={team.code}
               style={[styles.chip, {
-                backgroundColor: active ? t.primary : t.paper2,
-                borderColor: t.line,
+                backgroundColor: active ? t.ink : t.card,
+                borderColor: active ? t.ink : t.line,
               }]}
               onPress={() => setSelectedTeam(active ? null : team.code)}
             >
-              <Flag colors={team.colors} width={18} height={12} />
-              <View style={styles.chipText}>
-                <Text style={[styles.chipCode, { color: active ? t.pitch : t.ink, fontFamily: fonts.semibold }]}>
-                  {team.code}
-                </Text>
-                <Text style={[styles.chipName, { color: active ? t.pitch : t.ink4, fontFamily: fonts.mono }]}>
-                  {team.name}
-                </Text>
-              </View>
+              <Flag colors={team.colors} width={20} height={14} />
+              <Text style={[styles.chipCode, { color: active ? '#fff' : t.ink, fontFamily: fonts.semibold }]}>
+                {team.code}
+              </Text>
+              <Text style={[styles.chipCount, { color: active ? 'rgba(255,255,255,0.55)' : t.ink4, fontFamily: fonts.mono }]}>
+                {ownedCount}/{teamStickers.length}
+              </Text>
             </TouchableOpacity>
           );
         })}
@@ -188,9 +192,8 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     borderWidth: 0.5,
   },
-  chipText:   { flexDirection: 'column' },
-  chipCode:   { fontSize: 11 },
-  chipName:   { fontSize: 9, marginTop: 1 },
+  chipCode:   { fontSize: 12 },
+  chipCount:  { fontSize: 9, marginTop: 1 },
   footer:     { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 16 },
   counter:    { fontSize: 11, textAlign: 'center', marginBottom: 8, letterSpacing: 0.2 },
   doneBtn:    { borderRadius: 24, paddingVertical: 14, alignItems: 'center' },
