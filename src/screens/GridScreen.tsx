@@ -109,6 +109,8 @@ export function GridScreen() {
   const [filter, setFilter] = useState<Filter>('all');
   const [scrolled, setScrolled] = React.useState(false);
 
+  const chipW = Math.floor((width - PAD * 2 - 6 * (FILTERS.length - 1)) / FILTERS.length);
+
   // Pre-filter counts (before search, just for chip badges — exact state match)
   const chipCounts = useMemo<Record<Filter, number>>(() => ({
     all:       filterCount(stickers, 'all'),
@@ -182,7 +184,7 @@ export function GridScreen() {
           return (
             <HapticPress
               key={f.key}
-              style={[styles.chip, { backgroundColor: active ? t.pitch : t.card, borderColor: active ? 'transparent' : t.line }]}
+              style={[styles.chip, { width: chipW, backgroundColor: active ? t.pitch : t.card, borderColor: active ? 'transparent' : t.line }]}
               onPress={() => setFilter(f.key)}
             >
               <Text style={[styles.chipLabel, { color: active ? '#fff' : t.ink2 }]} numberOfLines={1} adjustsFontSizeToFit>
@@ -250,16 +252,15 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontFamily: fonts.body,
   },
-  filters:   { flexDirection: 'row', gap: 6, marginBottom: 4 },
+  filters:   { flexDirection: 'row', gap: 6 },
   chip:      {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 10,
     borderRadius: 12,
     borderWidth: 0.5,
   },
-  chipLabel: { fontFamily: fonts.semibold, fontSize: 12, letterSpacing: -0.2, textAlign: 'center', minWidth: 0 },
+  chipLabel: { fontFamily: fonts.semibold, fontSize: 12, letterSpacing: -0.2, textAlign: 'center' },
   chipCount: { fontFamily: fonts.mono, fontSize: 10, textAlign: 'center', marginTop: 1 },
 
   // Section
