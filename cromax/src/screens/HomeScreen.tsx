@@ -238,7 +238,7 @@ export function HomeScreen() {
 
       {/* FAB */}
       <HapticPress
-        style={[styles.fab, { backgroundColor: t.primary, bottom: (tabBarHeight ?? 80) + 16 }]}
+        style={[styles.fab, { backgroundColor: t.primary, bottom: (tabBarHeight ?? 80) + 32 }]}
         onPress={() => nav.navigate('QuickAdd' as any)}
       >
         <IcPlus color={t.pitch} size={22} />
