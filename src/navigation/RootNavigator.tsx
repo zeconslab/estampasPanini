@@ -24,7 +24,11 @@ export function RootNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'modal' }}>
         <Stack.Screen name="Main"         component={MainTabs}          options={{ presentation: 'card' }} />
-        <Stack.Screen name="StickerModal" component={StickerSheet} />
+        <Stack.Screen
+          name="StickerModal"
+          component={StickerSheet}
+          options={{ presentation: 'transparentModal', cardStyle: { backgroundColor: 'transparent' } }}
+        />
         <Stack.Screen name="ShareModal"   component={ShareSheet} />
         <Stack.Screen name="ScanModal"    component={ScanSheet} />
         <Stack.Screen name="QuickAdd"     component={QuickAddSheet} />

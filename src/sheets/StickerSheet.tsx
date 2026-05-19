@@ -154,7 +154,9 @@ export function StickerSheet() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: t.paper, paddingBottom: insets.bottom + 16 }]}>
+    <View style={styles.overlay}>
+      <HapticPress style={styles.backdrop} onPress={() => nav.goBack()}><View /></HapticPress>
+      <View style={[styles.sheet, { backgroundColor: t.paper, paddingBottom: insets.bottom + 16 }]}>
       <View style={[styles.handle, { backgroundColor: t.line2 }]} />
 
       <View style={styles.topRow}>
@@ -259,6 +261,7 @@ export function StickerSheet() {
         <IcSwap color={t.ink} size={16} />
         <Text style={[styles.ghostBtnText, { color: t.ink, fontFamily: fonts.headline }]}>Buscar entre amigos</Text>
       </HapticPress>
+      </View>
     </View>
   );
 }
@@ -288,7 +291,9 @@ function ActionTile({ active, color, label, sub, onPress }: {
 }
 
 const styles = StyleSheet.create({
-  container:    { flex: 1, padding: 18 },
+  overlay:      { flex: 1, justifyContent: 'flex-end' },
+  backdrop:     { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.4)' },
+  sheet:        { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 18, paddingTop: 10 },
   handle:       { width: 36, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 16 },
   topRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 },
   eyebrow:      { fontFamily: 'JetBrainsMono_700Bold', fontSize: 10, textTransform: 'uppercase', letterSpacing: 1.2 },
