@@ -1,14 +1,15 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, fonts } from '../theme';
 import { HapticPress } from '../components/HapticPress';
 import { MxBunting } from '../components/MxBunting';
 
 const { width: W } = Dimensions.get('window');
-const CARD_W = 130;
+const CARD_W = 140;
 const CARD_H = Math.round(CARD_W * 7 / 5);
-const SMALL_W = 72;
+const SMALL_W = 78;
 const SMALL_H = Math.round(SMALL_W * 7 / 5);
 
 interface Props { onNext: () => void }
@@ -18,7 +19,7 @@ export function OnboardWelcome({ onNext }: Props) {
   const insets = useSafeAreaInsets();
   return (
     <View style={styles.screen}>
-      {/* Green hero panel */}
+      {/* Green hero panel — fills all remaining space */}
       <View style={styles.hero}>
         <View style={styles.buntingWrap}><MxBunting /></View>
 
@@ -26,10 +27,14 @@ export function OnboardWelcome({ onNext }: Props) {
         <View style={[styles.stickerMain, { left: W / 2 - CARD_W / 2 }]}>
           <View style={styles.stickerCard}>
             <Text style={styles.stickerNum}>MEX 01</Text>
-            <View style={styles.stickerArt}>
-              <View style={styles.stickerMexGrad} />
+            <LinearGradient
+              colors={['#006847', '#FFFFFF', '#CE1126']}
+              start={{ x: 0.2, y: 0 }}
+              end={{ x: 0.8, y: 1 }}
+              style={styles.stickerArt}
+            >
               <Text style={styles.stickerInit}>OCH</Text>
-            </View>
+            </LinearGradient>
             <View style={styles.stickerFoot}>
               <Text style={styles.stickerFootText}>MEX</Text>
             </View>
@@ -39,7 +44,12 @@ export function OnboardWelcome({ onNext }: Props) {
         {/* Secondary sticker — Argentina, left */}
         <View style={styles.stickerLeft}>
           <View style={styles.stickerSmall}>
-            <View style={[styles.stickerSmallArt, { backgroundColor: '#75AADB' }]} />
+            <LinearGradient
+              colors={['#75AADB', '#FFFFFF', '#75AADB']}
+              start={{ x: 0.2, y: 0 }}
+              end={{ x: 0.8, y: 1 }}
+              style={styles.stickerSmallArt}
+            />
             <View style={styles.stickerSmallFoot}><Text style={styles.stickerSmallFootText}>ARG</Text></View>
           </View>
         </View>
@@ -47,7 +57,12 @@ export function OnboardWelcome({ onNext }: Props) {
         {/* Secondary sticker — Brazil, right */}
         <View style={styles.stickerRight}>
           <View style={styles.stickerSmall}>
-            <View style={[styles.stickerSmallArt, { backgroundColor: '#009C3B' }]} />
+            <LinearGradient
+              colors={['#FEDF00', '#009C3B', '#002776']}
+              start={{ x: 0.2, y: 0 }}
+              end={{ x: 0.8, y: 1 }}
+              style={styles.stickerSmallArt}
+            />
             <View style={styles.stickerSmallFoot}><Text style={styles.stickerSmallFootText}>BRA</Text></View>
           </View>
         </View>
@@ -57,13 +72,13 @@ export function OnboardWelcome({ onNext }: Props) {
           <Text style={styles.eyebrow}>Edición México</Text>
           <Text style={styles.display}>Estampas{'\n'}Mundial 2026</Text>
           <Text style={styles.bodyText}>
-            Lleva el control de tu álbum físico, marca las repetidas y cambia con tus amigos.
+            Lleva el control de tu álbum físico, marca las repetidas y cambia con tus amigos sin abrir un sobre extra.
           </Text>
         </View>
       </View>
 
-      {/* CTA panel */}
-      <View style={[styles.cta, { backgroundColor: t.paper, paddingBottom: insets.bottom + 24 }]}>
+      {/* CTA panel — natural height, anchored to bottom */}
+      <View style={[styles.cta, { backgroundColor: t.paper, paddingBottom: Math.max(insets.bottom, 16) }]}>
         <HapticPress style={[styles.btn, { backgroundColor: t.pitch }]} onPress={onNext}>
           <Text style={[styles.btnText, { color: t.paper }]}>Empezar mi álbum</Text>
         </HapticPress>
@@ -79,11 +94,11 @@ const styles = StyleSheet.create({
   screen: { flex: 1 },
 
   hero: {
-    flex: 0.8,
+    flex: 1,
     backgroundColor: '#0E5B3A',
     overflow: 'hidden',
     justifyContent: 'flex-end',
-    padding: 26,
+    paddingHorizontal: 26,
     paddingTop: 90,
     paddingBottom: 32,
   },
@@ -95,7 +110,7 @@ const styles = StyleSheet.create({
 
   stickerMain: {
     position: 'absolute',
-    top: 110,
+    top: 120,
     width: CARD_W,
     height: CARD_H,
     transform: [{ rotate: '-6deg' }],
@@ -127,19 +142,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     paddingBottom: 10,
-    position: 'relative',
-  },
-  stickerMexGrad: {
-    position: 'absolute',
-    top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: '#006847',
   },
   stickerInit: {
     fontFamily: fonts.display,
-    fontSize: 28,
+    fontSize: 30,
     color: 'rgba(255,255,255,0.95)',
     letterSpacing: -1.2,
-    zIndex: 1,
+    textShadowColor: 'rgba(0,0,0,0.2)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   stickerFoot: {
     height: 18,
@@ -157,8 +168,8 @@ const styles = StyleSheet.create({
 
   stickerLeft: {
     position: 'absolute',
-    top: 178,
-    left: 18,
+    top: 180,
+    left: 24,
     transform: [{ rotate: '-14deg' }],
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
@@ -169,8 +180,8 @@ const styles = StyleSheet.create({
   },
   stickerRight: {
     position: 'absolute',
-    top: 198,
-    right: 14,
+    top: 200,
+    right: 20,
     transform: [{ rotate: '12deg' }],
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
@@ -216,22 +227,23 @@ const styles = StyleSheet.create({
     color: '#fff',
     letterSpacing: -1.5,
     lineHeight: 46,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   bodyText: {
     fontSize: 14,
     color: 'rgba(242,232,208,0.85)',
     lineHeight: 20,
     fontFamily: fonts.body,
+    maxWidth: 300,
   },
 
-  cta: { flex: 0.2, paddingHorizontal: 18, paddingTop: 16, justifyContent: 'flex-end' },
+  cta: { paddingHorizontal: 22, paddingTop: 20 },
   btn: {
     width: '100%',
     padding: 16,
     borderRadius: 16,
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 10,
   },
   btnText: {
     fontFamily: fonts.headline,
