@@ -182,16 +182,10 @@ export function GridScreen() {
           return (
             <HapticPress
               key={f.key}
-              style={[
-                styles.chip,
-                {
-                  backgroundColor: active ? t.pitch : t.card,
-                  borderColor: active ? 'transparent' : t.line,
-                },
-              ]}
+              style={[styles.chip, { backgroundColor: active ? t.pitch : t.card, borderColor: active ? 'transparent' : t.line }]}
               onPress={() => setFilter(f.key)}
             >
-              <Text style={[styles.chipLabel, { color: active ? '#fff' : t.ink }]} numberOfLines={1}>
+              <Text style={[styles.chipLabel, { color: active ? '#fff' : t.ink2 }]} numberOfLines={1} adjustsFontSizeToFit>
                 {f.label}
               </Text>
               <Text style={[styles.chipCount, { color: active ? 'rgba(255,255,255,0.6)' : t.ink4 }]}>
@@ -256,7 +250,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontFamily: fonts.body,
   },
-  filters:   { flexDirection: 'row', gap: 6 },
+  filters:   { flexDirection: 'row', gap: 6, marginBottom: 4 },
   chip:      {
     flex: 1,
     alignItems: 'center',
@@ -264,10 +258,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 12,
     borderWidth: 0.5,
-    gap: 2,
   },
-  chipLabel: { fontFamily: fonts.semibold, fontSize: 12, letterSpacing: -0.3, textAlign: 'center' },
-  chipCount: { fontFamily: fonts.mono, fontSize: 11, textAlign: 'center' },
+  chipLabel: { fontFamily: fonts.semibold, fontSize: 12, letterSpacing: -0.2, textAlign: 'center', minWidth: 0 },
+  chipCount: { fontFamily: fonts.mono, fontSize: 10, textAlign: 'center', marginTop: 1 },
 
   // Section
   sectionHeader: {
