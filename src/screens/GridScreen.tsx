@@ -191,14 +191,12 @@ export function GridScreen() {
               ]}
               onPress={() => setFilter(f.key)}
             >
-              <Text style={[styles.chipLabel, { color: active ? '#fff' : t.ink }]}>
+              <Text style={[styles.chipLabel, { color: active ? '#fff' : t.ink }]} numberOfLines={1}>
                 {f.label}
               </Text>
-              <View style={[styles.chipBadge, { backgroundColor: active ? 'rgba(255,255,255,0.18)' : t.paper2 }]}>
-                <Text style={[styles.chipCount, { color: active ? 'rgba(255,255,255,0.85)' : t.ink4 }]}>
-                  {chipCounts[f.key]}
-                </Text>
-              </View>
+              <Text style={[styles.chipCount, { color: active ? 'rgba(255,255,255,0.6)' : t.ink4 }]}>
+                {chipCounts[f.key]}
+              </Text>
             </HapticPress>
           );
         })}
@@ -258,21 +256,18 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontFamily: fonts.body,
   },
-  filters:    { flexDirection: 'row', gap: 6 },
-  chip:       {
+  filters:   { flexDirection: 'row', gap: 6 },
+  chip:      {
     flex: 1,
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 5,
     paddingVertical: 10,
-    paddingHorizontal: 6,
     borderRadius: 12,
     borderWidth: 0.5,
+    gap: 2,
   },
-  chipLabel:  { fontFamily: fonts.semibold, fontSize: 12, letterSpacing: -0.2 },
-  chipBadge:  { borderRadius: 6, paddingHorizontal: 5, paddingVertical: 2 },
-  chipCount:  { fontFamily: fonts.mono, fontSize: 10 },
+  chipLabel: { fontFamily: fonts.semibold, fontSize: 12, letterSpacing: -0.3, textAlign: 'center' },
+  chipCount: { fontFamily: fonts.mono, fontSize: 11, textAlign: 'center' },
 
   // Section
   sectionHeader: {
