@@ -136,28 +136,28 @@ const CC_STICKERS = [
   'Lautaro Martínez',   // CC14
 ];
 
-// 20 estampas especiales FIFA (FW00 + FW01–FW19)
-const FIFA_SPECIALS = [
-  'Logo FIFA World Cup 2026',    // FW00
-  'Portada Oficial',             // FW01
-  'Trofeo FIFA',                 // FW02
-  'Portada Grupos',              // FW03
-  'Portada Estadios',            // FW04
-  'Estadio Rose Bowl',           // FW05
-  'Estadio Azteca',              // FW06
-  'Estadio MetLife',             // FW07
-  'Estadio AT&T',                // FW08
-  'Estadio BC Place',            // FW09
-  'All-Star XI',                 // FW10
-  'Top Goleadores',              // FW11
-  'Mejores Porteros',            // FW12
-  'Capitanes del Mundo',         // FW13
-  'Golden Boot',                 // FW14
-  'Golden Glove',                // FW15
-  'Golden Ball',                 // FW16
-  'Fair Play Award',             // FW17
-  'Campeones Históricos',        // FW18
-  'Historia del Torneo',         // FW19
+// 19 estampas FWC — sección FIFA World Cup
+// FWC1–8: Intro / oficiales (foil)  |  FWC9–19: Historia / FIFA Museum
+const FWC_STICKERS: { name: string; label: string }[] = [
+  { label: 'FWC1',  name: 'Official Emblem 1' },
+  { label: 'FWC2',  name: 'Official Emblem 2' },
+  { label: 'FWC3',  name: 'Official Mascots' },
+  { label: 'FWC4',  name: 'Official Slogan' },
+  { label: 'FWC5',  name: 'Official Ball' },
+  { label: 'FWC6',  name: 'Canadá sede' },
+  { label: 'FWC7',  name: 'México sede' },
+  { label: 'FWC8',  name: 'USA sede' },
+  { label: 'FWC9',  name: 'Italia 1934' },
+  { label: 'FWC10', name: 'Uruguay 1950' },
+  { label: 'FWC11', name: 'Alemania Occidental 1954' },
+  { label: 'FWC12', name: 'Brasil 1962' },
+  { label: 'FWC13', name: 'Alemania Occidental 1974' },
+  { label: 'FWC14', name: 'Argentina 1986' },
+  { label: 'FWC15', name: 'Brasil 1994' },
+  { label: 'FWC16', name: 'Brasil 2002' },
+  { label: 'FWC17', name: 'Italia 2006' },
+  { label: 'FWC18', name: 'Alemania 2014' },
+  { label: 'FWC19', name: 'Argentina 2022' },
 ];
 
 export function generateAlbum(seed: number, withCocaCola = false): Sticker[] {
@@ -166,12 +166,11 @@ export function generateAlbum(seed: number, withCocaCola = false): Sticker[] {
   const stickers: Sticker[] = [];
   let id = 1;
 
-  // 20 especiales FIFA (FW00–FW19)
-  FIFA_SPECIALS.forEach((name, i) => {
+  // 19 estampas FWC (FWC1–FWC19)
+  FWC_STICKERS.forEach(({ label, name }) => {
     stickers.push({
       id: id++, type: 'special', team: null,
-      label: i === 0 ? 'FW00' : `FW${String(i).padStart(2, '0')}`,
-      name, state: 'missing', count: 0,
+      label, name, state: 'missing', count: 0,
     });
   });
 
@@ -209,7 +208,7 @@ export function generateAlbum(seed: number, withCocaCola = false): Sticker[] {
     });
   }
 
-  // Base: 980  |  Con Coca-Cola: 994 ✓
+  // Base: 979  |  Con Coca-Cola: 993 ✓
   return stickers;
 }
 
@@ -248,9 +247,9 @@ export interface Album {
 export const ALBUMS: Album[] = [
   {
     id: 'mundial26', name: 'Mundial 2026',
-    subtitle: '48 selecciones · 12 grupos · 980 estampas',
+    subtitle: '48 selecciones · 12 grupos · 979 estampas',
     cover: '#0E5B3A', accent: '#E89B2F', active: true,
-    baseCount: 980, cocaColaCount: 14,
+    baseCount: 979, cocaColaCount: 14,
   },
   {
     id: 'champ24', name: 'Champions 24/25',
