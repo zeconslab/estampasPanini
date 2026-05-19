@@ -202,7 +202,7 @@ function TipJar() {
         <View style={{ flex: 1 }}>
           <Text style={[tipStyles.title, { color: t.ink, fontFamily: fonts.headline }]}>¿Te late la app?</Text>
           <Text style={[tipStyles.sub, { color: t.ink3, fontFamily: fonts.body }]}>
-            Estampas es <Text style={{ fontFamily: fonts.semibold, color: t.ink2 }}>100% gratis</Text> · si quieres, invítame un cafecito
+            Cromax es <Text style={{ fontFamily: fonts.semibold, color: t.ink2 }}>100% gratis</Text> · si quieres, invítame un cafecito
           </Text>
         </View>
       </View>
