@@ -17,8 +17,8 @@ type Route = RouteProp<RootStackParamList, 'StickerModal'>;
 
 // ─── Mini card preview ───────────────────────────────────────────────────────
 
-const CARD_W = 28;
-const CARD_H = Math.round(CARD_W * 7 / 5); // 39
+const CARD_W = 64;
+const CARD_H = Math.round(CARD_W * 7 / 5); // 90
 
 function cardGradient(code: string | null): [string, string] {
   if (code === 'CC') return ['#E61A27', '#8B0000'];
@@ -79,10 +79,10 @@ const miniStyles = StyleSheet.create({
   },
   num: {
     position: 'absolute',
-    top: 1,
-    left: 2,
+    top: 3,
+    left: 4,
     fontFamily: fonts.mono,
-    fontSize: 4,
+    fontSize: 7,
     letterSpacing: -0.2,
     zIndex: 2,
   },
@@ -90,12 +90,12 @@ const miniStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
-    padding: 2,
-    marginTop: 8,
+    padding: 4,
+    marginTop: 14,
   },
   init: {
     fontFamily: fonts.display,
-    fontSize: 9,
+    fontSize: 18,
     color: 'rgba(255,255,255,0.92)',
     letterSpacing: -0.5,
   },
@@ -114,9 +114,9 @@ const miniStyles = StyleSheet.create({
   },
   footText: {
     fontFamily: fonts.headline,
-    fontSize: 4,
+    fontSize: 7,
     textTransform: 'uppercase',
-    letterSpacing: 0.1,
+    letterSpacing: 0.3,
   },
 });
 
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
 
 const tileStyles = StyleSheet.create({
   wrap:   { flex: 1 },
-  tile:   { flex: 1, borderRadius: 14, padding: 12, borderWidth: 0.5 },
+  tile:   { borderRadius: 14, padding: 12, borderWidth: 0.5 },
   dotRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 7 },
   dot:    { width: 9, height: 9, borderRadius: 5 },
   label:  { fontSize: 13, marginBottom: 2 },
