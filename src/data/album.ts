@@ -166,6 +166,12 @@ export function generateAlbum(seed: number, withCocaCola = false): Sticker[] {
   const stickers: Sticker[] = [];
   let id = 1;
 
+  // Estampa 00 — Panini (la primera que se pega)
+  stickers.push({
+    id: id++, type: 'special', team: null,
+    label: '00', name: 'Panini', state: 'missing', count: 0,
+  });
+
   // 19 estampas FWC (FWC1–FWC19)
   FWC_STICKERS.forEach(({ label, name }) => {
     stickers.push({
@@ -208,7 +214,7 @@ export function generateAlbum(seed: number, withCocaCola = false): Sticker[] {
     });
   }
 
-  // Base: 979  |  Con Coca-Cola: 993 ✓
+  // 00 + FWC1–19 + 48×20 = 980  |  Con Coca-Cola: 994 ✓
   return stickers;
 }
 
@@ -247,9 +253,9 @@ export interface Album {
 export const ALBUMS: Album[] = [
   {
     id: 'mundial26', name: 'Mundial 2026',
-    subtitle: '48 selecciones · 12 grupos · 979 estampas',
+    subtitle: '48 selecciones · 12 grupos · 980 estampas',
     cover: '#0E5B3A', accent: '#E89B2F', active: true,
-    baseCount: 979, cocaColaCount: 14,
+    baseCount: 980, cocaColaCount: 14,
   },
   {
     id: 'champ24', name: 'Champions 24/25',
