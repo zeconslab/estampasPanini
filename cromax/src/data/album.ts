@@ -108,17 +108,37 @@ export function generateAlbum(seed: number): Sticker[] {
 }
 
 export function computeStats(stickers: Sticker[]): AlbumStats {
-  const total = stickers.length;
-  const owned   = stickers.filter(s => s.state === 'owned').length;
+  const total   = stickers.length;
+  const owned   = stickers.filter(s => s.state !== 'missing').length;
   const missing = stickers.filter(s => s.state === 'missing').length;
-  const dupes   = stickers.filter(s => s.state === 'duplicate').reduce((acc, s) => acc + s.count, 0);
-  const pct     = total > 0 ? (owned / total) * 100 : 0;
+  const dupes   = stickers
+    .filter(s => s.state === 'duplicate')
+    .reduce((acc, s) => acc + (s.count || 1), 0);
+  const pct = total > 0 ? (owned / total) * 100 : 0;
   return { total, owned, missing, dupes, pct };
 }
 
 export function cycleQuick(sticker: Sticker): Sticker {
   if (sticker.state === 'missing')   return { ...sticker, state: 'owned',     count: 0 };
   if (sticker.state === 'owned')     return { ...sticker, state: 'duplicate', count: 1 };
-  // duplicate → missing
-  return { ...sticker, state: 'missing', count: 0 };
+  if (sticker.state === 'duplicate') {
+    if (sticker.count >= 4) return { ...sticker, state: 'missing', count: 0 };
+    return { ...sticker, count: sticker.count + 1 };
+  }
+  return sticker;
 }
+
+export interface Album {
+  id:       string;
+  name:     string;
+  subtitle: string;
+  cover:    string;
+  accent:   string;
+  active:   boolean;
+}
+
+export const ALBUMS: Album[] = [
+  { id: 'mundial26',  name: 'Mundial 2026',         subtitle: 'Edición México · 670 estampas', cover: '#0E5B3A', accent: '#E89B2F', active: true },
+  { id: 'champ24',   name: 'Champions 24/25',       subtitle: '32 clubes · 580 estampas',      cover: '#1B2D63', accent: '#67B7E8', active: false },
+  { id: 'libert25',  name: 'Copa América Femenina', subtitle: '12 selecciones · 270 estampas', cover: '#D7263D', accent: '#F2E8D0', active: false },
+];
