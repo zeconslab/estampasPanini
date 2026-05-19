@@ -33,19 +33,25 @@ export function OnboardingShell({ step, total, onBack, eyebrow, title, children 
           )}
         </View>
 
-        <View style={styles.dots}>
-          {Array.from({ length: total }).map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.dot,
-                { backgroundColor: i < step ? t.pitch2 : t.line },
-                i === step && styles.dotActive,
-                i === step && { backgroundColor: t.primary },
-                i < step && styles.dotDone,
-              ]}
-            />
-          ))}
+        {/* Pill dots */}
+        <View style={styles.dotsContainer}>
+          <View style={dotStyles.row}>
+            {Array.from({ length: total }).map((_, i) => {
+              const isActive = i === step;
+              const isDone   = i < step;
+              return (
+                <View
+                  key={i}
+                  style={[
+                    dotStyles.dot,
+                    { backgroundColor: isDone || isActive ? t.pitch : t.line2 },
+                    isActive && dotStyles.dotActive,
+                    isDone   && { opacity: 0.55 },
+                  ]}
+                />
+              );
+            })}
+          </View>
         </View>
 
         <View style={styles.navSide} />
@@ -95,25 +101,11 @@ const styles = StyleSheet.create({
     lineHeight: 32,
     marginTop: -2,
   },
-  dots: {
+  dotsContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  dotActive: {
-    width: 22,
-    backgroundColor: '#0E5B3A',
-    borderRadius: 3,
-  },
-  dotDone: {
-    opacity: 0.55,
   },
   header: {
     paddingHorizontal: 22,
@@ -139,4 +131,10 @@ const styles = StyleSheet.create({
     paddingTop: 18,
     paddingBottom: 32,
   },
+});
+
+const dotStyles = StyleSheet.create({
+  row:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  dot:       { width: 6, height: 6, borderRadius: 3 },
+  dotActive: { width: 22 },
 });
