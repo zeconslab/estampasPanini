@@ -57,16 +57,16 @@ export const TEAMS: Array<{
   { code: 'KOR', name: 'Corea del Sur',        group: 'A', players: 18, colors: ['#FFFFFF','#C60C30','#003478'] },
   { code: 'RSA', name: 'Sudáfrica',            group: 'A', players: 18, colors: ['#007A4D','#FFB612','#001489'] },
   { code: 'CZE', name: 'Chequia',              group: 'A', players: 18, colors: ['#D7141A','#FFFFFF','#11457E'] },
-  // ── Grupo B ──────────────────────────────────────────
-  { code: 'NZL', name: 'Nueva Zelanda',        group: 'B', players: 18, colors: ['#00247D','#CC142B','#00247D'] },
+  // ── Grupo B ── confirmado en álbum oficial ────────────
+  { code: 'CAN', name: 'Canadá',               group: 'B', players: 18, colors: ['#FF0000','#FFFFFF','#FF0000'] },
   { code: 'QAT', name: 'Catar',                group: 'B', players: 18, colors: ['#8D1B3D','#FFFFFF','#8D1B3D'] },
   { code: 'SUI', name: 'Suiza',                group: 'B', players: 18, colors: ['#FF0000','#FFFFFF','#FF0000'] },
   { code: 'BIH', name: 'Bosnia y Herz.',       group: 'B', players: 18, colors: ['#002395','#FECB00','#FFFFFF'] },
-  // ── Grupo C ── confirmado en álbum oficial ────────────
+  // ── Grupo C ──────────────────────────────────────────
   { code: 'BRA', name: 'Brasil',               group: 'C', players: 18, colors: ['#FEDF00','#009C3B','#002776'] },
   { code: 'URU', name: 'Uruguay',              group: 'C', players: 18, colors: ['#5CB8E4','#FFFFFF','#5CB8E4'] },
   { code: 'POL', name: 'Polonia',              group: 'C', players: 18, colors: ['#FFFFFF','#DC143C','#FFFFFF'] },
-  { code: 'CAN', name: 'Canadá',               group: 'C', players: 18, colors: ['#FF0000','#FFFFFF','#FF0000'] },
+  { code: 'NZL', name: 'Nueva Zelanda',        group: 'C', players: 18, colors: ['#00247D','#CC142B','#00247D'] },
   // ── Grupo D ──────────────────────────────────────────
   { code: 'USA', name: 'EUA',                  group: 'D', players: 18, colors: ['#B22234','#FFFFFF','#3C3B6E'] },
   { code: 'JPN', name: 'Japón',                group: 'D', players: 18, colors: ['#FFFFFF','#BC002D','#FFFFFF'] },
