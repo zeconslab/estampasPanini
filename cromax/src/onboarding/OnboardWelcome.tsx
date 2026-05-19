@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, fonts } from '../theme';
 import { HapticPress } from '../components/HapticPress';
 import { MxBunting } from '../components/MxBunting';
@@ -14,6 +15,7 @@ interface Props { onNext: () => void }
 
 export function OnboardWelcome({ onNext }: Props) {
   const t = useTheme();
+  const insets = useSafeAreaInsets();
   return (
     <View style={styles.screen}>
       {/* Green hero panel */}
@@ -61,7 +63,7 @@ export function OnboardWelcome({ onNext }: Props) {
       </View>
 
       {/* CTA panel */}
-      <View style={[styles.cta, { backgroundColor: t.paper }]}>
+      <View style={[styles.cta, { backgroundColor: t.paper, paddingBottom: insets.bottom + 24 }]}>
         <HapticPress style={[styles.btn, { backgroundColor: t.pitch }]} onPress={onNext}>
           <Text style={[styles.btnText, { color: t.paper }]}>Empezar mi álbum</Text>
         </HapticPress>
@@ -223,7 +225,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
   },
 
-  cta: { flex: 0.3, padding: 18, paddingTop: 20, paddingBottom: 30, justifyContent: 'center' },
+  cta: { flex: 0.3, paddingHorizontal: 18, paddingTop: 20, justifyContent: 'flex-end' },
   btn: {
     width: '100%',
     padding: 16,
