@@ -128,8 +128,8 @@ export function StickerSheet() {
   const nav     = useNavigation();
   const route   = useRoute<Route>();
   const { stickerId } = route.params;
-  const { stickers, updateSticker } = useAlbumStore();
-  const sticker = stickers.find(s => s.id === stickerId);
+  const sticker       = useAlbumStore(s => s.stickers.find(x => x.id === stickerId));
+  const updateSticker = useAlbumStore(s => s.updateSticker);
 
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   useEffect(() => {

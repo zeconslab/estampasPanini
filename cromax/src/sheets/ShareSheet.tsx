@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState, useRef, useEffect } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, Share, Linking, Platform,
 } from 'react-native';
@@ -88,8 +88,12 @@ export function ShareSheet() {
   const t       = useTheme();
   const insets  = useSafeAreaInsets();
   const nav     = useNavigation<Nav>();
-  const { stickers, profile, friends } = useAlbumStore();
+  const stickers = useAlbumStore(s => s.stickers);
+  const profile  = useAlbumStore(s => s.profile);
+  const friends  = useAlbumStore(s => s.friends);
   const [copied, setCopied] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (copyTimerRef.current) clearTimeout(copyTimerRef.current); }, []);
 
   const payload = useMemo(() => encodeQR(profile?.name ?? 'Amigo', stickers), [stickers, profile]);
 
@@ -159,7 +163,7 @@ export function ShareSheet() {
   const handleCopy = useCallback(async () => {
     await Share.share({ message: shareText });
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
   }, [shareText]);
 
   const handleShare = useCallback(() => {

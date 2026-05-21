@@ -2,6 +2,15 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Sticker, Friend, Profile, generateAlbum } from '../data/album';
 
+let _stickerWriteTimer: ReturnType<typeof setTimeout> | null = null;
+function scheduleStickersWrite(stickers: Sticker[]) {
+  if (_stickerWriteTimer) clearTimeout(_stickerWriteTimer);
+  _stickerWriteTimer = setTimeout(() => {
+    AsyncStorage.setItem('cromax.stickers', JSON.stringify(stickers));
+    _stickerWriteTimer = null;
+  }, 600);
+}
+
 const KEYS = {
   stickers: 'cromax.stickers',
   friends:  'cromax.friends',
@@ -84,7 +93,7 @@ export const useAlbumStore = create<AlbumStore>((set, get) => ({
       return next;
     });
     set({ stickers });
-    AsyncStorage.setItem(KEYS.stickers, JSON.stringify(stickers));
+    scheduleStickersWrite(stickers);
   },
 
   setStickers: (incoming) => {
@@ -97,7 +106,7 @@ export const useAlbumStore = create<AlbumStore>((set, get) => ({
       return s;
     });
     set({ stickers });
-    AsyncStorage.setItem(KEYS.stickers, JSON.stringify(stickers));
+    scheduleStickersWrite(stickers);
   },
 
   addFriend: (friend) => {
@@ -127,7 +136,7 @@ export const useAlbumStore = create<AlbumStore>((set, get) => ({
         return saved ? { ...s, ...saved } : s;
       });
       set({ stickers });
-      AsyncStorage.setItem(KEYS.stickers, JSON.stringify(stickers));
+      scheduleStickersWrite(stickers);
     }
   },
 

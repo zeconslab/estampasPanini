@@ -195,7 +195,7 @@ export function GridScreen() {
     </View>
   ), [CELL, nav]);
 
-  const ListHeader = (
+  const ListHeaderComponent = useCallback(() => (
     <View style={[styles.header, { backgroundColor: t.paper }]}>
       <TextInput
         value={query}
@@ -226,7 +226,7 @@ export function GridScreen() {
         })}
       </View>
     </View>
-  );
+  ), [t, query, filter, chipCounts, chipW, setQuery, setFilter]);
 
   return (
     <View style={[styles.container, { backgroundColor: t.paper }]}>
@@ -234,7 +234,7 @@ export function GridScreen() {
       <SectionList
         sections={sections}
         keyExtractor={(row, index) => `row-${index}-${row[0]?.id ?? index}`}
-        ListHeaderComponent={ListHeader}
+        ListHeaderComponent={ListHeaderComponent}
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Text style={[styles.emptyText, { color: t.ink3 }]}>Sin resultados.</Text>

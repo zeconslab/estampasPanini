@@ -20,7 +20,9 @@ export function QuickAddSheet() {
   const t       = useTheme();
   const insets  = useSafeAreaInsets();
   const nav     = useNavigation();
-  const { stickers, setStickers, profile } = useAlbumStore();
+  const stickers    = useAlbumStore(s => s.stickers);
+  const setStickers = useAlbumStore(s => s.setStickers);
+  const profile     = useAlbumStore(s => s.profile);
   const { width } = useWindowDimensions();
 
   const CELL = useMemo(
@@ -40,6 +42,18 @@ export function QuickAddSheet() {
     ).length,
     [local],
   );
+
+  const teamCounts = useMemo(() => {
+    const map = new Map<string, { owned: number; total: number }>();
+    for (const s of local) {
+      const key = s.team ?? '★';
+      const entry = map.get(key) ?? { owned: 0, total: 0 };
+      entry.total++;
+      if (s.state !== 'missing') entry.owned++;
+      map.set(key, entry);
+    }
+    return map;
+  }, [local]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -121,8 +135,7 @@ export function QuickAddSheet() {
 
         {TEAMS.map(team => {
           const active = selectedTeam === team.code;
-          const teamStickers = local.filter(s => s.team === team.code);
-          const ownedCount   = teamStickers.filter(s => s.state !== 'missing').length;
+          const counts = teamCounts.get(team.code) ?? { owned: 0, total: 0 };
           return (
             <TouchableOpacity
               key={team.code}
@@ -137,7 +150,7 @@ export function QuickAddSheet() {
                 {team.code}
               </Text>
               <Text style={[styles.chipCount, { color: active ? 'rgba(255,255,255,0.55)' : t.ink4, fontFamily: fonts.mono }]}>
-                {ownedCount}/{teamStickers.length}
+                {counts.owned}/{counts.total}
               </Text>
             </TouchableOpacity>
           );
@@ -145,8 +158,7 @@ export function QuickAddSheet() {
 
         {profile?.withCocaCola && (() => {
           const active = selectedTeam === 'CC';
-          const ccStickers = local.filter(s => s.team === 'CC');
-          const ownedCount = ccStickers.filter(s => s.state !== 'missing').length;
+          const counts = teamCounts.get('CC') ?? { owned: 0, total: 0 };
           return (
             <TouchableOpacity
               key="CC"
@@ -161,7 +173,7 @@ export function QuickAddSheet() {
                 CC
               </Text>
               <Text style={[styles.chipCount, { color: active ? 'rgba(255,255,255,0.55)' : t.ink4, fontFamily: fonts.mono }]}>
-                {ownedCount}/{ccStickers.length}
+                {counts.owned}/{counts.total}
               </Text>
             </TouchableOpacity>
           );
@@ -175,6 +187,11 @@ export function QuickAddSheet() {
         contentContainerStyle={listContentStyle}
         columnWrapperStyle={styles.colWrapper}
         renderItem={renderItem}
+        windowSize={5}
+        maxToRenderPerBatch={3}
+        initialNumToRender={10}
+        updateCellsBatchingPeriod={50}
+        removeClippedSubviews
       />
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 8, backgroundColor: t.paper }]}>

@@ -13,9 +13,11 @@ interface Props {
   onLongPress?: (sticker: StickerData) => void;
 }
 
+const TEAM_COLOR_MAP = new Map(
+  TEAMS.map(t => [t.code, [t.colors[0], t.colors[2] ?? t.colors[1]] as [string, string]])
+);
 function teamColors(code: string): [string, string] {
-  const team = TEAMS.find(t => t.code === code);
-  return team ? [team.colors[0], team.colors[2] ?? team.colors[1]] : ['#444', '#222'];
+  return TEAM_COLOR_MAP.get(code) ?? ['#444', '#222'];
 }
 
 function initials(name: string): string {
@@ -74,7 +76,7 @@ export const Sticker = React.memo(function Sticker({ sticker, size = 52, onPress
             style={[styles.art, { height: h - footH - Math.round(h * 0.15) }]}
           >
             <Text style={[styles.init, { fontSize: initSize }]}>{initials(sticker.name)}</Text>
-            <View style={styles.sheen} />
+            <View style={[styles.sheen, { left: -Math.round(w * 0.3), width: Math.round(w * 0.6) }]} />
           </LinearGradient>
         ) : (
           <View style={[styles.art, { height: h - footH - Math.round(h * 0.15) }]} />
@@ -137,8 +139,6 @@ const styles = StyleSheet.create({
   sheen: {
     position: 'absolute',
     top: 0,
-    left: '-30%' as any,
-    width: '60%',
     height: '100%',
     backgroundColor: 'rgba(255,255,255,0.35)',
     transform: [{ skewX: '-15deg' }],
