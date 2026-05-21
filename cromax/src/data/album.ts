@@ -10,6 +10,7 @@ export interface Sticker {
   name: string;
   state: StickerState;
   count: number;
+  markedAt?: number;
 }
 
 export interface Friend {

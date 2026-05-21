@@ -71,7 +71,10 @@ export function HomeScreen() {
   );
 
   const recent = useMemo(
-    () => stickers.filter(s => s.state !== 'missing').slice(-maxVisible).reverse(),
+    () => stickers
+      .filter(s => s.state !== 'missing' && s.markedAt != null)
+      .sort((a, b) => (b.markedAt ?? 0) - (a.markedAt ?? 0))
+      .slice(0, maxVisible),
     [stickers, maxVisible],
   );
 

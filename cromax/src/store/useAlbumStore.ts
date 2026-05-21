@@ -74,12 +74,28 @@ export const useAlbumStore = create<AlbumStore>((set, get) => ({
   },
 
   updateSticker: (id, patch) => {
-    const stickers = get().stickers.map(s => s.id === id ? { ...s, ...patch } : s);
+    const now = Date.now();
+    const stickers = get().stickers.map(s => {
+      if (s.id !== id) return s;
+      const next = { ...s, ...patch };
+      if (patch.state && patch.state !== 'missing' && s.state === 'missing') {
+        next.markedAt = now;
+      }
+      return next;
+    });
     set({ stickers });
     AsyncStorage.setItem(KEYS.stickers, JSON.stringify(stickers));
   },
 
-  setStickers: (stickers) => {
+  setStickers: (incoming) => {
+    const prev = new Map(get().stickers.map(s => [s.id, s.state]));
+    const now = Date.now();
+    const stickers = incoming.map(s => {
+      if (s.state !== 'missing' && prev.get(s.id) === 'missing') {
+        return { ...s, markedAt: s.markedAt ?? now };
+      }
+      return s;
+    });
     set({ stickers });
     AsyncStorage.setItem(KEYS.stickers, JSON.stringify(stickers));
   },
