@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import { MainTabs }          from './MainTabs';
 import { StickerSheet }      from '../sheets/StickerSheet';
 import { QuickAddSheet }     from '../sheets/QuickAddSheet';
@@ -24,7 +24,15 @@ export function RootNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'modal' }}>
         <Stack.Screen name="Main"         component={MainTabs}          options={{ presentation: 'card' }} />
-        <Stack.Screen name="StickerModal" component={StickerSheet} />
+        <Stack.Screen
+          name="StickerModal"
+          component={StickerSheet}
+          options={{
+            presentation: 'transparentModal',
+            cardStyle: { backgroundColor: 'transparent' },
+            ...TransitionPresets.ModalSlideFromBottomIOS,
+          }}
+        />
         <Stack.Screen name="ShareModal"   component={ShareSheet} />
         <Stack.Screen name="ScanModal"    component={ScanSheet} />
         <Stack.Screen name="QuickAdd"     component={QuickAddSheet} />

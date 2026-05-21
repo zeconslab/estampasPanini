@@ -41,18 +41,33 @@ export const useAlbumStore = create<AlbumStore>((set, get) => ({
       AsyncStorage.getItem(KEYS.dark),
     ]);
 
-    const stickers: Sticker[] = rawStickers
-      ? JSON.parse(rawStickers)
-      : generateAlbum(42);
+    const profile: Profile | null = rawProfile ? JSON.parse(rawProfile) : null;
+    const withCocaCola = profile?.withCocaCola ?? false;
+    const freshAlbum = generateAlbum(42, withCocaCola);
+    let stickers: Sticker[];
 
-    if (!rawStickers) {
+    if (rawStickers) {
+      const cached: Sticker[] = JSON.parse(rawStickers);
+      // If sticker count changed (album updated or CC flag changed), regenerate preserving state by ID
+      if (cached.length !== freshAlbum.length) {
+        const stateById = new Map(cached.map(s => [s.id, { state: s.state, count: s.count }]));
+        stickers = freshAlbum.map(s => {
+          const saved = stateById.get(s.id);
+          return saved ? { ...s, ...saved } : s;
+        });
+        await AsyncStorage.setItem(KEYS.stickers, JSON.stringify(stickers));
+      } else {
+        stickers = cached;
+      }
+    } else {
+      stickers = freshAlbum;
       await AsyncStorage.setItem(KEYS.stickers, JSON.stringify(stickers));
     }
 
     set({
       stickers,
-      friends:  rawFriends  ? JSON.parse(rawFriends)  : [],
-      profile:  rawProfile  ? JSON.parse(rawProfile)  : null,
+      friends:  rawFriends ? JSON.parse(rawFriends) : [],
+      profile,
       dark:     rawDark === '1',
       hydrated: true,
     });

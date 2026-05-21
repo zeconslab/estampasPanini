@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback } from 'react';
 import {
-  ScrollView, View, Text, Switch, TouchableOpacity, StyleSheet, Alert,
+  ScrollView, View, Text, Switch, TouchableOpacity, StyleSheet, Alert, Linking,
 } from 'react-native';
 import AsyncStorage                from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets }       from 'react-native-safe-area-context';
@@ -31,15 +31,21 @@ export function ProfileScreen() {
   const handleResetOnboarding = useCallback(() => {
     Alert.alert(
       'Reiniciar álbum',
-      '¿Seguro? Esto borrará tu perfil y regresarás al inicio.',
+      '¿Seguro? Esto borrará todo tu progreso, amigos guardados y perfil. No se puede deshacer.',
       [
         { text: 'Cancelar', style: 'cancel' },
         {
-          text: 'Reiniciar',
+          text: 'Reiniciar todo',
           style: 'destructive',
-          onPress: () => {
-            AsyncStorage.removeItem('cromax.profile').catch(console.error);
-            useAlbumStore.setState({ profile: null });
+          onPress: async () => {
+            await AsyncStorage.multiRemove([
+              'cromax.stickers',
+              'cromax.friends',
+              'cromax.profile',
+              'cromax.dark',
+            ]);
+            // Re-hydrate with empty storage → generates fresh album, profile=null → App shows onboarding
+            await useAlbumStore.getState().hydrate();
           },
         },
       ],
@@ -111,14 +117,25 @@ export function ProfileScreen() {
           {ALBUMS.map(album => {
             const pct = album.active ? stats.pct : 0;
             return (
-              <View key={album.id} style={[styles.albumCard, { backgroundColor: t.card, borderColor: t.line }]}>
-                <View style={[styles.albumCover, { backgroundColor: album.cover }]}>
-                  <View style={[styles.albumCoverAccent, { backgroundColor: album.accent }]} />
-                  <Text style={styles.albumCoverName}>{album.name.toUpperCase()}</Text>
+              <View
+                key={album.id}
+                style={[
+                  styles.albumCard,
+                  { backgroundColor: t.card, borderColor: t.line },
+                  !album.active && { opacity: 0.45 },
+                ]}
+              >
+                <View style={[styles.albumCover, { backgroundColor: album.active ? album.cover : t.paper3 }]}>
+                  {album.active && <View style={[styles.albumCoverAccent, { backgroundColor: album.accent }]} />}
+                  <Text style={[styles.albumCoverName, !album.active && { color: t.ink4 }]}>
+                    {album.name.toUpperCase()}
+                  </Text>
                 </View>
                 <View style={styles.albumInfo}>
                   <View style={styles.albumTitleRow}>
-                    <Text style={[styles.albumTitle, { color: t.ink, fontFamily: fonts.semibold }]}>{album.name}</Text>
+                    <Text style={[styles.albumTitle, { color: album.active ? t.ink : t.ink3, fontFamily: fonts.semibold }]}>
+                      {album.name}
+                    </Text>
                     {album.active
                       ? <View style={[styles.activeBadge, { backgroundColor: t.lime }]}>
                           <Text style={[styles.activeBadgeText, { color: t.pitch }]}>Activo</Text>
@@ -128,9 +145,9 @@ export function ProfileScreen() {
                         </View>
                     }
                   </View>
-                  <Text style={[styles.albumSubtitle, { color: t.ink3, fontFamily: fonts.mono }]}>{album.subtitle}</Text>
+                  <Text style={[styles.albumSubtitle, { color: t.ink4, fontFamily: fonts.mono }]}>{album.subtitle}</Text>
                   <View style={[styles.progressTrack, { backgroundColor: t.line }]}>
-                    <View style={[styles.progressFill, { backgroundColor: t.lime, width: `${pct}%` as any }]} />
+                    {album.active && <View style={[styles.progressFill, { backgroundColor: t.lime, width: `${pct}%` as any }]} />}
                   </View>
                 </View>
               </View>
@@ -182,12 +199,10 @@ export function ProfileScreen() {
   );
 }
 
+const BMC_URL = 'https://buymeacoffee.com/raulweb';
+
 function TipJar() {
   const t = useTheme();
-  const [open, setOpen] = React.useState(false);
-  const [amount, setAmount] = React.useState(50);
-  const [sent, setSent] = React.useState(false);
-  const OPTIONS = [20, 50, 100, 250];
 
   return (
     <View style={[tipStyles.card, { backgroundColor: t.goldSoft, borderColor: t.line }]}>
@@ -198,64 +213,22 @@ function TipJar() {
         <View style={{ flex: 1 }}>
           <Text style={[tipStyles.title, { color: t.ink, fontFamily: fonts.headline }]}>¿Te late la app?</Text>
           <Text style={[tipStyles.sub, { color: t.ink3, fontFamily: fonts.body }]}>
-            Estampas es <Text style={{ fontFamily: fonts.semibold, color: t.ink2 }}>100% gratis</Text> · si quieres, invítame un cafecito
+            Cromax es <Text style={{ fontFamily: fonts.semibold, color: t.ink2 }}>100% gratis</Text> · si quieres, invítame un cafecito
           </Text>
         </View>
       </View>
 
-      {!open && !sent && (
-        <HapticPress
-          style={[tipStyles.btn, { backgroundColor: t.primary }]}
-          onPress={() => setOpen(true)}
-        >
-          <Text style={[tipStyles.btnText, { color: t.pitch, fontFamily: fonts.headline }]}>
-            ❤️  Invítame un cafecito
-          </Text>
-        </HapticPress>
-      )}
-
-      {open && !sent && (
-        <>
-          <View style={tipStyles.amountRow}>
-            {OPTIONS.map(v => (
-              <HapticPress
-                key={v}
-                style={[tipStyles.amountChip, {
-                  backgroundColor: amount === v ? t.ink : t.card,
-                  borderColor: amount === v ? t.ink : t.line,
-                }]}
-                onPress={() => setAmount(v)}
-              >
-                <Text style={[tipStyles.amountNum, { color: amount === v ? t.paper : t.ink, fontFamily: fonts.mono }]}>${v}</Text>
-                <Text style={tipStyles.amountEmoji}>
-                  {v <= 20 ? '☕' : v <= 50 ? '☕☕' : v <= 100 ? '🌼' : '🌼🌼'}
-                </Text>
-              </HapticPress>
-            ))}
-          </View>
-          <View style={tipStyles.actions}>
-            <HapticPress style={[tipStyles.cancelBtn, { backgroundColor: t.paper2 }]} onPress={() => setOpen(false)}>
-              <Text style={[tipStyles.cancelText, { color: t.ink, fontFamily: fonts.semibold }]}>Cancelar</Text>
-            </HapticPress>
-            <HapticPress style={[tipStyles.sendBtn, { backgroundColor: t.primary, flex: 1 }]} onPress={() => setSent(true)}>
-              <Text style={[tipStyles.sendText, { color: t.pitch, fontFamily: fonts.headline }]}>Enviar ${amount}</Text>
-            </HapticPress>
-          </View>
-        </>
-      )}
-
-      {sent && (
-        <View style={{ alignItems: 'center', paddingVertical: 8 }}>
-          <Text style={{ fontSize: 28, marginBottom: 4 }}>🌼</Text>
-          <Text style={[tipStyles.title, { color: t.ink, fontFamily: fonts.headline }]}>¡Mil gracias!</Text>
-          <Text style={[tipStyles.sub, { color: t.ink3, fontFamily: fonts.body, textAlign: 'center' }]}>
-            Tu apoyo nos ayuda a seguir mejorando.
-          </Text>
-        </View>
-      )}
+      <HapticPress
+        style={[tipStyles.btn, { backgroundColor: t.primary }]}
+        onPress={() => Linking.openURL(BMC_URL)}
+      >
+        <Text style={[tipStyles.btnText, { color: t.pitch, fontFamily: fonts.headline }]}>
+          ❤️  Invítame un cafecito
+        </Text>
+      </HapticPress>
 
       <Text style={[tipStyles.disclaimer, { color: t.ink4, fontFamily: fonts.mono }]}>
-        Donación voluntaria · No desbloquea funciones · Toda la app sigue gratis
+        Donación voluntaria · Toda la app sigue gratis
       </Text>
     </View>
   );
@@ -269,16 +242,7 @@ const tipStyles = StyleSheet.create({
   sub:        { fontSize: 12, lineHeight: 17, marginTop: 2 },
   btn:        { borderRadius: 16, paddingVertical: 14, alignItems: 'center', marginBottom: 6 },
   btnText:    { fontSize: 15 },
-  amountRow:  { flexDirection: 'row', gap: 6, marginBottom: 10 },
-  amountChip: { flex: 1, borderRadius: 12, borderWidth: 0.5, paddingVertical: 10, alignItems: 'center' },
-  amountNum:  { fontSize: 14 },
-  amountEmoji:{ fontSize: 9, marginTop: 2 },
-  actions:    { flexDirection: 'row', gap: 8, marginBottom: 6 },
-  cancelBtn:  { borderRadius: 14, paddingVertical: 12, paddingHorizontal: 14, alignItems: 'center' },
-  cancelText: { fontSize: 14 },
-  sendBtn:    { borderRadius: 14, paddingVertical: 12, alignItems: 'center' },
-  sendText:   { fontSize: 14 },
-  disclaimer: { fontSize: 10, textAlign: 'center', marginTop: 8, letterSpacing: 0.2 },
+  disclaimer: { fontSize: 10, textAlign: 'center', marginTop: 4, letterSpacing: 0.2 },
 });
 
 const styles = StyleSheet.create({

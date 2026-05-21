@@ -64,10 +64,15 @@ export function HomeScreen() {
     canGet: (f.dupes ?? []).filter(d => stickers.find(s => s.id === d.id && s.state === 'missing')).length,
   })).filter(m => m.canGive > 0).slice(0, 4), [friends, myDupeIds, stickers]);
 
-  // Recent stickers (last 8 owned/duplicate)
+  // Fit exactly one row based on screen width
+  const maxVisible = useMemo(
+    () => Math.floor((SCREEN_W - GRID_PAD * 2 + GRID_GAP) / (CELL_SIZE + GRID_GAP)),
+    [SCREEN_W, CELL_SIZE],
+  );
+
   const recent = useMemo(
-    () => stickers.filter(s => s.state !== 'missing').slice(-8).reverse(),
-    [stickers],
+    () => stickers.filter(s => s.state !== 'missing').slice(-maxVisible).reverse(),
+    [stickers, maxVisible],
   );
 
   const tabBarHeight = useBottomTabBarHeight();
@@ -124,18 +129,22 @@ export function HomeScreen() {
 
           <View style={styles.heroActions}>
             <HapticPress
-              style={[styles.heroBtn, { backgroundColor: t.primary }]}
+              style={[styles.heroBtnPrimary]}
               onPress={() => nav.navigate('QuickAdd')}
             >
-              <Text style={[styles.heroBtnIcon, { color: t.pitch }]}>+</Text>
+              <View style={styles.heroBtnIconWrap}>
+                <IcPlus color={t.pitch} size={17} />
+              </View>
               <Text style={[styles.heroBtnText, { color: t.pitch }]}>Marcar nuevas</Text>
             </HapticPress>
             <HapticPress
-              style={[styles.heroBtn, { backgroundColor: 'rgba(255,255,255,0.18)' }]}
+              style={[styles.heroBtnGhost]}
               onPress={() => nav.navigate('ShareModal')}
             >
-              <Text style={[styles.heroBtnIcon, { color: 'rgba(255,255,255,0.9)' }]}>↑</Text>
-              <Text style={[styles.heroBtnText, { color: 'rgba(255,255,255,0.9)' }]}>Mis faltantes</Text>
+              <View style={styles.heroBtnIconWrap}>
+                <IcShare color="#fff" size={15} />
+              </View>
+              <Text style={[styles.heroBtnText, { color: '#fff' }]}>Mis faltantes</Text>
             </HapticPress>
           </View>
         </View>
@@ -222,7 +231,7 @@ export function HomeScreen() {
       {recent.length > 0 && (
         <>
           <SectionHeader title="Pegadas recientemente" />
-          <View style={styles.recentGrid}>
+          <View style={styles.recentRow}>
             {recent.map(s => (
               <StickerComponent
                 key={s.id}
@@ -326,17 +335,42 @@ const styles = StyleSheet.create({
   statLineDot: { width: 8, height: 8, borderRadius: 4, marginLeft: 4 },
 
   heroActions: { flexDirection: 'row', gap: 8 },
-  heroBtn: {
+  heroBtnPrimary: {
     flex: 1,
-    borderRadius: 26,
-    paddingVertical: 14,
+    borderRadius: 18,
+    paddingVertical: 15,
+    paddingHorizontal: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: 7,
+    backgroundColor: '#B5DA40',
+    shadowColor: '#B5DA40',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.55,
+    shadowRadius: 14,
+    elevation: 8,
   },
-  heroBtnIcon: { fontFamily: fonts.headline, fontSize: 17 },
-  heroBtnText: { fontFamily: fonts.headline, fontSize: 15, letterSpacing: -0.2 },
+  heroBtnGhost: {
+    flex: 1,
+    borderRadius: 18,
+    paddingVertical: 15,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.22)',
+  },
+  heroBtnIconWrap: {
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroBtnText: { fontFamily: fonts.headline, fontSize: 14, letterSpacing: -0.2 },
 
   eyebrowText: {
     fontFamily: fonts.mono,
@@ -391,10 +425,9 @@ const styles = StyleSheet.create({
   barBg: { height: 6, borderRadius: 3, overflow: 'hidden' },
   barFill: { height: 6, borderRadius: 3 },
 
-  recentGrid: {
+  recentRow: {
     paddingHorizontal: GRID_PAD,
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: GRID_GAP,
   },
   fab: {

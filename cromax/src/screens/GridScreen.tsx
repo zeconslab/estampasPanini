@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View, Text, TextInput, SectionList,
   StyleSheet, useWindowDimensions,
@@ -66,31 +66,35 @@ interface SectionHeaderProps {
   sectionStickers: Sticker[];
 }
 
-function TeamSectionHeader({ teamCode, sectionStickers }: SectionHeaderProps) {
+const COKE_RED = '#E61A27';
+
+const TeamSectionHeader = React.memo(function TeamSectionHeader({ teamCode, sectionStickers }: SectionHeaderProps) {
   const t = useTheme();
 
-  const isSpecial = teamCode === '★';
-  const team = isSpecial ? null : TEAMS.find(tm => tm.code === teamCode);
-  // Section header counts both owned and duplicate as "have it"
+  const isSpecial  = teamCode === '★';
+  const isCocaCola = teamCode === 'CC';
+  const team = (isSpecial || isCocaCola) ? null : TEAMS.find(tm => tm.code === teamCode);
   const owned = sectionStickers.filter(s => s.state !== 'missing').length;
   const total = sectionStickers.length;
 
   return (
     <View style={styles.sectionHeader}>
-      {isSpecial ? (
+      {isCocaCola ? (
+        <View style={[styles.specialIcon, { backgroundColor: COKE_RED }]} />
+      ) : isSpecial ? (
         <View style={[styles.specialIcon, { backgroundColor: t.primary }]} />
       ) : (
         <Flag colors={team?.colors ?? ['#888888', '#888888', '#888888']} width={28} height={18} />
       )}
       <Text style={[styles.sectionName, { color: t.ink, fontFamily: fonts.headline }]}>
-        {isSpecial ? 'Especiales · Leyendas' : (team?.name ?? teamCode)}
+        {isCocaCola ? 'Coca-Cola × Panini' : isSpecial ? 'Especiales · FIFA' : (team?.name ?? teamCode)}
       </Text>
       <Text style={[styles.sectionCount, { color: t.ink3, fontFamily: fonts.mono }]}>
         {owned}/{total}
       </Text>
     </View>
   );
-}
+});
 
 // ─── Main screen ─────────────────────────────────────────────────────────────
 
@@ -108,6 +112,8 @@ export function GridScreen() {
   const [query,  setQuery]  = useState('');
   const [filter, setFilter] = useState<Filter>('all');
   const [scrolled, setScrolled] = React.useState(false);
+
+  const chipW = Math.floor((width - PAD * 2 - 6 * (FILTERS.length - 1)) / FILTERS.length);
 
   // Pre-filter counts (before search, just for chip badges — exact state match)
   const chipCounts = useMemo<Record<Filter, number>>(() => ({
@@ -134,7 +140,8 @@ export function GridScreen() {
     for (const team of TEAMS) {
       map.set(team.code, []);
     }
-    map.set('★', []);
+    map.set('★', []);  // FIFA specials (no team)
+    map.set('CC', []); // Coca-Cola exclusives
 
     for (const s of visible) {
       const key = s.team ?? '★';
@@ -142,28 +149,53 @@ export function GridScreen() {
       if (bucket) {
         bucket.push(s);
       } else {
-        // unknown team key — fall back to specials bucket
         map.get('★')!.push(s);
       }
     }
 
     // Build ordered array, skip empty buckets
     const result: Array<{ key: string; stickers: Sticker[] }> = [];
+    const special = map.get('★')!;
+    if (special.length > 0) result.push({ key: '★', stickers: special });
     for (const team of TEAMS) {
       const bucket = map.get(team.code)!;
       if (bucket.length > 0) result.push({ key: team.code, stickers: bucket });
     }
-    const special = map.get('★')!;
-    if (special.length > 0) result.push({ key: '★', stickers: special });
+    const cc = map.get('CC')!;
+    if (cc.length > 0) result.push({ key: 'CC', stickers: cc });
 
     return result;
   }, [visible]);
 
   // Transform sections into SectionList format with rows chunked to COLS
   const sections = useMemo(
-    () => orderedSections.map(s => ({ key: s.key, data: chunkRows(s.stickers, COLS) })),
+    () => orderedSections.map(s => ({
+      key: s.key,
+      data: chunkRows(s.stickers, COLS),
+      allStickers: s.stickers,
+    })),
     [orderedSections],
   );
+
+  const renderSectionHeader = useCallback(({ section }: { section: typeof sections[number] }) => (
+    <TeamSectionHeader
+      teamCode={section.key}
+      sectionStickers={section.allStickers}
+    />
+  ), []);
+
+  const renderItem = useCallback(({ item: row }: { item: Sticker[] }) => (
+    <View style={[styles.row, { paddingHorizontal: PAD, gap: GAP, marginBottom: GAP }]}>
+      {row.map(sticker => (
+        <StickerComponent
+          key={sticker.id}
+          sticker={sticker}
+          size={CELL}
+          onPress={() => nav.navigate('StickerModal', { stickerId: sticker.id })}
+        />
+      ))}
+    </View>
+  ), [CELL, nav]);
 
   const ListHeader = (
     <View style={[styles.header, { backgroundColor: t.paper }]}>
@@ -182,17 +214,13 @@ export function GridScreen() {
           return (
             <HapticPress
               key={f.key}
-              style={[styles.chip, { backgroundColor: active ? t.pitch : t.card, flex: 1 }]}
+              style={[styles.chip, { width: chipW, backgroundColor: active ? t.pitch : t.card, borderColor: active ? 'transparent' : t.line }]}
               onPress={() => setFilter(f.key)}
             >
-              <Text style={[styles.chipLabel, {
-                color: active ? '#fff' : t.ink2,
-              }]}>
+              <Text style={[styles.chipLabel, { color: active ? '#fff' : t.ink2 }]} numberOfLines={1} adjustsFontSizeToFit>
                 {f.label}
               </Text>
-              <Text style={[styles.chipCount, {
-                color: active ? 'rgba(255,255,255,0.7)' : t.ink4,
-              }]}>
+              <Text style={[styles.chipCount, { color: active ? 'rgba(255,255,255,0.6)' : t.ink4 }]}>
                 {chipCounts[f.key]}
               </Text>
             </HapticPress>
@@ -214,30 +242,17 @@ export function GridScreen() {
             <Text style={[styles.emptyText, { color: t.ink3 }]}>Sin resultados.</Text>
           </View>
         }
-        renderSectionHeader={({ section }) => (
-          <TeamSectionHeader
-            teamCode={section.key}
-            sectionStickers={section.data.flat()}
-          />
-        )}
-        renderItem={({ item: row }) => (
-          <View style={[styles.row, { paddingHorizontal: PAD, gap: GAP, marginBottom: GAP }]}>
-            {row.map(sticker => (
-              <StickerComponent
-                key={sticker.id}
-                sticker={sticker}
-                size={CELL}
-                onPress={() => nav.navigate('StickerModal', { stickerId: sticker.id })}
-              />
-            ))}
-          </View>
-        )}
+        renderSectionHeader={renderSectionHeader}
+        renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: tabBarHeight + 8 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         stickySectionHeadersEnabled={false}
         onScroll={e => setScrolled(e.nativeEvent.contentOffset.y > 6)}
         scrollEventThrottle={16}
+        windowSize={5}
+        maxToRenderPerBatch={3}
+        initialNumToRender={12}
       />
     </View>
   );
@@ -254,20 +269,16 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontFamily: fonts.body,
   },
-  filters:     { flexDirection: 'row', gap: 6 },
-  chip:        { paddingHorizontal: 8, paddingVertical: 7, borderRadius: 20, alignItems: 'center' },
-  chipLabel:   {
-    fontSize: 12,
-    fontFamily: fonts.semibold,
-    letterSpacing: -0.1,
-    textAlign: 'center',
+  filters:   { flexDirection: 'row', gap: 6 },
+  chip:      {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 12,
+    borderWidth: 0.5,
   },
-  chipCount:   {
-    fontSize: 10,
-    fontFamily: fonts.mono,
-    textAlign: 'center',
-    marginTop: 1,
-  },
+  chipLabel: { fontFamily: fonts.semibold, fontSize: 12, letterSpacing: -0.2, textAlign: 'center' },
+  chipCount: { fontFamily: fonts.mono, fontSize: 10, textAlign: 'center', marginTop: 1 },
 
   // Section
   sectionHeader: {
