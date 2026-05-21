@@ -33,14 +33,9 @@ const FILTERS: { key: Filter; label: string }[] = [
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
-/**
- * Chip badge counts = exact state match.
- * Section header "owned" count = owned + duplicate ("have it").
- * These differ intentionally: the chip badge answers "how many in this state?",
- * while the section header answers "how many do you have (any copy)?".
- */
 function filterCount(stickers: Sticker[], f: Filter): number {
-  if (f === 'all') return stickers.length;
+  if (f === 'all')    return stickers.length;
+  if (f === 'owned')  return stickers.filter(s => s.state !== 'missing').length;
   return stickers.filter(s => s.state === f).length;
 }
 
@@ -124,10 +119,13 @@ export function GridScreen() {
   }), [stickers]);
 
   // Visible stickers after filter + search
+  // 'owned' includes duplicates — a duplicate sticker IS pegada (you have it)
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
     return stickers.filter(s => {
-      if (filter !== 'all' && s.state !== filter) return false;
+      if (filter === 'owned'   && s.state === 'missing')    return false;
+      if (filter === 'missing' && s.state !== 'missing')    return false;
+      if (filter === 'duplicate' && s.state !== 'duplicate') return false;
       if (q) return stickerMatches(s, q);
       return true;
     });

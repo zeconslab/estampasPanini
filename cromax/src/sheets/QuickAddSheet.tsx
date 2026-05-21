@@ -20,7 +20,7 @@ export function QuickAddSheet() {
   const t       = useTheme();
   const insets  = useSafeAreaInsets();
   const nav     = useNavigation();
-  const { stickers, setStickers } = useAlbumStore();
+  const { stickers, setStickers, profile } = useAlbumStore();
   const { width } = useWindowDimensions();
 
   const CELL = useMemo(
@@ -142,6 +142,30 @@ export function QuickAddSheet() {
             </TouchableOpacity>
           );
         })}
+
+        {profile?.withCocaCola && (() => {
+          const active = selectedTeam === 'CC';
+          const ccStickers = local.filter(s => s.team === 'CC');
+          const ownedCount = ccStickers.filter(s => s.state !== 'missing').length;
+          return (
+            <TouchableOpacity
+              key="CC"
+              style={[styles.chip, {
+                backgroundColor: active ? '#E61A27' : t.card,
+                borderColor: active ? '#E61A27' : t.line,
+              }]}
+              onPress={() => setSelectedTeam(active ? null : 'CC')}
+            >
+              <View style={[styles.ccDot, { backgroundColor: active ? '#fff' : '#E61A27' }]} />
+              <Text style={[styles.chipCode, { color: active ? '#fff' : t.ink, fontFamily: fonts.semibold }]}>
+                CC
+              </Text>
+              <Text style={[styles.chipCount, { color: active ? 'rgba(255,255,255,0.55)' : t.ink4, fontFamily: fonts.mono }]}>
+                {ownedCount}/{ccStickers.length}
+              </Text>
+            </TouchableOpacity>
+          );
+        })()}
       </ScrollView>
 
       <FlatList
@@ -194,6 +218,7 @@ const styles = StyleSheet.create({
   },
   chipCode:   { fontSize: 12 },
   chipCount:  { fontSize: 9, marginTop: 1 },
+  ccDot:      { width: 8, height: 8, borderRadius: 4 },
   footer:     { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 16 },
   counter:    { fontSize: 11, textAlign: 'center', marginBottom: 8, letterSpacing: 0.2 },
   doneBtn:    { borderRadius: 24, paddingVertical: 14, alignItems: 'center' },

@@ -97,8 +97,22 @@ export const useAlbumStore = create<AlbumStore>((set, get) => ({
   },
 
   setProfile: (profile) => {
+    const prev = get().profile;
     set({ profile });
     AsyncStorage.setItem(KEYS.profile, JSON.stringify(profile));
+
+    // Regenerate stickers when withCocaCola changes (includes first-time setup)
+    if (prev?.withCocaCola !== profile.withCocaCola) {
+      const current = get().stickers;
+      const fresh = generateAlbum(42, profile.withCocaCola);
+      const stateById = new Map(current.map(s => [s.id, { state: s.state, count: s.count }]));
+      const stickers = fresh.map(s => {
+        const saved = stateById.get(s.id);
+        return saved ? { ...s, ...saved } : s;
+      });
+      set({ stickers });
+      AsyncStorage.setItem(KEYS.stickers, JSON.stringify(stickers));
+    }
   },
 
   toggleDark: () => {
