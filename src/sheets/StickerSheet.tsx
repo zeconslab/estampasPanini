@@ -132,12 +132,23 @@ export function StickerSheet() {
   const updateSticker = useAlbumStore(s => s.updateSticker);
 
   const backdropOpacity = useRef(new Animated.Value(0)).current;
+  const slideY          = useRef(new Animated.Value(380)).current;
+
   useEffect(() => {
-    Animated.timing(backdropOpacity, {
-      toValue: 1,
-      duration: 220,
-      useNativeDriver: true,
-    }).start();
+    Animated.parallel([
+      Animated.timing(backdropOpacity, {
+        toValue: 1,
+        duration: 240,
+        useNativeDriver: true,
+      }),
+      Animated.spring(slideY, {
+        toValue: 0,
+        useNativeDriver: true,
+        damping: 26,
+        stiffness: 260,
+        mass: 0.85,
+      }),
+    ]).start();
   }, []);
 
   if (!sticker) return null;
@@ -167,7 +178,7 @@ export function StickerSheet() {
       <Animated.View style={[StyleSheet.absoluteFill, { opacity: backdropOpacity }]}>
         <Pressable style={[StyleSheet.absoluteFill, styles.backdrop, { top: insets.top }]} onPress={() => nav.goBack()} />
       </Animated.View>
-      <View style={[styles.sheet, { backgroundColor: t.paper, paddingBottom: insets.bottom + 16 }]}>
+      <Animated.View style={[styles.sheet, { backgroundColor: t.paper, paddingBottom: insets.bottom + 16, transform: [{ translateY: slideY }] }]}>
       <View style={[styles.handle, { backgroundColor: t.line2 }]} />
 
       <View style={styles.topRow}>
@@ -272,7 +283,7 @@ export function StickerSheet() {
         <IcSwap color={t.ink} size={16} />
         <Text style={[styles.ghostBtnText, { color: t.ink, fontFamily: fonts.headline }]}>Buscar entre amigos</Text>
       </HapticPress>
-      </View>
+      </Animated.View>
     </View>
   );
 }

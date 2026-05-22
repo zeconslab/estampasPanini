@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import { MainTabs }          from './MainTabs';
 import { StickerSheet }      from '../sheets/StickerSheet';
 import { QuickAddSheet }     from '../sheets/QuickAddSheet';
@@ -30,7 +30,14 @@ export function RootNavigator() {
           options={{
             presentation: 'transparentModal',
             cardStyle: { backgroundColor: 'transparent' },
-            ...TransitionPresets.ModalSlideFromBottomIOS,
+            gestureEnabled: false,
+            transitionSpec: {
+              open:  { animation: 'timing', config: { duration: 0 } },
+              close: { animation: 'timing', config: { duration: 220 } },
+            },
+            cardStyleInterpolator: ({ current }) => ({
+              cardStyle: { opacity: current.progress },
+            }),
           }}
         />
         <Stack.Screen name="ShareModal"   component={ShareSheet} />
