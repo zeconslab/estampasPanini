@@ -10,6 +10,7 @@ export interface Sticker {
   name: string;
   state: StickerState;
   count: number;
+  markedAt?: number;
 }
 
 export interface Friend {
@@ -181,21 +182,38 @@ export function generateAlbum(seed: number, withCocaCola = false): Sticker[] {
   });
 
   // 48 selecciones × 20 = 960
-  // Cada selección: 1 escudo + 1 foto grupal + 18 jugadores
-  TEAMS.forEach((team, ti) => {
+  // Cada selección: 01 escudo · 02 portero · 03-12 jugadores · 13 foto grupal · 14-20 jugadores
+  TEAMS.forEach((team) => {
+    let teamNum = 1;
+
+    // 01 — escudo
     stickers.push({
-      id: id++, type: 'shield', team: team.code, teamNum: ti + 1,
+      id: id++, type: 'shield', team: team.code, teamNum: teamNum++,
       label: team.code, name: team.name, state: 'missing', count: 0,
     });
+
+    // 02-12 — portero (1) + jugadores (10)
+    for (let p = 0; p < 11; p++) {
+      stickers.push({
+        id: id++, type: 'player', team: team.code, teamNum: teamNum++,
+        label: `${team.code}${p + 1}`,
+        name: `${pick(FIRST_NAMES)} ${pick(LAST_NAMES)}`,
+        state: 'missing', count: 0,
+      });
+    }
+
+    // 13 — foto grupal
     stickers.push({
-      id: id++, type: 'special', team: team.code, teamNum: ti + 1,
+      id: id++, type: 'special', team: team.code, teamNum: teamNum++,
       label: `${team.code}-GRP`,
       name: `${team.name} · Foto grupal`,
       state: 'missing', count: 0,
     });
-    for (let p = 0; p < team.players; p++) {
+
+    // 14-20 — jugadores restantes (7)
+    for (let p = 11; p < team.players; p++) {
       stickers.push({
-        id: id++, type: 'player', team: team.code, teamNum: ti + 1,
+        id: id++, type: 'player', team: team.code, teamNum: teamNum++,
         label: `${team.code}${p + 1}`,
         name: `${pick(FIRST_NAMES)} ${pick(LAST_NAMES)}`,
         state: 'missing', count: 0,

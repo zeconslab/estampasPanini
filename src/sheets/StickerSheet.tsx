@@ -128,8 +128,8 @@ export function StickerSheet() {
   const nav     = useNavigation();
   const route   = useRoute<Route>();
   const { stickerId } = route.params;
-  const { stickers, updateSticker } = useAlbumStore();
-  const sticker = stickers.find(s => s.id === stickerId);
+  const sticker       = useAlbumStore(s => s.stickers.find(x => x.id === stickerId));
+  const updateSticker = useAlbumStore(s => s.updateSticker);
 
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -165,7 +165,7 @@ export function StickerSheet() {
   return (
     <View style={styles.overlay}>
       <Animated.View style={[StyleSheet.absoluteFill, { opacity: backdropOpacity }]}>
-        <Pressable style={[StyleSheet.absoluteFill, styles.backdrop]} onPress={() => nav.goBack()} />
+        <Pressable style={[StyleSheet.absoluteFill, styles.backdrop, { top: insets.top }]} onPress={() => nav.goBack()} />
       </Animated.View>
       <View style={[styles.sheet, { backgroundColor: t.paper, paddingBottom: insets.bottom + 16 }]}>
       <View style={[styles.handle, { backgroundColor: t.line2 }]} />

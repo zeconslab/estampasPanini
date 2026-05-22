@@ -40,7 +40,10 @@ export function HomeScreen() {
     () => Math.floor((SCREEN_W - GRID_PAD * 2 - GRID_GAP * (GRID_COLS - 1)) / GRID_COLS),
     [SCREEN_W],
   );
-  const { stickers, friends, dark, toggleDark } = useAlbumStore();
+  const stickers   = useAlbumStore(s => s.stickers);
+  const friends    = useAlbumStore(s => s.friends);
+  const dark       = useAlbumStore(s => s.dark);
+  const toggleDark = useAlbumStore(s => s.toggleDark);
   const stats = useMemo(() => computeStats(stickers), [stickers]);
   const [scrolled, setScrolled] = React.useState(false);
 
@@ -58,11 +61,15 @@ export function HomeScreen() {
     () => new Set(stickers.filter(s => s.state === 'duplicate').map(s => s.id)),
     [stickers],
   );
+  const myMissingIds = useMemo(
+    () => new Set(stickers.filter(s => s.state === 'missing').map(s => s.id)),
+    [stickers],
+  );
   const tradeMatches = useMemo(() => friends.map(f => ({
     friend: f,
     canGive: f.missing.filter(id => myDupeIds.has(id)).length,
-    canGet: (f.dupes ?? []).filter(d => stickers.find(s => s.id === d.id && s.state === 'missing')).length,
-  })).filter(m => m.canGive > 0).slice(0, 4), [friends, myDupeIds, stickers]);
+    canGet:  (f.dupes ?? []).filter(d => myMissingIds.has(d.id)).length,
+  })).filter(m => m.canGive > 0).slice(0, 4), [friends, myDupeIds, myMissingIds]);
 
   // Fit exactly one row based on screen width
   const maxVisible = useMemo(
@@ -71,7 +78,10 @@ export function HomeScreen() {
   );
 
   const recent = useMemo(
-    () => stickers.filter(s => s.state !== 'missing').slice(-maxVisible).reverse(),
+    () => stickers
+      .filter(s => s.state !== 'missing' && s.markedAt != null)
+      .sort((a, b) => (b.markedAt ?? 0) - (a.markedAt ?? 0))
+      .slice(0, maxVisible),
     [stickers, maxVisible],
   );
 

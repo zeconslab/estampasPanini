@@ -16,7 +16,8 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.cromaxapp.cromax",
       "infoPlist": {
-        "NSCameraUsageDescription": "Para escanear el QR de tus amigos y ver sus faltantes."
+        "NSCameraUsageDescription": "Para escanear el QR de tus amigos y ver sus faltantes.",
+        "LSApplicationQueriesSchemes": ["whatsapp"]
       }
     },
     "android": {
@@ -27,7 +28,10 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.cromaxapp.cromax",
-      "permissions": ["android.permission.CAMERA"]
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -35,8 +39,15 @@
     "plugins": [
       [
         "expo-camera",
-        { "cameraPermission": "Para escanear el QR de tus amigos y ver sus faltantes." }
+        {
+          "cameraPermission": "Para escanear el QR de tus amigos y ver sus faltantes."
+        }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "2ba8a371-527d-4b5b-8f35-d307939b390b"
+      }
+    }
   }
 }

@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState, useRef, useEffect } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, Share, Linking, Platform,
 } from 'react-native';
@@ -88,8 +88,12 @@ export function ShareSheet() {
   const t       = useTheme();
   const insets  = useSafeAreaInsets();
   const nav     = useNavigation<Nav>();
-  const { stickers, profile, friends } = useAlbumStore();
+  const stickers = useAlbumStore(s => s.stickers);
+  const profile  = useAlbumStore(s => s.profile);
+  const friends  = useAlbumStore(s => s.friends);
   const [copied, setCopied] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (copyTimerRef.current) clearTimeout(copyTimerRef.current); }, []);
 
   const payload = useMemo(() => encodeQR(profile?.name ?? 'Amigo', stickers), [stickers, profile]);
 
@@ -109,6 +113,19 @@ export function ShareSheet() {
       result.push({ teamCode: team.code, teamName: team.name, colors: team.colors, labels });
     }
 
+    // Coca-Cola collection (team === 'CC', excluded from TEAMS)
+    if (profile?.withCocaCola) {
+      const ccLabels = missingStickers.filter(s => s.team === 'CC').map(s => s.label);
+      if (ccLabels.length > 0) {
+        result.push({
+          teamCode: 'CC',
+          teamName: 'Coca-Cola',
+          colors: ['#E61A27', '#FFFFFF', '#E61A27'],
+          labels: ccLabels,
+        });
+      }
+    }
+
     // Specials + legends (no team)
     const specialLabels = missingStickers.filter(s => !s.team).map(s => s.label);
     if (specialLabels.length > 0) {
@@ -121,7 +138,7 @@ export function ShareSheet() {
     }
 
     return result;
-  }, [missingStickers]);
+  }, [missingStickers, profile?.withCocaCola]);
 
   // Friend trade matches
   const friendMatches = useMemo(() =>
@@ -144,14 +161,9 @@ export function ShareSheet() {
 
   const teamsWithMissing = missingByTeam.filter(r => r.labels.length > 0);
 
-  const handleWhatsApp = useCallback(async () => {
+  const handleWhatsApp = useCallback(() => {
     const url = `whatsapp://send?text=${encodeURIComponent(shareText)}`;
-    const can = await Linking.canOpenURL(url);
-    if (can) {
-      Linking.openURL(url);
-    } else {
-      Share.share({ message: shareText });
-    }
+    Linking.openURL(url).catch(() => Share.share({ message: shareText }));
   }, [shareText]);
 
   const handleMessages = useCallback(() => {
@@ -164,7 +176,7 @@ export function ShareSheet() {
   const handleCopy = useCallback(async () => {
     await Share.share({ message: shareText });
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
   }, [shareText]);
 
   const handleShare = useCallback(() => {
@@ -173,8 +185,19 @@ export function ShareSheet() {
 
   return (
     <View style={[styles.container, { backgroundColor: t.paper }]}>
-      {/* Drag handle */}
-      <View style={[styles.handle, { backgroundColor: t.line }]} />
+      {/* Top bar: safe area + centered handle + close button */}
+      <View style={[styles.sheetHeader, { paddingTop: insets.top + 8 }]}>
+        <View style={{ flex: 1 }} />
+        <View style={[styles.handle, { backgroundColor: t.line }]} />
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
+          <HapticPress
+            style={[styles.closeBtn, { backgroundColor: t.card, borderColor: t.line }]}
+            onPress={() => nav.goBack()}
+          >
+            <Text style={[styles.closeBtnText, { color: t.ink }]}>✕</Text>
+          </HapticPress>
+        </View>
+      </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}>
 
@@ -319,8 +342,11 @@ export function ShareSheet() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  handle:    { width: 36, height: 4, borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 4 },
+  container:    { flex: 1 },
+  sheetHeader:  { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingBottom: 12 },
+  handle:       { width: 36, height: 4, borderRadius: 2 },
+  closeBtn:     { width: 32, height: 32, borderRadius: 11, borderWidth: 0.5, alignItems: 'center', justifyContent: 'center' },
+  closeBtnText: { fontSize: 14 },
 
   // QR card
   qrCard:    { margin: 16, borderRadius: 20, padding: 24, alignItems: 'center' },

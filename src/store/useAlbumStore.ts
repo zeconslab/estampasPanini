@@ -2,6 +2,15 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Sticker, Friend, Profile, generateAlbum } from '../data/album';
 
+let _stickerWriteTimer: ReturnType<typeof setTimeout> | null = null;
+function scheduleStickersWrite(stickers: Sticker[]) {
+  if (_stickerWriteTimer) clearTimeout(_stickerWriteTimer);
+  _stickerWriteTimer = setTimeout(() => {
+    AsyncStorage.setItem('cromax.stickers', JSON.stringify(stickers));
+    _stickerWriteTimer = null;
+  }, 600);
+}
+
 const KEYS = {
   stickers: 'cromax.stickers',
   friends:  'cromax.friends',
@@ -74,14 +83,30 @@ export const useAlbumStore = create<AlbumStore>((set, get) => ({
   },
 
   updateSticker: (id, patch) => {
-    const stickers = get().stickers.map(s => s.id === id ? { ...s, ...patch } : s);
+    const now = Date.now();
+    const stickers = get().stickers.map(s => {
+      if (s.id !== id) return s;
+      const next = { ...s, ...patch };
+      if (patch.state && patch.state !== 'missing' && s.state === 'missing') {
+        next.markedAt = now;
+      }
+      return next;
+    });
     set({ stickers });
-    AsyncStorage.setItem(KEYS.stickers, JSON.stringify(stickers));
+    scheduleStickersWrite(stickers);
   },
 
-  setStickers: (stickers) => {
+  setStickers: (incoming) => {
+    const prev = new Map(get().stickers.map(s => [s.id, s.state]));
+    const now = Date.now();
+    const stickers = incoming.map(s => {
+      if (s.state !== 'missing' && prev.get(s.id) === 'missing') {
+        return { ...s, markedAt: s.markedAt ?? now };
+      }
+      return s;
+    });
     set({ stickers });
-    AsyncStorage.setItem(KEYS.stickers, JSON.stringify(stickers));
+    scheduleStickersWrite(stickers);
   },
 
   addFriend: (friend) => {
@@ -97,8 +122,22 @@ export const useAlbumStore = create<AlbumStore>((set, get) => ({
   },
 
   setProfile: (profile) => {
+    const prev = get().profile;
     set({ profile });
     AsyncStorage.setItem(KEYS.profile, JSON.stringify(profile));
+
+    // Regenerate stickers when withCocaCola changes (includes first-time setup)
+    if (prev?.withCocaCola !== profile.withCocaCola) {
+      const current = get().stickers;
+      const fresh = generateAlbum(42, profile.withCocaCola);
+      const stateById = new Map(current.map(s => [s.id, { state: s.state, count: s.count }]));
+      const stickers = fresh.map(s => {
+        const saved = stateById.get(s.id);
+        return saved ? { ...s, ...saved } : s;
+      });
+      set({ stickers });
+      scheduleStickersWrite(stickers);
+    }
   },
 
   toggleDark: () => {

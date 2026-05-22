@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View, Text, TextInput, SectionList,
   StyleSheet, useWindowDimensions,
@@ -33,14 +33,9 @@ const FILTERS: { key: Filter; label: string }[] = [
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
-/**
- * Chip badge counts = exact state match.
- * Section header "owned" count = owned + duplicate ("have it").
- * These differ intentionally: the chip badge answers "how many in this state?",
- * while the section header answers "how many do you have (any copy)?".
- */
 function filterCount(stickers: Sticker[], f: Filter): number {
-  if (f === 'all') return stickers.length;
+  if (f === 'all')    return stickers.length;
+  if (f === 'owned')  return stickers.filter(s => s.state !== 'missing').length;
   return stickers.filter(s => s.state === f).length;
 }
 
@@ -68,7 +63,7 @@ interface SectionHeaderProps {
 
 const COKE_RED = '#E61A27';
 
-function TeamSectionHeader({ teamCode, sectionStickers }: SectionHeaderProps) {
+const TeamSectionHeader = React.memo(function TeamSectionHeader({ teamCode, sectionStickers }: SectionHeaderProps) {
   const t = useTheme();
 
   const isSpecial  = teamCode === '★';
@@ -94,7 +89,7 @@ function TeamSectionHeader({ teamCode, sectionStickers }: SectionHeaderProps) {
       </Text>
     </View>
   );
-}
+});
 
 // ─── Main screen ─────────────────────────────────────────────────────────────
 
@@ -124,10 +119,13 @@ export function GridScreen() {
   }), [stickers]);
 
   // Visible stickers after filter + search
+  // 'owned' includes duplicates — a duplicate sticker IS pegada (you have it)
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
     return stickers.filter(s => {
-      if (filter !== 'all' && s.state !== filter) return false;
+      if (filter === 'owned'   && s.state === 'missing')    return false;
+      if (filter === 'missing' && s.state !== 'missing')    return false;
+      if (filter === 'duplicate' && s.state !== 'duplicate') return false;
       if (q) return stickerMatches(s, q);
       return true;
     });
@@ -169,11 +167,35 @@ export function GridScreen() {
 
   // Transform sections into SectionList format with rows chunked to COLS
   const sections = useMemo(
-    () => orderedSections.map(s => ({ key: s.key, data: chunkRows(s.stickers, COLS) })),
+    () => orderedSections.map(s => ({
+      key: s.key,
+      data: chunkRows(s.stickers, COLS),
+      allStickers: s.stickers,
+    })),
     [orderedSections],
   );
 
-  const ListHeader = (
+  const renderSectionHeader = useCallback(({ section }: { section: typeof sections[number] }) => (
+    <TeamSectionHeader
+      teamCode={section.key}
+      sectionStickers={section.allStickers}
+    />
+  ), []);
+
+  const renderItem = useCallback(({ item: row }: { item: Sticker[] }) => (
+    <View style={[styles.row, { paddingHorizontal: PAD, gap: GAP, marginBottom: GAP }]}>
+      {row.map(sticker => (
+        <StickerComponent
+          key={sticker.id}
+          sticker={sticker}
+          size={CELL}
+          onPress={() => nav.navigate('StickerModal', { stickerId: sticker.id })}
+        />
+      ))}
+    </View>
+  ), [CELL, nav]);
+
+  const ListHeaderComponent = useCallback(() => (
     <View style={[styles.header, { backgroundColor: t.paper }]}>
       <TextInput
         value={query}
@@ -204,7 +226,7 @@ export function GridScreen() {
         })}
       </View>
     </View>
-  );
+  ), [t, query, filter, chipCounts, chipW, setQuery, setFilter]);
 
   return (
     <View style={[styles.container, { backgroundColor: t.paper }]}>
@@ -212,36 +234,23 @@ export function GridScreen() {
       <SectionList
         sections={sections}
         keyExtractor={(row, index) => `row-${index}-${row[0]?.id ?? index}`}
-        ListHeaderComponent={ListHeader}
+        ListHeaderComponent={ListHeaderComponent}
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Text style={[styles.emptyText, { color: t.ink3 }]}>Sin resultados.</Text>
           </View>
         }
-        renderSectionHeader={({ section }) => (
-          <TeamSectionHeader
-            teamCode={section.key}
-            sectionStickers={section.data.flat()}
-          />
-        )}
-        renderItem={({ item: row }) => (
-          <View style={[styles.row, { paddingHorizontal: PAD, gap: GAP, marginBottom: GAP }]}>
-            {row.map(sticker => (
-              <StickerComponent
-                key={sticker.id}
-                sticker={sticker}
-                size={CELL}
-                onPress={() => nav.navigate('StickerModal', { stickerId: sticker.id })}
-              />
-            ))}
-          </View>
-        )}
+        renderSectionHeader={renderSectionHeader}
+        renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: tabBarHeight + 8 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         stickySectionHeadersEnabled={false}
         onScroll={e => setScrolled(e.nativeEvent.contentOffset.y > 6)}
         scrollEventThrottle={16}
+        windowSize={5}
+        maxToRenderPerBatch={3}
+        initialNumToRender={12}
       />
     </View>
   );

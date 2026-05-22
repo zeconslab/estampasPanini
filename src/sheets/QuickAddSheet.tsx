@@ -20,7 +20,9 @@ export function QuickAddSheet() {
   const t       = useTheme();
   const insets  = useSafeAreaInsets();
   const nav     = useNavigation();
-  const { stickers, setStickers } = useAlbumStore();
+  const stickers    = useAlbumStore(s => s.stickers);
+  const setStickers = useAlbumStore(s => s.setStickers);
+  const profile     = useAlbumStore(s => s.profile);
   const { width } = useWindowDimensions();
 
   const CELL = useMemo(
@@ -40,6 +42,18 @@ export function QuickAddSheet() {
     ).length,
     [local],
   );
+
+  const teamCounts = useMemo(() => {
+    const map = new Map<string, { owned: number; total: number }>();
+    for (const s of local) {
+      const key = s.team ?? '★';
+      const entry = map.get(key) ?? { owned: 0, total: 0 };
+      entry.total++;
+      if (s.state !== 'missing') entry.owned++;
+      map.set(key, entry);
+    }
+    return map;
+  }, [local]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -85,10 +99,18 @@ export function QuickAddSheet() {
 
   return (
     <View style={[styles.container, { backgroundColor: t.paper }]}>
-      <View style={[styles.header, { backgroundColor: t.paper }]}>
+      <View style={[styles.header, { backgroundColor: t.paper, paddingTop: Math.max(16, insets.top + 8) }]}>
         <View style={styles.titleRow}>
-          <Text style={[styles.title, { color: t.ink, fontFamily: fonts.headline }]}>Marcar rápido</Text>
-          <Text style={[styles.sub, { color: t.ink4, fontFamily: fonts.body }]}>falta → tengo → repetida</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.title, { color: t.ink, fontFamily: fonts.headline }]}>Marcar rápido</Text>
+            <Text style={[styles.sub, { color: t.ink4, fontFamily: fonts.body }]}>falta → tengo → repetida</Text>
+          </View>
+          <HapticPress
+            style={[styles.closeBtn, { backgroundColor: t.paper2, borderColor: t.line }]}
+            onPress={() => nav.goBack()}
+          >
+            <Text style={[styles.closeBtnText, { color: t.ink }]}>✕</Text>
+          </HapticPress>
         </View>
         <TextInput
           value={query}
@@ -121,8 +143,7 @@ export function QuickAddSheet() {
 
         {TEAMS.map(team => {
           const active = selectedTeam === team.code;
-          const teamStickers = local.filter(s => s.team === team.code);
-          const ownedCount   = teamStickers.filter(s => s.state !== 'missing').length;
+          const counts = teamCounts.get(team.code) ?? { owned: 0, total: 0 };
           return (
             <TouchableOpacity
               key={team.code}
@@ -137,11 +158,34 @@ export function QuickAddSheet() {
                 {team.code}
               </Text>
               <Text style={[styles.chipCount, { color: active ? 'rgba(255,255,255,0.55)' : t.ink4, fontFamily: fonts.mono }]}>
-                {ownedCount}/{teamStickers.length}
+                {counts.owned}/{counts.total}
               </Text>
             </TouchableOpacity>
           );
         })}
+
+        {profile?.withCocaCola && (() => {
+          const active = selectedTeam === 'CC';
+          const counts = teamCounts.get('CC') ?? { owned: 0, total: 0 };
+          return (
+            <TouchableOpacity
+              key="CC"
+              style={[styles.chip, {
+                backgroundColor: active ? '#E61A27' : t.card,
+                borderColor: active ? '#E61A27' : t.line,
+              }]}
+              onPress={() => setSelectedTeam(active ? null : 'CC')}
+            >
+              <View style={[styles.ccDot, { backgroundColor: active ? '#fff' : '#E61A27' }]} />
+              <Text style={[styles.chipCode, { color: active ? '#fff' : t.ink, fontFamily: fonts.semibold }]}>
+                CC
+              </Text>
+              <Text style={[styles.chipCount, { color: active ? 'rgba(255,255,255,0.55)' : t.ink4, fontFamily: fonts.mono }]}>
+                {counts.owned}/{counts.total}
+              </Text>
+            </TouchableOpacity>
+          );
+        })()}
       </ScrollView>
 
       <FlatList
@@ -151,6 +195,11 @@ export function QuickAddSheet() {
         contentContainerStyle={listContentStyle}
         columnWrapperStyle={styles.colWrapper}
         renderItem={renderItem}
+        windowSize={5}
+        maxToRenderPerBatch={3}
+        initialNumToRender={10}
+        updateCellsBatchingPeriod={50}
+        removeClippedSubviews
       />
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 8, backgroundColor: t.paper }]}>
@@ -170,7 +219,9 @@ export function QuickAddSheet() {
 const styles = StyleSheet.create({
   container:  { flex: 1 },
   header:     { padding: 16, paddingBottom: 10 },
-  titleRow:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 },
+  titleRow:     { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  closeBtn:     { width: 32, height: 32, borderRadius: 11, borderWidth: 0.5, alignItems: 'center', justifyContent: 'center' },
+  closeBtnText: { fontSize: 14 },
   title:      { fontSize: 19 },
   sub:        { fontSize: 11 },
   search:     {
@@ -194,6 +245,7 @@ const styles = StyleSheet.create({
   },
   chipCode:   { fontSize: 12 },
   chipCount:  { fontSize: 9, marginTop: 1 },
+  ccDot:      { width: 8, height: 8, borderRadius: 4 },
   footer:     { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 16 },
   counter:    { fontSize: 11, textAlign: 'center', marginBottom: 8, letterSpacing: 0.2 },
   doneBtn:    { borderRadius: 24, paddingVertical: 14, alignItems: 'center' },
