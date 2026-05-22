@@ -1,7 +1,8 @@
 import React, { useMemo, useCallback } from 'react';
 import {
-  ScrollView, View, Text, Switch, TouchableOpacity, StyleSheet, Alert, Linking,
+  ScrollView, View, Text, TouchableOpacity, StyleSheet, Alert, Linking,
 } from 'react-native';
+import { Toggle } from '../components/Toggle';
 import AsyncStorage                from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets }       from 'react-native-safe-area-context';
 import { useBottomTabBarHeight }   from '@react-navigation/bottom-tabs';
@@ -174,13 +175,7 @@ export function ProfileScreen() {
           {/* Modo oscuro */}
           <View style={[styles.settingsRow, styles.settingsRowBorder, { borderColor: t.line }]}>
             <Text style={[styles.rowLabel, { color: t.ink, fontFamily: fonts.semibold }]}>Modo oscuro</Text>
-            <Switch
-              value={dark}
-              onValueChange={toggleDark}
-              trackColor={{ false: t.paper2, true: t.primary }}
-              thumbColor={dark ? t.paper : '#FFFFFF'}
-              ios_backgroundColor={t.paper2}
-            />
+            <Toggle value={dark} onValueChange={toggleDark} />
           </View>
 
           {/* Reiniciar álbum */}
